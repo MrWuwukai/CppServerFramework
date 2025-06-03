@@ -30,3 +30,27 @@
 *.exe
 *.out
 *.app
+
+# Visual Studio 生成的文件
+.vs/
+.vscode/
+ipch/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# 编译生成的文件
+Debug/
+Release/
+x64/
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.lib
+*.exp
+
+# 其他临时文件
+*.tmp
+*.log
