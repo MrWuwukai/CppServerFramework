@@ -128,10 +128,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="log.cpp" />
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="testlog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeList.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

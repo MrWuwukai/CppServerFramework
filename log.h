@@ -10,15 +10,26 @@
 #include <fstream>
 #include <vector>
 #include <tuple>
+#include <map>
+#include <functional>
+
+#ifdef _WIN32
+#include <ctime>
+#include <cstdio> 
+#else
+#include <time.h>
+#include <string.h>
+#endif
 
 namespace Framework {
+    class Logger;
 
     // 日志事件
     class LogEvent {
     public:
         // 定义LogEvent智能指针类型别名ptr
         typedef std::shared_ptr<LogEvent> ptr;
-        LogEvent();
+        LogEvent(const char* file, int32_t m_line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time);
 
         const char* getFile() const { return m_file; }
         int32_t getLine() const { return m_line; }
@@ -26,7 +37,8 @@ namespace Framework {
         uint32_t getThreadId() const { return m_threadId; }
         uint32_t getFiberId() const { return m_fiberId; }
         uint64_t getTime() const { return m_time; }
-        const std::string& getContent() const { return m_content; }
+        std::string getContent() const { return m_content.str(); }
+        std::stringstream& getSS() { return m_content; }
     private:
         // 记录日志的文件名，初始化为空指针
         const char* m_file = nullptr;
@@ -39,9 +51,9 @@ namespace Framework {
         // 协程ID，初始化为0
         uint32_t m_fiberId = 0;
         // 日志记录的时间戳，初始化为0
-        uint64_t m_time;
+        uint64_t m_time = 0;
         // 日志内容
-        std::string m_content;
+        std::stringstream m_content;
     };
 
     class LogLevel {
@@ -66,17 +78,19 @@ namespace Framework {
         // 构造函数，接受一个字符串模式参数
         LogFormatter(const std::string& pattern);
         // 格式化日志事件的函数，接受一个LogEvent的智能指针参数，返回格式化后的字符串
-        std::string format(LogLevel::Level level, LogEvent::ptr event);
+        std::string format(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event);
     public:
         // 内部类FormatItem，用于表示格式化项
         class FormatItem {
         public:
             // 定义一个指向FormatItem的智能指针类型
             typedef std::shared_ptr<FormatItem> ptr;
+            // 构造函数
+            //FormatItem(const std::string& fmt = "") {};
             // 虚析构函数，确保派生类正确析构
             virtual ~FormatItem() {}
             // 纯虚函数，用于格式化日志事件，接受一个LogEvent的智能指针参数，返回格式化后的字符串
-            virtual void format(std::ostream& os, LogLevel::Level level, LogEvent::ptr event) = 0;
+            virtual void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
         };
 
         void init();
@@ -95,18 +109,18 @@ namespace Framework {
         // 虚析构函数，用于在派生类析构时正确释放资源
         virtual ~LogAppender() {}
         // 记录日志的函数，接受日志级别和日志事件指针作为参数
-        virtual void log(LogLevel::Level level, LogEvent::ptr event) = 0;
+        virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
 
         void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
         LogFormatter::ptr getFormatter() const { return m_formatter; }
     protected:
         // 日志级别
-        LogLevel::Level m_level;
+        LogLevel::Level m_level = LogLevel::INFO;
         LogFormatter::ptr m_formatter;
     };
 
     // 日志器类定义
-    class Logger {
+    class Logger : public std::enable_shared_from_this<Logger>{
     public:
         // 定义一个指向Logger的智能指针类型别名
         typedef std::shared_ptr<Logger> ptr;
@@ -138,6 +152,8 @@ namespace Framework {
         LogLevel::Level getLevel() const {return m_level;}
         void setLevel(LogLevel::Level val) { m_level = val; }
 
+        const std::string& getName() const { return m_name; }
+
     private:
         // 日志名称成员变量
         std::string m_name;
@@ -145,6 +161,7 @@ namespace Framework {
         LogLevel::Level m_level;
         // Appender集合成员变量，用于存储多个Appender指针
         std::list<LogAppender::ptr> m_appenders;
+        LogFormatter::ptr m_formatter;
     };
 
     // 输出到控制台的Appender
@@ -153,7 +170,7 @@ namespace Framework {
         // 定义一个指向StdoutLogAppender的智能指针类型别名
         typedef std::shared_ptr<StdoutLogAppender> ptr;
         // 重写父类的log方法，用于将日志事件输出到控制台，level表示日志级别，event表示日志事件
-        void log(LogLevel::Level level, LogEvent::ptr event) override;
+        void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
     };
 
     // 定义输出到文件的Appender
@@ -164,7 +181,7 @@ namespace Framework {
         // 构造函数，接受一个文件名参数，用于指定日志输出的文件
         FileLogAppender(const std::string& filename);
         // 重写父类的log方法，用于将日志事件输出到文件，level表示日志级别，event表示日志事件
-        void log(LogLevel::Level level, LogEvent::ptr event) override;
+        void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
 
         bool reopen();
     private:
