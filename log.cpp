@@ -1,4 +1,4 @@
-#include "log.h"
+ï»¿#include "log.h"
 
 namespace Framework {
     // ---LogEvent---
@@ -14,8 +14,7 @@ namespace Framework {
 
     }
 
-
-    // LogEventWrap
+    // ---LogEventWrap---
     LogEventWrap::LogEventWrap(LogEvent::ptr e)
         :m_event(e) {
     }
@@ -49,14 +48,14 @@ namespace Framework {
     }
 
     // ---Logger---
-    // LoggerÀàµÄ¹¹Ôìº¯Êı£¬½ÓÊÜÒ»¸ö×Ö·û´®²ÎÊıname£¬ÓÃÓÚ³õÊ¼»¯ÈÕÖ¾¼ÇÂ¼Æ÷µÄÃû³Æ
+    // Loggerç±»çš„æ„é€ å‡½æ•°ï¼Œæ¥å—ä¸€ä¸ªå­—ç¬¦ä¸²å‚æ•°nameï¼Œç”¨äºåˆå§‹åŒ–æ—¥å¿—è®°å½•å™¨çš„åç§°
     Logger::Logger(const std::string& name)
         : m_name(name), m_level(LogLevel::INFO) {
         //m_formatter.reset(new LogFormatter("%d [%p] <%f:%l> %m %n"));
-        m_formatter.reset(new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
+        m_formatter.reset(new LogFormatter("%d{%Y-%m-%d %H:%M:%S} %T%t %T%F %T[%p]%T[%c] %T%f:%l %T%m%n"));
     }
 
-    // ÏòÈÕÖ¾¼ÇÂ¼Æ÷ÖĞÌí¼ÓÒ»¸öÈÕÖ¾Êä³öÆ÷£¨appender£©
+    // å‘æ—¥å¿—è®°å½•å™¨ä¸­æ·»åŠ ä¸€ä¸ªæ—¥å¿—è¾“å‡ºå™¨ï¼ˆappenderï¼‰
     void Logger::addAppender(LogAppender::ptr appender) {
         if (!appender->getFormatter()){
             appender->setFormatter(m_formatter);
@@ -64,7 +63,7 @@ namespace Framework {
         m_appenders.push_back(appender);
     }
 
-    // ´ÓÈÕÖ¾¼ÇÂ¼Æ÷ÖĞÉ¾³ıÖ¸¶¨µÄÈÕÖ¾Êä³öÆ÷£¨appender£©
+    // ä»æ—¥å¿—è®°å½•å™¨ä¸­åˆ é™¤æŒ‡å®šçš„æ—¥å¿—è¾“å‡ºå™¨ï¼ˆappenderï¼‰
     void Logger::delAppender(LogAppender::ptr appender) {
         for (auto it = m_appenders.begin();
             it != m_appenders.end(); ++it) {
@@ -75,7 +74,7 @@ namespace Framework {
         }
     }
 
-    // ¼ÇÂ¼ÈÕÖ¾µÄ·½·¨£¬¸ù¾İÈÕÖ¾¼¶±ğÅĞ¶ÏÊÇ·ñ¼ÇÂ¼£¬ÈôÂú×ãÌõ¼şÔò±éÀúËùÓĞÊä³öÆ÷½øĞĞÈÕÖ¾Êä³ö
+    // è®°å½•æ—¥å¿—çš„æ–¹æ³•ï¼Œæ ¹æ®æ—¥å¿—çº§åˆ«åˆ¤æ–­æ˜¯å¦è®°å½•ï¼Œè‹¥æ»¡è¶³æ¡ä»¶åˆ™éå†æ‰€æœ‰è¾“å‡ºå™¨è¿›è¡Œæ—¥å¿—è¾“å‡º
     void Logger::log(LogLevel::Level level, LogEvent::ptr event) {
         if (level >= m_level) {
             auto self = shared_from_this();
@@ -85,70 +84,70 @@ namespace Framework {
         }
     }
 
-    // µ÷ÊÔ¼¶±ğµÄÈÕÖ¾¼ÇÂ¼·½·¨£¬µ÷ÓÃlog·½·¨²¢Ö¸¶¨¼¶±ğÎªDEBUG
+    // è°ƒè¯•çº§åˆ«çš„æ—¥å¿—è®°å½•æ–¹æ³•ï¼Œè°ƒç”¨logæ–¹æ³•å¹¶æŒ‡å®šçº§åˆ«ä¸ºDEBUG
     void Logger::debug(LogEvent::ptr event) {
         log(LogLevel::DEBUG, event);
     }
 
-    // ĞÅÏ¢¼¶±ğµÄÈÕÖ¾¼ÇÂ¼·½·¨£¬µ÷ÓÃlog·½·¨²¢Ö¸¶¨¼¶±ğÎªINFO
+    // ä¿¡æ¯çº§åˆ«çš„æ—¥å¿—è®°å½•æ–¹æ³•ï¼Œè°ƒç”¨logæ–¹æ³•å¹¶æŒ‡å®šçº§åˆ«ä¸ºINFO
     void Logger::info(LogEvent::ptr event) {
         log(LogLevel::INFO, event);
     }
 
-    // ¾¯¸æ¼¶±ğµÄÈÕÖ¾¼ÇÂ¼·½·¨£¬µ÷ÓÃlog·½·¨²¢Ö¸¶¨¼¶±ğÎªWARN
+    // è­¦å‘Šçº§åˆ«çš„æ—¥å¿—è®°å½•æ–¹æ³•ï¼Œè°ƒç”¨logæ–¹æ³•å¹¶æŒ‡å®šçº§åˆ«ä¸ºWARN
     void Logger::warn(LogEvent::ptr event) {
         log(LogLevel::WARN, event);
     }
 
-    // ´íÎó¼¶±ğµÄÈÕÖ¾¼ÇÂ¼·½·¨£¬µ÷ÓÃlog·½·¨²¢Ö¸¶¨¼¶±ğÎªERROR
+    // é”™è¯¯çº§åˆ«çš„æ—¥å¿—è®°å½•æ–¹æ³•ï¼Œè°ƒç”¨logæ–¹æ³•å¹¶æŒ‡å®šçº§åˆ«ä¸ºERROR
     void Logger::error(LogEvent::ptr event) {
         log(LogLevel::ERROR, event);
     }
 
-    // ÖÂÃü´íÎó¼¶±ğµÄÈÕÖ¾¼ÇÂ¼·½·¨£¬µ÷ÓÃlog·½·¨²¢Ö¸¶¨¼¶±ğÎªFATAL
+    // è‡´å‘½é”™è¯¯çº§åˆ«çš„æ—¥å¿—è®°å½•æ–¹æ³•ï¼Œè°ƒç”¨logæ–¹æ³•å¹¶æŒ‡å®šçº§åˆ«ä¸ºFATAL
     void Logger::fatal(LogEvent::ptr event) {
         log(LogLevel::FATAL, event);
     }
 
     // ---LogAppender---
-    // FileLogAppenderÀàµÄ¹¹Ôìº¯Êı£¬½ÓÊÜÒ»¸öÎÄ¼şÃû²ÎÊı
-    // ÓÃÓÚ³õÊ¼»¯³ÉÔ±±äÁ¿m_filename£¬¸Ã±äÁ¿´æ´¢ÈÕÖ¾ÒªĞ´ÈëµÄÎÄ¼şÃû
+    // FileLogAppenderç±»çš„æ„é€ å‡½æ•°ï¼Œæ¥å—ä¸€ä¸ªæ–‡ä»¶åå‚æ•°
+    // ç”¨äºåˆå§‹åŒ–æˆå‘˜å˜é‡m_filenameï¼Œè¯¥å˜é‡å­˜å‚¨æ—¥å¿—è¦å†™å…¥çš„æ–‡ä»¶å
     FileLogAppender::FileLogAppender(const std::string& filename)
         : m_filename(filename) {
     }
 
-    // FileLogAppenderÀàµÄlog·½·¨£¬ÓÃÓÚ½«ÈÕÖ¾ÊÂ¼şĞ´ÈëÎÄ¼ş
-    // level±íÊ¾ÈÕÖ¾µÄ¼¶±ğ
-    // eventÊÇÖ¸ÏòÈÕÖ¾ÊÂ¼şµÄÖÇÄÜÖ¸Õë
+    // FileLogAppenderç±»çš„logæ–¹æ³•ï¼Œç”¨äºå°†æ—¥å¿—äº‹ä»¶å†™å…¥æ–‡ä»¶
+    // levelè¡¨ç¤ºæ—¥å¿—çš„çº§åˆ«
+    // eventæ˜¯æŒ‡å‘æ—¥å¿—äº‹ä»¶çš„æ™ºèƒ½æŒ‡é’ˆ
     void FileLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
-        // ÅĞ¶Ïµ±Ç°ÈÕÖ¾¼¶±ğÊÇ·ñ´óÓÚµÈÓÚÉè¶¨µÄÈÕÖ¾¼¶±ğ
+        // åˆ¤æ–­å½“å‰æ—¥å¿—çº§åˆ«æ˜¯å¦å¤§äºç­‰äºè®¾å®šçš„æ—¥å¿—çº§åˆ«
         if (level >= m_level) {
-            // Èç¹ûÂú×ãÌõ¼ş£¬½«¸ñÊ½»¯ºóµÄÈÕÖ¾ÊÂ¼şĞ´Èëµ½ÎÄ¼şÁ÷m_filestreamÖĞ
+            // å¦‚æœæ»¡è¶³æ¡ä»¶ï¼Œå°†æ ¼å¼åŒ–åçš„æ—¥å¿—äº‹ä»¶å†™å…¥åˆ°æ–‡ä»¶æµm_filestreamä¸­
             m_filestream << m_formatter->format(logger, level, event);
         }
     }
 
-    // FileLogAppenderÀàµÄreopenº¯Êı£¬ÓÃÓÚÖØĞÂ´ò¿ªÈÕÖ¾ÎÄ¼şÁ÷
-    // ·µ»ØÖµ£ºÈç¹ûÎÄ¼şÁ÷³É¹¦´ò¿ª£¨¼´ÎÄ¼şÁ÷¶ÔÏóÓĞĞ§£©£¬·µ»Øtrue£»·ñÔò·µ»Øfalse
+    // FileLogAppenderç±»çš„reopenå‡½æ•°ï¼Œç”¨äºé‡æ–°æ‰“å¼€æ—¥å¿—æ–‡ä»¶æµ
+    // è¿”å›å€¼ï¼šå¦‚æœæ–‡ä»¶æµæˆåŠŸæ‰“å¼€ï¼ˆå³æ–‡ä»¶æµå¯¹è±¡æœ‰æ•ˆï¼‰ï¼Œè¿”å›trueï¼›å¦åˆ™è¿”å›false
     bool FileLogAppender::reopen() {
-        // ÅĞ¶ÏÎÄ¼şÁ÷¶ÔÏóm_filestreamÊÇ·ñ´æÔÚ£¨²»Îªnullptr£©
+        // åˆ¤æ–­æ–‡ä»¶æµå¯¹è±¡m_filestreamæ˜¯å¦å­˜åœ¨ï¼ˆä¸ä¸ºnullptrï¼‰
         if (m_filestream) {
-            // ¹Ø±Õµ±Ç°µÄÎÄ¼şÁ÷
+            // å…³é—­å½“å‰çš„æ–‡ä»¶æµ
             m_filestream.close();
         }
-        // ³¢ÊÔ´ò¿ªÖ¸¶¨ÎÄ¼şÃûµÄÎÄ¼şÁ÷
+        // å°è¯•æ‰“å¼€æŒ‡å®šæ–‡ä»¶åçš„æ–‡ä»¶æµ
         m_filestream.open(m_filename);
-        // ·µ»ØÎÄ¼şÁ÷ÊÇ·ñ³É¹¦´ò¿ªµÄ×´Ì¬£¬!m_filestreamÎªfalse±íÊ¾´ò¿ªÊ§°Ü£¬true±íÊ¾´ò¿ª³É¹¦
+        // è¿”å›æ–‡ä»¶æµæ˜¯å¦æˆåŠŸæ‰“å¼€çš„çŠ¶æ€ï¼Œ!m_filestreamä¸ºfalseè¡¨ç¤ºæ‰“å¼€å¤±è´¥ï¼Œtrueè¡¨ç¤ºæ‰“å¼€æˆåŠŸ
         return!m_filestream;
     }
 
-    // StdoutLogAppenderÀàµÄlogº¯Êı£¬ÓÃÓÚ½«ÈÕÖ¾ÊÂ¼şÊä³öµ½±ê×¼Êä³öÁ÷
-    // level£ºÈÕÖ¾¼¶±ğ
-    // event£ºÖ¸ÏòÈÕÖ¾ÊÂ¼ş¶ÔÏóµÄÖÇÄÜÖ¸Õë
+    // StdoutLogAppenderç±»çš„logå‡½æ•°ï¼Œç”¨äºå°†æ—¥å¿—äº‹ä»¶è¾“å‡ºåˆ°æ ‡å‡†è¾“å‡ºæµ
+    // levelï¼šæ—¥å¿—çº§åˆ«
+    // eventï¼šæŒ‡å‘æ—¥å¿—äº‹ä»¶å¯¹è±¡çš„æ™ºèƒ½æŒ‡é’ˆ
     void StdoutLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
-        // ÅĞ¶Ïµ±Ç°ÈÕÖ¾¼¶±ğÊÇ·ñ´óÓÚµÈÓÚÉèÖÃµÄÈÕÖ¾¼¶±ğ
+        // åˆ¤æ–­å½“å‰æ—¥å¿—çº§åˆ«æ˜¯å¦å¤§äºç­‰äºè®¾ç½®çš„æ—¥å¿—çº§åˆ«
         if (level >= m_level) {
-            // ½«¸ñÊ½»¯ºóµÄÈÕÖ¾ÊÂ¼şÊä³öµ½±ê×¼Êä³öÁ÷std::cout
+            // å°†æ ¼å¼åŒ–åçš„æ—¥å¿—äº‹ä»¶è¾“å‡ºåˆ°æ ‡å‡†è¾“å‡ºæµstd::cout
             std::cout << m_formatter->format(logger, level, event);
         }
     }
@@ -296,13 +295,13 @@ namespace Framework {
         std::vector<std::tuple<std::string, std::string, int>> vec;
         std::string nstr;
         for (size_t i = 0; i < m_pattern.size(); ++i) {
-            // Èç¹ûµ±Ç°×Ö·û²»ÊÇ '%', Ö±½Ó½«Æä×·¼Óµ½ nstr ÖĞ
+            // å¦‚æœå½“å‰å­—ç¬¦ä¸æ˜¯ '%', ç›´æ¥å°†å…¶è¿½åŠ åˆ° nstr ä¸­
             if (m_pattern[i] != '%') {
                 nstr.append(1, m_pattern[i]);
                 continue;
             }
-            // Èç¹ûµ±Ç°×Ö·ûÊÇ '%' ÇÒÏÂÒ»¸ö×Ö·ûÒ²ÊÇ '%', ËµÃ÷ÊÇ×ªÒåµÄ '%', 
-            // Ö±½Ó½« '%' ×·¼Óµ½ nstr ÖĞÈ»ºóÌø¹ıÏÂÒ»¸ö×Ö·ûµÄ¼ì²é
+            // å¦‚æœå½“å‰å­—ç¬¦æ˜¯ '%' ä¸”ä¸‹ä¸€ä¸ªå­—ç¬¦ä¹Ÿæ˜¯ '%', è¯´æ˜æ˜¯è½¬ä¹‰çš„ '%', 
+            // ç›´æ¥å°† '%' è¿½åŠ åˆ° nstr ä¸­ç„¶åè·³è¿‡ä¸‹ä¸€ä¸ªå­—ç¬¦çš„æ£€æŸ¥
             if ((i + 1) < m_pattern.size()) {
                 if (m_pattern[i + 1] == '%') {
                     nstr.append(1, '%');
@@ -315,28 +314,28 @@ namespace Framework {
             std::string str;
             std::string fmt;
             while (n < m_pattern.size()) {
-                // Èç¹ûÓöµ½¿Õ¸ñ£¬Í£Ö¹½âÎöµ±Ç°¸ñÊ½Ïà¹ØÄÚÈİ
+                // å¦‚æœé‡åˆ°ç©ºæ ¼ï¼Œåœæ­¢è§£æå½“å‰æ ¼å¼ç›¸å…³å†…å®¹
                 if (!fmt_status && (!isalpha(m_pattern[n]) && m_pattern[n] != '{' && m_pattern[n] != '}')) {
                     str = m_pattern.substr(i + 1, n - i - 1);
                     break;
                 }
-                // µ±»¹Î´¿ªÊ¼½âÎö¸ñÊ½±êÊ¶Ê±
+                // å½“è¿˜æœªå¼€å§‹è§£ææ ¼å¼æ ‡è¯†æ—¶
                 if (fmt_status == 0) {
-                    // Èç¹ûÓöµ½ '('£¬±íÊ¾¸ñÊ½±êÊ¶¿ªÊ¼
+                    // å¦‚æœé‡åˆ° '('ï¼Œè¡¨ç¤ºæ ¼å¼æ ‡è¯†å¼€å§‹
                     if (m_pattern[n] == '{') {
                         str = m_pattern.substr(i + 1, n - i - 1);
-                        fmt_status = 1; // ±ê¼Ç½øÈë¸ñÊ½½âÎö×´Ì¬
-                        fmt_begin = n; // ¼ÇÂ¼¸ñÊ½±êÊ¶¿ªÊ¼µÄË÷Òı
+                        fmt_status = 1; // æ ‡è®°è¿›å…¥æ ¼å¼è§£æçŠ¶æ€
+                        fmt_begin = n; // è®°å½•æ ¼å¼æ ‡è¯†å¼€å§‹çš„ç´¢å¼•
                         ++n;
                         continue;
                     }
                 }
-                // µ±ÒÑ¾­¿ªÊ¼½âÎö¸ñÊ½±êÊ¶Ê±
+                // å½“å·²ç»å¼€å§‹è§£ææ ¼å¼æ ‡è¯†æ—¶
                 else if (fmt_status == 1) {
-                    // Èç¹ûÓöµ½ ')'£¬±íÊ¾¸ñÊ½±êÊ¶½áÊø
+                    // å¦‚æœé‡åˆ° ')'ï¼Œè¡¨ç¤ºæ ¼å¼æ ‡è¯†ç»“æŸ
                     if (m_pattern[n] == '}') {
                         fmt = m_pattern.substr(fmt_begin + 1, n - fmt_begin - 1);
-                        fmt_status = 0; // ±ê¼Ç¸ñÊ½½âÎöÍê³É
+                        fmt_status = 0; // æ ‡è®°æ ¼å¼è§£æå®Œæˆ
                         ++n;
                         break;
                     }
@@ -352,30 +351,30 @@ namespace Framework {
 
             if (fmt_status == 0) {
                 if (!nstr.empty()) {
-                    // Èç¹ûnstr²»Îª¿Õ£¬½«nstrºÍÒ»¸ö¿Õ×Ö·û´®×é³ÉµÄpair£¨µÚÈı¸ö²ÎÊı0¿ÉÄÜ±íÊ¾Ä³ÖÖ×´Ì¬»ò±êÊ¶£©Ìí¼Óµ½vecÏòÁ¿ÖĞ
+                    // å¦‚æœnsträ¸ä¸ºç©ºï¼Œå°†nstrå’Œä¸€ä¸ªç©ºå­—ç¬¦ä¸²ç»„æˆçš„pairï¼ˆç¬¬ä¸‰ä¸ªå‚æ•°0å¯èƒ½è¡¨ç¤ºæŸç§çŠ¶æ€æˆ–æ ‡è¯†ï¼‰æ·»åŠ åˆ°vecå‘é‡ä¸­
                     vec.push_back(std::make_tuple(nstr, std::string(), 0));
                     nstr.clear();
                 }
-                // ½«strºÍfmt×é³ÉµÄtuple£¨µÚÈı¸ö²ÎÊı1¿ÉÄÜ±íÊ¾Ä³ÖÖ×´Ì¬»ò±êÊ¶£©Ìí¼Óµ½vecÏòÁ¿ÖĞ
+                // å°†strå’Œfmtç»„æˆçš„tupleï¼ˆç¬¬ä¸‰ä¸ªå‚æ•°1å¯èƒ½è¡¨ç¤ºæŸç§çŠ¶æ€æˆ–æ ‡è¯†ï¼‰æ·»åŠ åˆ°vecå‘é‡ä¸­
                 vec.push_back(std::make_tuple(str, fmt, 1));
-                // ½«Ë÷ÒıiÉèÖÃÎªn£¬¿ÉÄÜÓÃÓÚºóĞøÑ­»·¿ØÖÆ»ò±íÊ¾´¦Àí½áÊøµÈ
+                // å°†ç´¢å¼•iè®¾ç½®ä¸ºnï¼Œå¯èƒ½ç”¨äºåç»­å¾ªç¯æ§åˆ¶æˆ–è¡¨ç¤ºå¤„ç†ç»“æŸç­‰
                 i = n - 1;
             }
             else if (fmt_status == 1) {
-                // Èç¹ûfmt_statusµÈÓÚ1£¬Êä³ö¸ñÊ½½âÎö´íÎóĞÅÏ¢£¬°üÀ¨Ä£Ê½×Ö·û´®m_patternÒÔ¼°µ±Ç°Î»ÖÃi´¦µÄ×Ó×Ö·û´®
+                // å¦‚æœfmt_statusç­‰äº1ï¼Œè¾“å‡ºæ ¼å¼è§£æé”™è¯¯ä¿¡æ¯ï¼ŒåŒ…æ‹¬æ¨¡å¼å­—ç¬¦ä¸²m_patternä»¥åŠå½“å‰ä½ç½®iå¤„çš„å­å­—ç¬¦ä¸²
                 std::cout << "pattern parse error: " << m_pattern << " - " << m_pattern.substr(i) << std::endl;
-                // ½«Ò»¸ö°üº¬"<pattern_error>"ºÍfmtµÄtuple£¨µÚÈı¸ö²ÎÊı0¿ÉÄÜ±íÊ¾Ä³ÖÖ×´Ì¬»ò±êÊ¶£©Ìí¼Óµ½vecÏòÁ¿ÖĞ
+                // å°†ä¸€ä¸ªåŒ…å«"<pattern_error>"å’Œfmtçš„tupleï¼ˆç¬¬ä¸‰ä¸ªå‚æ•°0å¯èƒ½è¡¨ç¤ºæŸç§çŠ¶æ€æˆ–æ ‡è¯†ï¼‰æ·»åŠ åˆ°vecå‘é‡ä¸­
                 vec.push_back(std::make_tuple("<pattern_error>", fmt, 0));
             }
             //else if (fmt_status == 2) {
             //    if (!nstr.empty()) {
-            //        // Èç¹ûnstr²»Îª¿Õ£¬½«nstrºÍÒ»¸ö¿Õ×Ö·û´®×é³ÉµÄpair£¨µÚÈı¸ö²ÎÊı0¿ÉÄÜ±íÊ¾Ä³ÖÖ×´Ì¬»ò±êÊ¶£©Ìí¼Óµ½vecÏòÁ¿ÖĞ
+            //        // å¦‚æœnsträ¸ä¸ºç©ºï¼Œå°†nstrå’Œä¸€ä¸ªç©ºå­—ç¬¦ä¸²ç»„æˆçš„pairï¼ˆç¬¬ä¸‰ä¸ªå‚æ•°0å¯èƒ½è¡¨ç¤ºæŸç§çŠ¶æ€æˆ–æ ‡è¯†ï¼‰æ·»åŠ åˆ°vecå‘é‡ä¸­
             //        vec.push_back(std::make_tuple(nstr, "", 0));
             //        nstr.clear();
             //    }
-            //    // ½«strºÍfmt×é³ÉµÄtuple£¨µÚÈı¸ö²ÎÊı1¿ÉÄÜ±íÊ¾Ä³ÖÖ×´Ì¬»ò±êÊ¶£©Ìí¼Óµ½vecÏòÁ¿ÖĞ
+            //    // å°†strå’Œfmtç»„æˆçš„tupleï¼ˆç¬¬ä¸‰ä¸ªå‚æ•°1å¯èƒ½è¡¨ç¤ºæŸç§çŠ¶æ€æˆ–æ ‡è¯†ï¼‰æ·»åŠ åˆ°vecå‘é‡ä¸­
             //    vec.push_back(std::make_tuple(str, fmt, 1));
-            //    // ½«Ë÷ÒıiÉèÖÃÎªn£¬¿ÉÄÜÓÃÓÚºóĞøÑ­»·¿ØÖÆ»ò±íÊ¾´¦Àí½áÊøµÈ
+            //    // å°†ç´¢å¼•iè®¾ç½®ä¸ºnï¼Œå¯èƒ½ç”¨äºåç»­å¾ªç¯æ§åˆ¶æˆ–è¡¨ç¤ºå¤„ç†ç»“æŸç­‰
             //    i = n - 1;
             //}
         }
@@ -385,8 +384,8 @@ namespace Framework {
         }
 
         static std::map<std::string, std::function<FormatItem::ptr(const std::string& str)>> s_format_items = {
-            // # ÊÇ C/C++ Ô¤´¦ÀíÆ÷µÄ×Ö·û´®»¯ÔËËã·û£¬ËüµÄ×÷ÓÃÊÇ½«ºê²ÎÊı×ª»»Îª×Ö·û´®×ÖÃæÁ¿¡£
-            // #str »á½«´«ÈëµÄ str ²ÎÊı£¨Èç "m"¡¢"p" µÈ£©×ª»»³É×Ö·û´®×ÖÃæÁ¿£¨Èç "m"¡¢"p"£©¡£
+            // # æ˜¯ C/C++ é¢„å¤„ç†å™¨çš„å­—ç¬¦ä¸²åŒ–è¿ç®—ç¬¦ï¼Œå®ƒçš„ä½œç”¨æ˜¯å°†å®å‚æ•°è½¬æ¢ä¸ºå­—ç¬¦ä¸²å­—é¢é‡ã€‚
+            // #str ä¼šå°†ä¼ å…¥çš„ str å‚æ•°ï¼ˆå¦‚ "m"ã€"p" ç­‰ï¼‰è½¬æ¢æˆå­—ç¬¦ä¸²å­—é¢é‡ï¼ˆå¦‚ "m"ã€"p"ï¼‰ã€‚
             #define XX(str, C) \
                 {#str, [](const std::string& fmt) { return FormatItem::ptr(new C(fmt)); }}
                 XX(m, MessageFormatItem),
@@ -404,25 +403,25 @@ namespace Framework {
         };
 
         for (auto& i : vec) {
-            // ÅĞ¶ÏÔª×éiµÄµÚÈı¸öÔªËØÊÇ·ñÎª0
+            // åˆ¤æ–­å…ƒç»„içš„ç¬¬ä¸‰ä¸ªå…ƒç´ æ˜¯å¦ä¸º0
             if (std::get<2>(i) == 0) {
-                // Èç¹ûÊÇ0£¬´´½¨Ò»¸öStringFormatItem¶ÔÏó£¬²¢½«ÆäÖ¸Õë°ü×°ÔÚFormatItem::ptrÖĞ£¬
-                // È»ºóÌí¼Óµ½m_itemsÈİÆ÷ÖĞ¡£ÕâÀï¼ÙÉèStringFormatItemÊÇÒ»¸ö×Ô¶¨ÒåÀà£¬
-                // ËüµÄ¹¹Ôìº¯Êı½ÓÊÜÔª×éiµÄµÚÒ»¸öÔªËØ×÷Îª²ÎÊı
+                // å¦‚æœæ˜¯0ï¼Œåˆ›å»ºä¸€ä¸ªStringFormatItemå¯¹è±¡ï¼Œå¹¶å°†å…¶æŒ‡é’ˆåŒ…è£…åœ¨FormatItem::pträ¸­ï¼Œ
+                // ç„¶åæ·»åŠ åˆ°m_itemså®¹å™¨ä¸­ã€‚è¿™é‡Œå‡è®¾StringFormatItemæ˜¯ä¸€ä¸ªè‡ªå®šä¹‰ç±»ï¼Œ
+                // å®ƒçš„æ„é€ å‡½æ•°æ¥å—å…ƒç»„içš„ç¬¬ä¸€ä¸ªå…ƒç´ ä½œä¸ºå‚æ•°
                 m_items.push_back(FormatItem::ptr(new StringFormatItem(std::get<0>(i))));
             }
             else {
-                // Èç¹ûÔª×éiµÄµÚÈı¸öÔªËØ²»Îª0£¬ÔÚs_format_itemsÕâ¸öÈİÆ÷£¨¼ÙÉèÊÇÒ»¸ömapÖ®ÀàµÄ¹ØÁªÈİÆ÷£©ÖĞ²éÕÒ¼üÎªÔª×éiµÄµÚÒ»¸öÔªËØ
+                // å¦‚æœå…ƒç»„içš„ç¬¬ä¸‰ä¸ªå…ƒç´ ä¸ä¸º0ï¼Œåœ¨s_format_itemsè¿™ä¸ªå®¹å™¨ï¼ˆå‡è®¾æ˜¯ä¸€ä¸ªmapä¹‹ç±»çš„å…³è”å®¹å™¨ï¼‰ä¸­æŸ¥æ‰¾é”®ä¸ºå…ƒç»„içš„ç¬¬ä¸€ä¸ªå…ƒç´ 
                 auto it = s_format_items.find(std::get<0>(i));
-                // Èç¹ûÃ»ÓĞÕÒµ½¶ÔÓ¦µÄ¼ü
+                // å¦‚æœæ²¡æœ‰æ‰¾åˆ°å¯¹åº”çš„é”®
                 if (it == s_format_items.end()) {
-                    // ´´½¨Ò»¸ö¸ñÊ½»¯´íÎóĞÅÏ¢µÄStringFormatItem¶ÔÏó£¬²¢½«ÆäÖ¸Õë°ü×°ÔÚFormatItem::ptrÖĞ£¬
-                    // Ìí¼Óµ½m_itemsÈİÆ÷ÖĞ¡£¸ñÊ½»¯ĞÅÏ¢°üº¬Ô­Ê¼²éÕÒµÄ¼ü
+                    // åˆ›å»ºä¸€ä¸ªæ ¼å¼åŒ–é”™è¯¯ä¿¡æ¯çš„StringFormatItemå¯¹è±¡ï¼Œå¹¶å°†å…¶æŒ‡é’ˆåŒ…è£…åœ¨FormatItem::pträ¸­ï¼Œ
+                    // æ·»åŠ åˆ°m_itemså®¹å™¨ä¸­ã€‚æ ¼å¼åŒ–ä¿¡æ¯åŒ…å«åŸå§‹æŸ¥æ‰¾çš„é”®
                     m_items.push_back(FormatItem::ptr(new StringFormatItem("<error_format " + std::get<0>(i) + ">")));
                 }
                 else {
-                    // Èç¹ûÕÒµ½ÁË¶ÔÓ¦µÄ¼ü£¬µ÷ÓÃÕÒµ½µÄÖµµÄµÚ¶ş¸öÔªËØ£¨¼ÙÉèÊÇÒ»¸ö¿Éµ÷ÓÃ¶ÔÏó£¬±ÈÈçº¯ÊıÖ¸Õë»òº¯Êı¶ÔÏó£©
-                    // ²¢´«ÈëÔª×éiµÄµÚ¶ş¸öÔªËØ×÷Îª²ÎÊı£¬½«·µ»ØÖµ°ü×°ÔÚFormatItem::ptrÖĞ£¬Ìí¼Óµ½m_itemsÈİÆ÷ÖĞ
+                    // å¦‚æœæ‰¾åˆ°äº†å¯¹åº”çš„é”®ï¼Œè°ƒç”¨æ‰¾åˆ°çš„å€¼çš„ç¬¬äºŒä¸ªå…ƒç´ ï¼ˆå‡è®¾æ˜¯ä¸€ä¸ªå¯è°ƒç”¨å¯¹è±¡ï¼Œæ¯”å¦‚å‡½æ•°æŒ‡é’ˆæˆ–å‡½æ•°å¯¹è±¡ï¼‰
+                    // å¹¶ä¼ å…¥å…ƒç»„içš„ç¬¬äºŒä¸ªå…ƒç´ ä½œä¸ºå‚æ•°ï¼Œå°†è¿”å›å€¼åŒ…è£…åœ¨FormatItem::pträ¸­ï¼Œæ·»åŠ åˆ°m_itemså®¹å™¨ä¸­
                     m_items.push_back(it->second(std::get<1>(i)));
                 }
             }

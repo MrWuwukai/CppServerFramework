@@ -1,11 +1,11 @@
-#include "utils.h"
+ï»¿#include "utils.h"
 
 namespace Framework {
     uint32_t GetThreadId() {
     #ifdef _WIN32
         std::thread::id tid = std::this_thread::get_id();
         std::hash<std::thread::id> hasher;
-        size_t id_hash = hasher(tid); // µÃµ½Ò»¸öÊıÖµ¹şÏ£Öµ
+        size_t id_hash = hasher(tid); // å¾—åˆ°ä¸€ä¸ªæ•°å€¼å“ˆå¸Œå€¼
 
         uint32_t id_num = static_cast<uint32_t>(id_hash);
         return id_num;
@@ -22,26 +22,37 @@ namespace Framework {
         if (fiber == nullptr) {
             return 0;
         }
-        // Ê¹ÓÃ std::hash ¼ÆËãÖ¸ÕëµÄ¹şÏ£Öµ
+        // ä½¿ç”¨ std::hash è®¡ç®—æŒ‡é’ˆçš„å“ˆå¸Œå€¼
         std::hash<LPVOID> hasher;
         size_t hash_value = hasher(fiber);
-        // ½«¹şÏ£Öµ×ª»»Îª uint32_t
+        // å°†å“ˆå¸Œå€¼è½¬æ¢ä¸º uint32_t
         uint32_t fiber_id = static_cast<uint32_t>(hash_value);
         return fiber_id;
     #else
-        // Linux Æ½Ì¨£ºÊ¹ÓÃ Boost.Fiber »ñÈ¡µ±Ç° Fiber ID
-        // ×¢Òâ£º±ØĞëÔÚ Boost.Fiber »·¾³ÏÂÔËĞĞ£¬·ñÔò»á±ÀÀ£
+        // Linux å¹³å°ï¼šä½¿ç”¨ Boost.Fiber è·å–å½“å‰ Fiber ID
+        // æ³¨æ„ï¼šå¿…é¡»åœ¨ Boost.Fiber ç¯å¢ƒä¸‹è¿è¡Œï¼Œå¦åˆ™ä¼šå´©æºƒ
         try {
             boost::fibers::fiber::id fiber_id = boost::this_fiber::get_id();
-            // ½« fiber_id ×ª»»Îª uint32_t£¨Boost µÄ fiber::id ¿ÉÒÔÒşÊ½×ª»»Îª size_t£©
+            // å°† fiber_id è½¬æ¢ä¸º uint32_tï¼ˆBoost çš„ fiber::id å¯ä»¥éšå¼è½¬æ¢ä¸º size_tï¼‰
             uint32_t id_num = static_cast<uint32_t>(fiber_id);
             return id_num;
         }
         catch (...) {
-            // Èç¹û²»ÔÚ Boost.Fiber »·¾³ÏÂµ÷ÓÃ´Ëº¯Êı£¬¿ÉÄÜ»áÅ×³öÒì³£
-            // ·µ»Ø 0 ±íÊ¾ÎŞĞ§ Fiber ID
+            // å¦‚æœä¸åœ¨ Boost.Fiber ç¯å¢ƒä¸‹è°ƒç”¨æ­¤å‡½æ•°ï¼Œå¯èƒ½ä¼šæŠ›å‡ºå¼‚å¸¸
+            // è¿”å› 0 è¡¨ç¤ºæ— æ•ˆ Fiber ID
             return 0;
         }
     #endif
     }
+
+    #ifdef _WIN32
+    int myvasprintf(char** strp, const char* format, va_list ap) {
+        
+        int wanted = vsnprintf(*strp = NULL, 0, format, ap);
+        if ((wanted > 0) && ((*strp = (char*)malloc(1 + wanted)) != NULL))
+            return vsprintf(*strp, format, ap);
+
+        return wanted;
+    }
+    #endif
 }

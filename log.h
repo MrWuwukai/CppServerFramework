@@ -12,8 +12,14 @@
 #include <tuple>
 #include <map>
 #include <functional>
+#include <cstdarg>
+#include <format>
+#include "utils.h"
 
 #ifdef _WIN32
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
 #include <ctime>
 #include <cstdio> 
 #else
@@ -21,7 +27,10 @@
 #include <string.h>
 #endif
 
-//#define LOG_LEVEL(logger, level) if(logger->getLevel() <= level) LogEventWrap(LogEvent::ptr(new LogEvent(__FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::GetFiberId(), time(0))))->getSS()
+#ifdef ERROR
+#undef ERROR  // 取消宏定义
+#endif
+
 #define LOG_LEVEL(logger, level) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::GetFiberId(), time(0)))).getSS()
 
 #define LOG_DEBUG(logger) LOG_LEVEL(logger, Framework::LogLevel::DEBUG)
@@ -29,6 +38,14 @@
 #define LOG_WARN(logger) LOG_LEVEL(logger, Framework::LogLevel::WARN)
 #define LOG_ERROR(logger) LOG_LEVEL(logger, Framework::LogLevel::ERROR)
 #define LOG_FATAL(logger) LOG_LEVEL(logger, Framework::LogLevel::FATAL)
+
+#define LOG_FMT_LEVEL(logger, level, fmt, ...) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::GetFiberId(), time(0)))).getEvent()->format(fmt, __VA_ARGS__)
+
+#define LOG_FMT_DEBUG(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::DEBUG, fmt, __VA_ARGS__)
+#define LOG_FMT_INFO(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::INFO, fmt, __VA_ARGS__)
+#define LOG_FMT_WARN(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::WARN, fmt, __VA_ARGS__)
+#define LOG_FMT_ERROR(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::ERROR, fmt, __VA_ARGS__)
+#define LOG_FMT_FATAL(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::FATAL, fmt, __VA_ARGS__)
 
 namespace Framework {
     class Logger;
@@ -62,8 +79,40 @@ namespace Framework {
         uint64_t getTime() const { return m_time; }
         std::string getContent() const { return m_content.str(); }
 
+        // 流式
         std::stringstream& getSS() { return m_content; }
-        void format(const char* fmt, ...);
+        // format方法
+		void format(const char* fmt, ...) {
+            va_list args;
+            va_start(args, fmt);
+
+            // 先计算需要的缓冲区大小（使用 _vscprintf）
+            int size = _vscprintf(fmt, args) + 1;  // +1 用于 '\0'
+            va_end(args);
+
+            // 动态分配缓冲区
+            char* buffer = (char*)malloc(size);
+
+            // 重新获取可变参数并安全格式化
+            va_start(args, fmt);
+            vsprintf_s(buffer, size, fmt, args);  // 安全版本
+            va_end(args);
+
+			this->getSS() << buffer;
+		}
+        #ifndef _WIN32
+        void format(const char* fmt, va_list al) {
+            char* buf = nullptr;
+            // 使用vasprintf函数将格式化的字符串写入buf，并获取其长度
+            int len = Framework::vasprintf(&buf, fmt, al);
+            if (len != -1) {
+                // 将格式化后的字符串存储到成员变量m_ss中
+                //m_ss << std::string(buf, len);
+                // 释放动态分配的内存
+                free(buf);
+            }
+        }
+        #endif 
 
         std::shared_ptr<Logger> getLogger() const { return m_logger; }
         LogLevel::Level getLogLevel() const { return m_level; }
@@ -92,6 +141,7 @@ namespace Framework {
         LogEventWrap(LogEvent::ptr e);
         ~LogEventWrap();
         std::stringstream& getSS();
+        std::shared_ptr<LogEvent> getEvent() { return m_event; }
     private:
         LogEvent::ptr m_event;
     };
@@ -139,6 +189,9 @@ namespace Framework {
 
         void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
         LogFormatter::ptr getFormatter() const { return m_formatter; }
+
+        LogLevel::Level getLevel() const { return m_level; }
+        void setLevel(LogLevel::Level val) { m_level = val; }
     protected:
         // 日志级别
         LogLevel::Level m_level = LogLevel::INFO;

@@ -103,7 +103,8 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,11 +129,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="log.cpp" />
+    <ClCompile Include="LoggerManager.cpp" />
     <ClCompile Include="testlog.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h" />
+    <ClInclude Include="LoggerManager.h" />
+    <ClInclude Include="singleton.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
