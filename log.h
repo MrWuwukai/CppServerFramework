@@ -21,15 +21,38 @@
 #include <string.h>
 #endif
 
+//#define LOG_LEVEL(logger, level) if(logger->getLevel() <= level) LogEventWrap(LogEvent::ptr(new LogEvent(__FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::GetFiberId(), time(0))))->getSS()
+#define LOG_LEVEL(logger, level) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::GetFiberId(), time(0)))).getSS()
+
+#define LOG_DEBUG(logger) LOG_LEVEL(logger, Framework::LogLevel::DEBUG)
+#define LOG_INFO(logger) LOG_LEVEL(logger, Framework::LogLevel::INFO)
+#define LOG_WARN(logger) LOG_LEVEL(logger, Framework::LogLevel::WARN)
+#define LOG_ERROR(logger) LOG_LEVEL(logger, Framework::LogLevel::ERROR)
+#define LOG_FATAL(logger) LOG_LEVEL(logger, Framework::LogLevel::FATAL)
+
 namespace Framework {
     class Logger;
+
+    class LogLevel {
+    public:
+        // 定义日志级别的枚举类型Level
+        enum Level {
+            DEBUG = 1,  // 调试级别
+            INFO = 2,   // 信息级别
+            WARN = 3,   // 警告级别
+            ERROR = 4,  // 错误级别
+            FATAL = 5   // 致命错误级别
+        };
+
+        static const char* toString(LogLevel::Level level);
+    };
 
     // 日志事件
     class LogEvent {
     public:
         // 定义LogEvent智能指针类型别名ptr
         typedef std::shared_ptr<LogEvent> ptr;
-        LogEvent(const char* file, int32_t m_line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time);
+        LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level, const char* file, int32_t m_line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time);
 
         const char* getFile() const { return m_file; }
         int32_t getLine() const { return m_line; }
@@ -38,7 +61,12 @@ namespace Framework {
         uint32_t getFiberId() const { return m_fiberId; }
         uint64_t getTime() const { return m_time; }
         std::string getContent() const { return m_content.str(); }
+
         std::stringstream& getSS() { return m_content; }
+        void format(const char* fmt, ...);
+
+        std::shared_ptr<Logger> getLogger() const { return m_logger; }
+        LogLevel::Level getLogLevel() const { return m_level; }
     private:
         // 记录日志的文件名，初始化为空指针
         const char* m_file = nullptr;
@@ -54,20 +82,18 @@ namespace Framework {
         uint64_t m_time = 0;
         // 日志内容
         std::stringstream m_content;
+
+        std::shared_ptr<Logger> m_logger;
+        LogLevel::Level m_level;
     };
 
-    class LogLevel {
+    class LogEventWrap {
     public:
-        // 定义日志级别的枚举类型Level
-        enum Level {
-            DEBUG = 1,  // 调试级别
-            INFO = 2,   // 信息级别
-            WARN = 3,   // 警告级别
-            ERROR = 4,  // 错误级别
-            FATAL = 5   // 致命错误级别
-        };
-
-        static const char* toString(LogLevel::Level level);
+        LogEventWrap(LogEvent::ptr e);
+        ~LogEventWrap();
+        std::stringstream& getSS();
+    private:
+        LogEvent::ptr m_event;
     };
 
     //日志格式器

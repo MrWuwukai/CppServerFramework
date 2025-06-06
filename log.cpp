@@ -2,14 +2,30 @@
 
 namespace Framework {
     // ---LogEvent---
-    LogEvent::LogEvent(const char* file, int32_t m_line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time) 
+    LogEvent::LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level, const char* file, int32_t m_line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time)
         : m_file(file)
         , m_line(m_line)
         , m_elapse(elapse)
         , m_threadId(thread_id)
         , m_fiberId(fiber_id)
-        , m_time(time) {
+        , m_time(time) 
+        , m_logger(logger)
+        , m_level(level) {
 
+    }
+
+
+    // LogEventWrap
+    LogEventWrap::LogEventWrap(LogEvent::ptr e)
+        :m_event(e) {
+    }
+
+    LogEventWrap::~LogEventWrap() {
+        m_event->getLogger()->log(m_event->getLogLevel(), m_event);
+    }
+
+    std::stringstream& LogEventWrap::getSS() {
+        return m_event->getSS();
     }
 
     // ---LogLevel---
@@ -36,7 +52,8 @@ namespace Framework {
     // Logger类的构造函数，接受一个字符串参数name，用于初始化日志记录器的名称
     Logger::Logger(const std::string& name)
         : m_name(name), m_level(LogLevel::INFO) {
-        m_formatter.reset(new LogFormatter("%d [%p] <%f:%l> %m %n"));
+        //m_formatter.reset(new LogFormatter("%d [%p] <%f:%l> %m %n"));
+        m_formatter.reset(new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
     }
 
     // 向日志记录器中添加一个日志输出器（appender）
@@ -252,6 +269,16 @@ namespace Framework {
         std::string m_string;
     };
 
+    class TabFormatItem : public LogFormatter::FormatItem {
+    public:
+        TabFormatItem(const std::string& str = "") {}
+        void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override {
+            os << "\t";
+        }
+    private:
+        std::string m_string;
+    };
+
     LogFormatter::LogFormatter(const std::string& pattern)
         : m_pattern(pattern) {
         init();
@@ -289,13 +316,14 @@ namespace Framework {
             std::string fmt;
             while (n < m_pattern.size()) {
                 // 如果遇到空格，停止解析当前格式相关内容
-                if (!isalpha(m_pattern[n]) && m_pattern[n] != '{' && m_pattern[n] != '}') {
+                if (!fmt_status && (!isalpha(m_pattern[n]) && m_pattern[n] != '{' && m_pattern[n] != '}')) {
+                    str = m_pattern.substr(i + 1, n - i - 1);
                     break;
                 }
                 // 当还未开始解析格式标识时
                 if (fmt_status == 0) {
                     // 如果遇到 '('，表示格式标识开始
-                    if (m_pattern[n] == '(') {
+                    if (m_pattern[n] == '{') {
                         str = m_pattern.substr(i + 1, n - i - 1);
                         fmt_status = 1; // 标记进入格式解析状态
                         fmt_begin = n; // 记录格式标识开始的索引
@@ -304,15 +332,22 @@ namespace Framework {
                     }
                 }
                 // 当已经开始解析格式标识时
-                if (fmt_status == 1) {
+                else if (fmt_status == 1) {
                     // 如果遇到 ')'，表示格式标识结束
-                    if (m_pattern[n] == ')') {
+                    if (m_pattern[n] == '}') {
                         fmt = m_pattern.substr(fmt_begin + 1, n - fmt_begin - 1);
-                        fmt_status = 2; // 标记格式解析完成
+                        fmt_status = 0; // 标记格式解析完成
+                        ++n;
                         break;
                     }
                 }
                 ++n;
+                
+                if (n == m_pattern.size()) {
+                    if (str.empty()) {
+                        str = m_pattern.substr(i + 1);
+                    }
+                }
             }
 
             if (fmt_status == 0) {
@@ -321,8 +356,6 @@ namespace Framework {
                     vec.push_back(std::make_tuple(nstr, std::string(), 0));
                     nstr.clear();
                 }
-                // 从m_pattern字符串中截取从索引i + 1开始，长度为n - i - 1的子字符串，赋值给str
-                str = m_pattern.substr(i + 1, n - i - 1);
                 // 将str和fmt组成的tuple（第三个参数1可能表示某种状态或标识）添加到vec向量中
                 vec.push_back(std::make_tuple(str, fmt, 1));
                 // 将索引i设置为n，可能用于后续循环控制或表示处理结束等
@@ -334,17 +367,17 @@ namespace Framework {
                 // 将一个包含"<pattern_error>"和fmt的tuple（第三个参数0可能表示某种状态或标识）添加到vec向量中
                 vec.push_back(std::make_tuple("<pattern_error>", fmt, 0));
             }
-            else if (fmt_status == 2) {
-                if (!nstr.empty()) {
-                    // 如果nstr不为空，将nstr和一个空字符串组成的pair（第三个参数0可能表示某种状态或标识）添加到vec向量中
-                    vec.push_back(std::make_tuple(nstr, "", 0));
-                    nstr.clear();
-                }
-                // 将str和fmt组成的tuple（第三个参数1可能表示某种状态或标识）添加到vec向量中
-                vec.push_back(std::make_tuple(str, fmt, 1));
-                // 将索引i设置为n，可能用于后续循环控制或表示处理结束等
-                i = n - 1;
-            }
+            //else if (fmt_status == 2) {
+            //    if (!nstr.empty()) {
+            //        // 如果nstr不为空，将nstr和一个空字符串组成的pair（第三个参数0可能表示某种状态或标识）添加到vec向量中
+            //        vec.push_back(std::make_tuple(nstr, "", 0));
+            //        nstr.clear();
+            //    }
+            //    // 将str和fmt组成的tuple（第三个参数1可能表示某种状态或标识）添加到vec向量中
+            //    vec.push_back(std::make_tuple(str, fmt, 1));
+            //    // 将索引i设置为n，可能用于后续循环控制或表示处理结束等
+            //    i = n - 1;
+            //}
         }
 
         if (!nstr.empty()) {
@@ -364,7 +397,9 @@ namespace Framework {
                 XX(n, NewLineFormatItem),
                 XX(d, DateTimeFormatItem),
                 XX(f, FilenameFormatItem),
-                XX(l, LineFormatItem)
+                XX(l, LineFormatItem),
+                XX(T, TabFormatItem),
+                XX(F, FiberIdFormatItem)
             #undef XX
         };
 
@@ -391,8 +426,8 @@ namespace Framework {
                     m_items.push_back(it->second(std::get<1>(i)));
                 }
             }
-            // 输出元组i的第一个、第二个和第三个元素，以特定的格式分隔并换行
-            std::cout << std::get<0>(i) << " - " << std::get<1>(i) << " - " << std::get<2>(i) << std::endl;
+            // test
+            // std::cout << std::get<0>(i) << " - " << std::get<1>(i) << " - " << std::get<2>(i) << std::endl;
         }
     }
 
