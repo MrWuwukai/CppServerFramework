@@ -3,9 +3,67 @@
 #include <string>
 #include <sstream>
 #include <boost/lexical_cast.hpp>
+#include <yaml-cpp/yaml.h>
 #include "LoggerManager.h"
 
 namespace Framework {
+
+    //F from_type, T to_type
+    template<class F, class T>
+    class ConfigCast {
+    public:
+        T operator()(const F& v) {
+            return boost::lexical_cast<T>(v);
+        }
+    };
+
+    // std::string -> std::vector<T>
+    template<class T>
+    class ConfigCast<std::string, std::vector<T> > {
+    public:
+        // 重载函数调用运算符，用于将字符串转换为 std::vector<T>
+        std::vector<T> operator()(const std::string& v) {
+            // 使用 YAML 库加载字符串为 YAML 节点
+            YAML::Node node = YAML::Load(v);
+            // 定义一个 std::vector<T> 类型的变量 vec
+            std::vector<T> vec;
+            // 定义一个字符串流 ss
+            std::stringstream ss;
+            // 遍历 YAML 节点中的每个元素
+            for (size_t i = 0; i < node.size(); ++i) {
+                ss.str(""); // 清空字符串流
+                ss << node[i]; // 将当前节点元素写入字符串流
+                // 递归将字符串转换为 T 类型，并添加到 vec 中
+                vec.push_back(ConfigCast<std::string, T>()(ss.str()));
+            }
+            // 返回转换后的 vector
+            return vec;
+            /*
+            return vec;为什么可以不使用std::move？
+            当函数返回一个局部变量（如 vec）时，如果满足特定条件（如返回的是纯右值或局部变量），编译器可以优化掉拷贝或移动操作（RVO/NRVO 优化），直接在调用者的栈帧上构造返回值。
+            即使没有 RVO/NRVO，std::vector 也支持移动语义。如果编译器无法应用 RVO/NRVO，它会尝试调用 std::vector 的移动构造函数（而不是拷贝构造函数）来返回 vec。
+            移动构造函数的代价很低（只是指针交换），所以即使没有 std::move，性能损失也很小。
+            */
+        }
+    };
+
+    // std::vector<T> -> std::string
+    template<class T>
+    class ConfigCast<std::vector<T>, std::string> {
+    public:
+        // 重载函数调用运算符，用于将 std::vector<T> 转换为 std::string
+        std::string operator()(const std::vector<T>& v) {
+            YAML::Node node; // 创建一个 YAML 节点
+            // 遍历向量中的每个元素
+            for (auto& i : v) {
+                // 递归转换为字符串，并添加到 YAML 节点中
+                node.push_back(YAML::Load(ConfigCast<T, std::string>()(i)));
+            }
+            std::stringstream ss; // 创建一个字符串流
+            ss << node; // 将 YAML 节点输出到字符串流中
+            return ss.str(); // 返回字符串流的内容
+        }
+    };
 
     class ConfigVarBase {
     public:
@@ -13,6 +71,7 @@ namespace Framework {
         ConfigVarBase(const std::string& name, const std::string& description = "")
             :m_name(name)
             , m_description(description) {
+            std::transform(m_name.begin(), m_name.end(), m_name.begin(), ::tolower);
         }
         virtual ~ConfigVarBase() {}
 
@@ -26,7 +85,7 @@ namespace Framework {
         std::string m_description;
     };
 
-    template<class T>
+    template<class T, class FromStr = ConfigCast<std::string, T>, class ToStr = ConfigCast<T, std::string> >
     class ConfigVar : public ConfigVarBase {
     public:
         typedef std::shared_ptr<ConfigVar> ptr;
@@ -40,7 +99,8 @@ namespace Framework {
 
         std::string toString() override {
             try {
-                return boost::lexical_cast<std::string>(m_val);
+                //return boost::lexical_cast<std::string>(m_val);
+                return ToStr()(m_val);
             }
             catch (std::exception& e) {
                 LOG_ERROR(LOG_ROOT()) << "ConfigVar::toString exception"
@@ -51,7 +111,8 @@ namespace Framework {
 
         bool fromString(const std::string& val) override {
             try {
-                m_val = boost::lexical_cast<T>(val);
+                // m_val = boost::lexical_cast<T>(val); // 简单类型转化
+                setValue(FromStr()(val));
             }
             catch (std::exception& e) {
                 LOG_ERROR(LOG_ROOT()) << "ConfigVar::toString exception"
@@ -84,7 +145,7 @@ namespace Framework {
             }
 
             // 检查名称是否包含无效字符
-            if (name.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._0123456789")
+            if (name.find_first_not_of("abcdefghijklmnopqrstuvwxyz._0123456789") // ABCDEFGHIJKLMNOPQRSTUVWXYZ
                 != std::string::npos) {
                 // 如果包含无效字符，记录错误日志并抛出异常
                 LOG_ERROR(LOG_ROOT()) << "Lookup name invalid " << name;
@@ -110,6 +171,9 @@ namespace Framework {
             return std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
         }
 
+        static void LoadFromYaml(const YAML::Node& root);
+
+        static ConfigVarBase::ptr LookupBase(const std::string& name);
     private:
         // 静态数据成员，存储所有配置变量
         static ConfigVarMap s_datas;

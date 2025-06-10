@@ -3,6 +3,7 @@
 #include <yaml-cpp/yaml.h>
 
 Framework::ConfigVar<int>::ptr g_int_value_config = Framework::Config::Lookup("system.port", (int)8080, "system port");
+Framework::ConfigVar<std::vector<int> >::ptr g_int_vec_value_config = Framework::Config::Lookup("system.int_vec", std::vector<int>{1, 2}, "system int vec");
 
 void print_yaml(const YAML::Node& node, int level) {
     if (node.IsScalar()) {
@@ -31,9 +32,25 @@ void test_yaml() {
     //LOG_INFO(LOG_ROOT()) << root;
 }
 
-int main(int argc, char** argv) {
+void test_yaml1() {
+    YAML::Node root = YAML::LoadFile("./log.yml");
+    Framework::Config::LoadFromYaml(root);
     LOG_INFO(LOG_ROOT()) << g_int_value_config->getValue();
     LOG_INFO(LOG_ROOT()) << g_int_value_config->toString();
-    test_yaml();
+}
+
+void test_yaml2() {
+    YAML::Node root = YAML::LoadFile("./log.yml");
+    Framework::Config::LoadFromYaml(root);
+    auto v = g_int_vec_value_config->getValue();
+    for (auto& i : v) {
+        LOG_INFO(LOG_ROOT()) << "int_vec: " << i;
+    }
+}
+
+int main(int argc, char** argv) {
+    //test_yaml();
+    //test_yaml1();
+    test_yaml2();
     return 0;
 }
