@@ -27,6 +27,12 @@
     <ClCompile Include="LoggerManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="testconfig.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="config.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -41,10 +47,18 @@
     <ClInclude Include="singleton.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeList.txt">
       <Filter>资源文件</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="log.yml">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>
