@@ -250,6 +250,7 @@ namespace Framework {
     class ConfigVar : public ConfigVarBase {
     public:
         typedef std::shared_ptr<ConfigVar> ptr;
+        typedef std::function<void(const T& old_value, const T& new_value)> on_change_cb;
 
         ConfigVar(const std::string& name
             , const T& default_value
@@ -283,9 +284,37 @@ namespace Framework {
         }
 
         const T getValue() const { return m_val; }
-        void setValue(const T& v) { m_val = v; }
+        void setValue(const T& v) { 
+            if (v == m_val) {
+                return;
+            }
+            for (auto& i : m_cbs) {
+                i.second(m_val, v);
+            }
+            m_val = v;
+        }
+
+        // 监听配置更改事件
+        void addListener(uint64_t key, on_change_cb cb) {
+            m_cbs[key] = cb;
+        }
+        void delListener(uint64_t key) {
+            m_cbs.erase(key);
+        }
+        void clearListener() {
+            m_cbs.clear();
+        }
+        on_change_cb getListener(uint64_t key) {
+            auto it = m_cbs.find(key);
+            return it == m_cbs.end() ? nullptr : it->second;
+        }
     private:
         T m_val;
+        std::map<uint64_t, on_change_cb> m_cbs;
+        /*
+        为什么回调函数还要包一层？
+        因为functional包装的函数难以比较是否是同一函数。        
+        */
     };
 
     class Config {

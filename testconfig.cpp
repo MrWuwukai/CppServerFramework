@@ -16,6 +16,12 @@ public:
             << "]";
         return ss.str();
     }
+
+    bool operator==(const Person& oth) const {
+        return m_name == oth.m_name
+            && m_age == oth.m_age
+            && m_sex == oth.m_sex;
+    }
 };
 
 namespace Framework {
@@ -137,10 +143,25 @@ void test_yaml_anyclass() {
     LOG_INFO(LOG_ROOT()) << g_person->toString();
 }
 
+void test_yaml_change_listener() {
+    LOG_INFO(LOG_ROOT()) << g_person->getValue().toString();
+    LOG_INFO(LOG_ROOT()) << g_person->toString();
+
+    g_person->addListener(10, [](const Person& old_value, const Person& new_value) {
+        LOG_INFO(LOG_ROOT()) << "old_value=" << old_value.toString() << " new_value=" << new_value.toString();
+    });
+
+    YAML::Node root = YAML::LoadFile("./log.yml");
+    Framework::Config::LoadFromYaml(root);
+
+    LOG_INFO(LOG_ROOT()) << g_person->getValue().toString();
+    LOG_INFO(LOG_ROOT()) << g_person->toString();
+}
+
 int main(int argc, char** argv) {
     //test_yaml();
     //test_yaml1();
     //test_yaml_set();
-    test_yaml_anyclass();
+    test_yaml_change_listener();
     return 0;
 }
