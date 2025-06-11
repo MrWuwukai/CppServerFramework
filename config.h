@@ -4,6 +4,12 @@
 #include <sstream>
 #include <boost/lexical_cast.hpp>
 #include <yaml-cpp/yaml.h>
+#include <vector>
+#include <list>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
 #include "LoggerManager.h"
 
 namespace Framework {
@@ -62,6 +68,161 @@ namespace Framework {
             std::stringstream ss; // 创建一个字符串流
             ss << node; // 将 YAML 节点输出到字符串流中
             return ss.str(); // 返回字符串流的内容
+        }
+    };
+
+    // std::string -> std::list<T>
+    template<class T>
+    class ConfigCast<std::string, std::list<T> > {
+    public:
+        std::list<T> operator()(const std::string& v) {
+            YAML::Node node = YAML::Load(v);
+            std::list<T> vv;
+            std::stringstream ss;
+            for (size_t i = 0; i < node.size(); ++i) {
+                ss.str("");
+                ss << node[i];
+                vv.push_back(ConfigCast<std::string, T>()(ss.str()));
+            }
+            return vv;
+        }
+    };
+    // std::list<T> -> std::string
+    template<class T>
+    class ConfigCast<std::list<T>, std::string> {
+    public:
+        std::string operator()(const std::list<T>& v) {
+            YAML::Node node;
+            for (auto& i : v) {
+                node.push_back(YAML::Load(ConfigCast<T, std::string>()(i)));
+            }
+            std::stringstream ss;
+            ss << node;
+            return ss.str();
+        }
+    };
+
+    // std::string -> std::set<T>
+    template<class T>
+    class ConfigCast<std::string, std::set<T> > {
+    public:
+        std::set<T> operator()(const std::string& v) {
+            YAML::Node node = YAML::Load(v);
+            std::set<T> vv;
+            std::stringstream ss;
+            for (size_t i = 0; i < node.size(); ++i) {
+                ss.str("");
+                ss << node[i];
+                vv.insert(ConfigCast<std::string, T>()(ss.str()));
+            }
+            return vv;
+        }
+    };
+    // std::set<T> -> std::string
+    template<class T>
+    class ConfigCast<std::set<T>, std::string> {
+    public:
+        std::string operator()(const std::set<T>& v) {
+            YAML::Node node;
+            for (auto& i : v) {
+                node.push_back(YAML::Load(ConfigCast<T, std::string>()(i)));
+            }
+            std::stringstream ss;
+            ss << node;
+            return ss.str();
+        }
+    };
+
+    // std::string -> std::unordered_set<T>
+    template<class T>
+    class ConfigCast<std::string, std::unordered_set<T> > {
+    public:
+        std::unordered_set<T> operator()(const std::string& v) {
+            YAML::Node node = YAML::Load(v);
+            std::unordered_set<T> vv;
+            std::stringstream ss;
+            for (size_t i = 0; i < node.size(); ++i) {
+                ss.str("");
+                ss << node[i];
+                vv.insert(ConfigCast<std::string, T>()(ss.str()));
+            }
+            return vv;
+        }
+    };
+    // std::unordered_set<T> -> std::string
+    template<class T>
+    class ConfigCast<std::unordered_set<T>, std::string> {
+    public:
+        std::string operator()(const std::unordered_set<T>& v) {
+            YAML::Node node;
+            for (auto& i : v) {
+                node.push_back(YAML::Load(ConfigCast<T, std::string>()(i)));
+            }
+            std::stringstream ss;
+            ss << node;
+            return ss.str();
+        }
+    };
+
+    // std::string -> std::map<std::string, T>
+    template<class T>
+    class ConfigCast<std::string, std::map<std::string, T> > {
+    public:
+        std::map<std::string, T> operator()(const std::string& v) {
+            YAML::Node node = YAML::Load(v);
+            std::map<std::string, T> vv;
+            std::stringstream ss;
+            for (auto it = node.begin(); it != node.end(); ++it) {
+                ss.str("");
+                ss << it->second;
+                vv.insert(std::make_pair(it->first.Scalar(), ConfigCast<std::string, T>()(ss.str())));
+            }
+            return vv;
+        }
+    };
+    // std::map<std::string, T> -> std::string
+    template<class T>
+    class ConfigCast<std::map<std::string, T>, std::string> {
+    public:
+        std::string operator()(const std::map<std::string, T>& v) {
+            YAML::Node node;
+            for (auto& i : v) {
+                node[i.first] = YAML::Load(ConfigCast<T, std::string>()(i.second));
+            }
+            std::stringstream ss;
+            ss << node;
+            return ss.str();
+        }
+    };
+
+    // std::string -> std::unordered_map<std::string, T>
+    template<class T>
+    class ConfigCast<std::string, std::unordered_map<std::string, T> > {
+    public:
+        std::unordered_map<std::string, T> operator()(const std::string& v) {
+            YAML::Node node = YAML::Load(v);
+            std::unordered_map<std::string, T> vv;
+            std::stringstream ss;
+            for (auto it = node.begin(); it != node.end(); ++it) {
+                ss.str("");
+                ss << it->second;
+                vv.insert(std::make_pair(it->first.Scalar(), ConfigCast<std::string, T>()(ss.str())));
+            }
+            return vv;
+        }
+    };
+    // std::unordered_map<std::string, T> -> std::string
+    template<class T>
+    class ConfigCast<std::unordered_map<std::string, T>, std::string> {
+    public:
+        std::string operator()(const std::unordered_map<std::string, T>& v) {
+            YAML::Node node;
+            for (auto& i : v) {
+                node[i.first] = YAML::Load(ConfigCast<T, std::string>()(i.second));
+            }
+            std::stringstream ss;
+            ss << node;
+            return ss.str();
         }
     };
 

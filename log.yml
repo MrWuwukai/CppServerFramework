@@ -17,3 +17,7 @@ system:
   port: 9999
   value: 19
   int_vec: [8, 9]
+  int_set: [44, 33, 55, 44]
+  int_map:
+    asc: 235
+    asdja: 777
