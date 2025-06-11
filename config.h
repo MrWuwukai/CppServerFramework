@@ -295,14 +295,11 @@ namespace Framework {
 
         // 模板函数，用于查找或创建指定名称的配置变量
         template<class T>
-        static typename ConfigVar<T>::ptr Lookup(const std::string& name,
-            const T& default_value, const std::string& description = "") {
+        static typename ConfigVar<T>::ptr Lookup(const std::string& name, const T& default_value, const std::string& description = "") {
             // 尝试查找已存在的配置变量
             auto tmp = Lookup<T>(name);
-            if (tmp) {
-                // 如果找到，记录日志并返回
-                LOG_INFO(LOG_ROOT()) << "Lookup name=" << name << " exists";
-                return tmp;
+            if (tmp.first != "NOT_FOUND") {
+                return tmp.second;
             }
 
             // 检查名称是否包含无效字符
@@ -321,15 +318,27 @@ namespace Framework {
 
         // 模板函数，用于查找指定名称的配置变量（不创建新变量）
         template<class T>
-        static typename ConfigVar<T>::ptr Lookup(const std::string& name) {
+        static std::pair<std::string, typename ConfigVar<T>::ptr> Lookup(const std::string& name) {
             // 在静态数据成员中查找配置变量
             auto it = s_datas.find(name);
             if (it == s_datas.end()) {
-                // 如果未找到，返回空指针
-                return nullptr;
+                // 如果未找到，返回 "NOT_FOUND" 状态和空指针
+                return { "NOT_FOUND", nullptr };
             }
-            // 返回找到的配置变量的指针（使用dynamic_pointer_cast进行类型转换）
-            return std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
+            else {
+                // 尝试类型转换
+                auto tmp = std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
+                if (tmp) {
+                    // 如果找到，记录日志并返回 "FOUND" 状态和指针
+                    LOG_INFO(LOG_ROOT()) << "Lookup name=" << name << " exists";
+                    return { "FOUND", tmp };
+                }
+                else {
+                    // 类型不匹配，返回错误状态和空指针
+                    LOG_ERROR(LOG_ROOT()) << "Lookup name=" << name << " type wrong: " << typeid(T).name();
+                    return { "TYPE_WRONG", nullptr };
+                }
+            }
         }
 
         static void LoadFromYaml(const YAML::Node& root);

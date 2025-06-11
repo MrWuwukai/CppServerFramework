@@ -21,3 +21,8 @@ system:
   int_map:
     asc: 235
     asdja: 777
+class:
+  person:
+    name: aaa
+    age: 22
+    sex: true
