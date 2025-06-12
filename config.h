@@ -10,7 +10,7 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
-#include "LoggerManager.h"
+#include "log.h"
 
 namespace Framework {
 
@@ -284,6 +284,7 @@ namespace Framework {
         }
 
         const T getValue() const { return m_val; }
+
         void setValue(const T& v) { 
             if (v == m_val) {
                 return;
@@ -341,7 +342,7 @@ namespace Framework {
 
             // 创建新的配置变量并存储到静态数据成员中
             typename ConfigVar<T>::ptr v(new ConfigVar<T>(name, default_value, description));
-            s_datas[name] = v;
+            GetDatas()[name] = v;
             return v;
         }
 
@@ -349,8 +350,8 @@ namespace Framework {
         template<class T>
         static std::pair<std::string, typename ConfigVar<T>::ptr> Lookup(const std::string& name) {
             // 在静态数据成员中查找配置变量
-            auto it = s_datas.find(name);
-            if (it == s_datas.end()) {
+            auto it = GetDatas().find(name);
+            if (it == GetDatas().end()) {
                 // 如果未找到，返回 "NOT_FOUND" 状态和空指针
                 return { "NOT_FOUND", nullptr };
             }
@@ -374,7 +375,9 @@ namespace Framework {
 
         static ConfigVarBase::ptr LookupBase(const std::string& name);
     private:
-        // 静态数据成员，存储所有配置变量
-        static ConfigVarMap s_datas;
+        static ConfigVarMap& GetDatas() {
+            static ConfigVarMap s_datas;
+            return s_datas;
+        }
     };
 }

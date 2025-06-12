@@ -1,5 +1,5 @@
 #include "config.h"
-#include "LoggerManager.h"
+#include "log.h"
 #include <yaml-cpp/yaml.h>
 
 class Person {
@@ -158,10 +158,18 @@ void test_yaml_change_listener() {
     LOG_INFO(LOG_ROOT()) << g_person->toString();
 }
 
+void test_new_log() {
+    std::cout << Framework::loggerMgr::GetInstance()->toYamlString() << std::endl;
+    YAML::Node root = YAML::LoadFile("./log.yml");
+    Framework::Config::LoadFromYaml(root);
+    std::cout << Framework::loggerMgr::GetInstance()->toYamlString() << std::endl;
+}
+
 int main(int argc, char** argv) {
     //test_yaml();
     //test_yaml1();
     //test_yaml_set();
-    test_yaml_change_listener();
+    //test_yaml_change_listener();
+    test_new_log();
     return 0;
 }

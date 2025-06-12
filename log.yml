@@ -1,28 +1,28 @@
-log:
+logs:
   - name: root
-    level: info
+    level: INFO
     formatter: "%d{%Y-%m-%d %H:%M:%S} %T%t %T%F %T[%p]%T[%c] %T%f:%l %T%m%n"
-    appender:
+    appenders:
       - type: FileLogAppender
-        path: log.txt
+        file: log.txt
       - type: StdoutLogAppender
   - name: system
-    level: error
+    level: INFO
     formatter: "%d%T%m%n"
-    appender:
+    appenders:
       - type: FileLogAppender
-        path: log.txt
+        file: log.txt
       - type: StdoutLogAppender
-system:
-  port: 9999
-  value: 19
-  int_vec: [8, 9]
-  int_set: [44, 33, 55, 44]
-  int_map:
-    asc: 235
-    asdja: 777
-class:
-  person:
-    name: aaa
-    age: 22
-    sex: true
+# system:
+#   port: 9999
+#   value: 19
+#   int_vec: [8, 9]
+#   int_set: [44, 33, 55, 44]
+#   int_map:
+#     asc: 235
+#     asdja: 777
+# class:
+#   person:
+#     name: aaa
+#     age: 22
+#     sex: true

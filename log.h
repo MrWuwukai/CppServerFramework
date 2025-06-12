@@ -15,6 +15,7 @@
 #include <cstdarg>
 #include <format>
 #include "utils.h"
+#include "singleton.h"
 
 #ifdef _WIN32
 #include <stdio.h>
@@ -32,7 +33,6 @@
 #endif
 
 #define LOG_LEVEL(logger, level) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::GetFiberId(), time(0)))).getSS()
-
 #define LOG_DEBUG(logger) LOG_LEVEL(logger, Framework::LogLevel::DEBUG)
 #define LOG_INFO(logger) LOG_LEVEL(logger, Framework::LogLevel::INFO)
 #define LOG_WARN(logger) LOG_LEVEL(logger, Framework::LogLevel::WARN)
@@ -40,15 +40,18 @@
 #define LOG_FATAL(logger) LOG_LEVEL(logger, Framework::LogLevel::FATAL)
 
 #define LOG_FMT_LEVEL(logger, level, fmt, ...) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::GetFiberId(), time(0)))).getEvent()->format(fmt, __VA_ARGS__)
-
 #define LOG_FMT_DEBUG(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::DEBUG, fmt, __VA_ARGS__)
 #define LOG_FMT_INFO(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::INFO, fmt, __VA_ARGS__)
 #define LOG_FMT_WARN(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::WARN, fmt, __VA_ARGS__)
 #define LOG_FMT_ERROR(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::ERROR, fmt, __VA_ARGS__)
 #define LOG_FMT_FATAL(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::FATAL, fmt, __VA_ARGS__)
 
+#define LOG_ROOT() Framework::loggerMgr::GetInstance()->getRoot()
+#define LOG_NAME(name) Framework::loggerMgr::GetInstance()->getLogger(name)
+
 namespace Framework {
     class Logger;
+    class LoggerManager;
 
     class LogLevel {
     public:
@@ -62,6 +65,7 @@ namespace Framework {
         };
 
         static const char* toString(LogLevel::Level level);
+        static LogLevel::Level FromString(const std::string& str);
     };
 
     // 日志事件
@@ -170,11 +174,15 @@ namespace Framework {
         };
 
         void init();
+
+        bool isError() const { return m_error; }
+        const std::string getPattern() const { return m_pattern; }
     private:
         // 存储日志格式模式的字符串
         std::string m_pattern;
         // 存储格式化项的智能指针向量
         std::vector<FormatItem::ptr> m_items;
+        bool m_error = false;
     };
 
     // 日志输出地相关类
@@ -186,6 +194,7 @@ namespace Framework {
         virtual ~LogAppender() {}
         // 记录日志的函数，接受日志级别和日志事件指针作为参数
         virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
+        virtual std::string toYamlString() = 0;
 
         void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
         LogFormatter::ptr getFormatter() const { return m_formatter; }
@@ -200,6 +209,7 @@ namespace Framework {
 
     // 日志器类定义
     class Logger : public std::enable_shared_from_this<Logger>{
+    friend class LoggerManager;
     public:
         // 定义一个指向Logger的智能指针类型别名
         typedef std::shared_ptr<Logger> ptr;
@@ -210,29 +220,26 @@ namespace Framework {
         // 记录日志的方法，接受日志级别和日志事件指针作为参数
         void log(LogLevel::Level level, LogEvent::ptr event);
 
-        // 记录调试级别日志的方法，接受日志事件指针作为参数
         void debug(LogEvent::ptr event);
-
-        // 记录信息级别日志的方法，接受日志事件指针作为参数
         void info(LogEvent::ptr event);
-
-        // 记录警告级别日志的方法，接受日志事件指针作为参数
         void warn(LogEvent::ptr event);
-
-        // 记录错误级别日志的方法，接受日志事件指针作为参数
         void error(LogEvent::ptr event);
-
-        // 记录致命错误级别日志的方法，接受日志事件指针作为参数
         void fatal(LogEvent::ptr event);
 
         void addAppender(LogAppender::ptr appender);
         void delAppender(LogAppender::ptr appender);
+        void clearAppenders();
 
         LogLevel::Level getLevel() const {return m_level;}
         void setLevel(LogLevel::Level val) { m_level = val; }
 
         const std::string& getName() const { return m_name; }
 
+        void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
+        void setFormatter(const std::string& val);
+        LogFormatter::ptr getFormatter() { return m_formatter; }
+
+        std::string toYamlString();
     private:
         // 日志名称成员变量
         std::string m_name;
@@ -241,6 +248,7 @@ namespace Framework {
         // Appender集合成员变量，用于存储多个Appender指针
         std::list<LogAppender::ptr> m_appenders;
         LogFormatter::ptr m_formatter;
+        Logger::ptr m_root;
     };
 
     // 输出到控制台的Appender
@@ -250,6 +258,7 @@ namespace Framework {
         typedef std::shared_ptr<StdoutLogAppender> ptr;
         // 重写父类的log方法，用于将日志事件输出到控制台，level表示日志级别，event表示日志事件
         void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
+        std::string toYamlString() override;
     };
 
     // 定义输出到文件的Appender
@@ -261,6 +270,7 @@ namespace Framework {
         FileLogAppender(const std::string& filename);
         // 重写父类的log方法，用于将日志事件输出到文件，level表示日志级别，event表示日志事件
         void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
+        std::string toYamlString() override;
 
         bool reopen();
     private:
@@ -269,6 +279,23 @@ namespace Framework {
         // 用于写入日志的文件流对象
         std::ofstream m_filestream;
     };
+}
+
+namespace Framework {
+    class LoggerManager {
+    public:
+        LoggerManager();
+        Logger::ptr getLogger(const std::string& name);
+        Logger::ptr getRoot() const { return m_root; }
+        std::string toYamlString();
+
+        void init();
+    private:
+        std::map<std::string, Logger::ptr> m_loggers;
+        Logger::ptr m_root;
+    };
+
+    typedef Framework::Singleton<LoggerManager> loggerMgr;
 }
 
 #endif

@@ -1,7 +1,7 @@
 #include "config.h"
 
 namespace Framework {
-	Config::ConfigVarMap Config::s_datas;
+	//Config::ConfigVarMap Config::s_datas;
 
     /*"A.B", 10
        A:
@@ -29,8 +29,8 @@ namespace Framework {
     }
 
     ConfigVarBase::ptr Config::LookupBase(const std::string& name) {
-        auto it = s_datas.find(name);
-        return it == s_datas.end() ? nullptr : it->second;
+        auto it = GetDatas().find(name);
+        return it == GetDatas().end() ? nullptr : it->second;
     }
 
     // 函数功能：LoadFromYaml 函数用于从 YAML::Node 中加载配置，并将配置值设置到对应的 ConfigVarBase 对象中。
