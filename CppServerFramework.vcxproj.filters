@@ -30,6 +30,12 @@
     <ClCompile Include="config.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="multithread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="testmultithread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -42,6 +48,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="multithread.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -135,13 +135,16 @@
   <ItemGroup>
     <ClCompile Include="config.cpp" />
     <ClCompile Include="log.cpp" />
+    <ClCompile Include="multithread.cpp" />
     <ClCompile Include="testconfig.cpp" />
     <ClCompile Include="testlog.cpp" />
+    <ClCompile Include="testmultithread.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="multithread.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
