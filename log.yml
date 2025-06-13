@@ -7,7 +7,7 @@ logs:
         file: log.txt
       - type: StdoutLogAppender
   - name: system
-    level: INFO
+    level: WARN
     formatter: "%d%T%m%n"
     appenders:
       - type: FileLogAppender

@@ -163,6 +163,8 @@ void test_new_log() {
     YAML::Node root = YAML::LoadFile("./log.yml");
     Framework::Config::LoadFromYaml(root);
     std::cout << Framework::loggerMgr::GetInstance()->toYamlString() << std::endl;
+
+    LOG_FATAL(LOG_NAME("system")) << "system" << std::endl;
 }
 
 int main(int argc, char** argv) {

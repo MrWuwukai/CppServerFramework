@@ -187,6 +187,7 @@ namespace Framework {
 
     // 日志输出地相关类
     class LogAppender {
+    friend class Logger;
     public:
         // 定义指向LogAppender对象的智能指针类型
         typedef std::shared_ptr<LogAppender> ptr;
@@ -196,14 +197,23 @@ namespace Framework {
         virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
         virtual std::string toYamlString() = 0;
 
-        void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
+        void setFormatter(LogFormatter::ptr val) {
+            m_formatter = val; 
+            if (m_formatter) {
+                m_hasFormatter = true;
+            }
+            else {
+                m_hasFormatter = false;
+            }
+        }
         LogFormatter::ptr getFormatter() const { return m_formatter; }
 
         LogLevel::Level getLevel() const { return m_level; }
         void setLevel(LogLevel::Level val) { m_level = val; }
     protected:
         // 日志级别
-        LogLevel::Level m_level = LogLevel::INFO;
+        LogLevel::Level m_level = LogLevel::DEBUG;
+        bool m_hasFormatter = false;
         LogFormatter::ptr m_formatter;
     };
 
@@ -235,7 +245,7 @@ namespace Framework {
 
         const std::string& getName() const { return m_name; }
 
-        void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
+        void setFormatter(LogFormatter::ptr val);
         void setFormatter(const std::string& val);
         LogFormatter::ptr getFormatter() { return m_formatter; }
 

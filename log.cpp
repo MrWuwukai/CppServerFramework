@@ -72,7 +72,7 @@ namespace Framework {
     // 向日志记录器中添加一个日志输出器（appender）
     void Logger::addAppender(LogAppender::ptr appender) {
         if (!appender->getFormatter()){
-            appender->setFormatter(m_formatter);
+            appender->m_formatter = m_formatter;
         }
         m_appenders.push_back(appender);
     }
@@ -92,6 +92,16 @@ namespace Framework {
         m_appenders.clear();
     }
 
+    void Logger::setFormatter(LogFormatter::ptr val) {
+        m_formatter = val;
+
+        for (auto& i : m_appenders) {
+            if (!i->m_hasFormatter) {
+                i->m_formatter = m_formatter;
+            }
+        }
+    }
+
     void Logger::setFormatter(const std::string& val) {
         LogFormatter::ptr new_val(new LogFormatter(val));
         if (new_val->isError()) {
@@ -100,7 +110,8 @@ namespace Framework {
                 << std::endl;
             return;
         }
-        m_formatter = new_val;
+        //m_formatter = new_val;
+        setFormatter(new_val);
     }
 
     // 记录日志的方法，根据日志级别判断是否记录，若满足条件则遍历所有输出器进行日志输出
@@ -196,7 +207,7 @@ namespace Framework {
         node["type"] = "FileLogAppender";
         node["file"] = m_filename;
         node["level"] = LogLevel::toString(m_level);
-        if (m_formatter) {
+        if (m_hasFormatter && m_formatter) {
             node["formatter"] = m_formatter->getPattern();
         }
         std::stringstream ss;
@@ -218,7 +229,7 @@ namespace Framework {
         YAML::Node node;
         node["type"] = "StdoutLogAppender";
         node["level"] = LogLevel::toString(m_level);
-        if (m_formatter) {
+        if (m_hasFormatter && m_formatter) {
             node["formatter"] = m_formatter->getPattern();
         }
         std::stringstream ss;
@@ -672,7 +683,7 @@ namespace Framework {
     struct LogIniter {
         LogIniter() {
             g_log_defines->addListener(0xF1E231, [](const std::set<LogDefine>& old_value, const std::set<LogDefine>& new_value) {
-                LOG_INFO(LOG_ROOT()) << "on logger conf changed";
+                //LOG_INFO(LOG_ROOT()) << "on logger conf changed";
                 for (auto& i : new_value) {
                     auto it = old_value.find(i);
                     Logger::ptr logger;
@@ -703,6 +714,15 @@ namespace Framework {
                             ap.reset(new StdoutLogAppender);
                         }
                         ap->setLevel(a.level);
+                        if (!a.formatter.empty()) {
+                            LogFormatter::ptr fmt(new LogFormatter(a.formatter));
+                            if (!fmt->isError()) {
+                                ap->setFormatter(fmt);
+                            }
+                            else {
+                                std::cout << "appender type=" << a.type << " formatter=" << a.formatter << " is invalid" << std::endl;
+                            }
+                        }
                         logger->addAppender(ap);
                     }
                 }
