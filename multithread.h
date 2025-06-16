@@ -4,8 +4,151 @@
 #include <memory>
 #include <string>
 #include <pthread.h>
+#include <semaphore.h>
+#include <stdint.h>
 
 namespace Framework {
+
+    class Semaphore {
+    public:
+        // 构造函数，接受一个无符号 32 位整数作为信号量的初始计数值，默认为 0
+        Semaphore(uint32_t count = 0);
+        // 析构函数
+        ~Semaphore();
+
+        // 等待信号量，若信号量计数值大于 0，则将其减 1 并继续执行；若计数值为 0，则线程阻塞直到信号量被唤醒
+        void wait();
+        // 发布信号量，将信号量的计数值加 1，若有线程因等待该信号量而阻塞，则唤醒其中一个线程
+        void notify();
+    private:
+        Semaphore(const Semaphore&) = delete;
+        Semaphore(Semaphore&&) = delete;
+        Semaphore& operator=(const Semaphore&) = delete;
+    private:
+        sem_t m_semaphore; // 用于存储信号量的成员变量
+    };
+
+    template<class T>
+    struct ScopedLockImpl {
+    public:
+        ScopedLockImpl(T& mutex)
+            :m_mutex(mutex) {
+            m_mutex.lock();
+            m_locked = true;
+        }
+
+        ~ScopedLockImpl() {
+            unlock();
+        }
+
+        void lock() {
+            if (!m_locked) {
+                m_mutex.lock();
+                m_locked = true;
+            }
+        }
+
+        void unlock() {
+            if (m_locked) {
+                m_mutex.unlock();
+                m_locked = false;
+            }
+        }
+    private:
+        T& m_mutex;
+        bool m_locked;
+    };
+    /*思考：这个锁的模板类为什么这么设计？RAII？*/
+
+    template<class T>
+    struct ReadScopedLockImpl {
+    public:
+        ReadScopedLockImpl(T& mutex)
+            : m_mutex(mutex) {
+            m_mutex.rdlock();
+            m_locked = true;
+        }
+
+        ~ReadScopedLockImpl() {
+            unlock();
+        }
+
+        void lock() {
+            if (!m_locked) {
+                m_mutex.rdlock();
+                m_locked = true;
+            }
+        }
+
+        void unlock() {
+            if (m_locked) {
+                m_mutex.unlock();
+                m_locked = false;
+            }
+        }
+    private:
+        T& m_mutex;
+        bool m_locked;
+    };
+
+    template<class T>
+    struct WriteScopedLockImpl {
+    public:
+        WriteScopedLockImpl(T& mutex)
+            :m_mutex(mutex) {
+            m_mutex.wrlock();
+            m_locked = true;
+        }
+
+        ~WriteScopedLockImpl() {
+            unlock();
+        }
+
+        void lock() {
+            if (!m_locked) {
+                m_mutex.wrlock();
+                m_locked = true;
+            }
+        }
+
+        void unlock() {
+            if (m_locked) {
+                m_mutex.unlock();
+                m_locked = false;
+            }
+        }
+    private:
+        T& m_mutex;
+        bool m_locked;
+    };
+
+    class RWMutex {
+    public:
+        typedef ReadScopedLockImpl<RWMutex> ReadLock;
+        typedef WriteScopedLockImpl<RWMutex> WriteLock;
+
+        RWMutex() {
+            pthread_rwlock_init(&m_lock, nullptr);
+        }
+
+        ~RWMutex() {
+            pthread_rwlock_destroy(&m_lock);
+        }
+
+        void rdlock() {
+            pthread_rwlock_rdlock(&m_lock);
+        }
+
+        void wrlock() {
+            pthread_rwlock_wrlock(&m_lock);
+        }
+
+        void unlock() {
+            pthread_rwlock_unlock(&m_lock);
+        }
+    private:
+        pthread_rwlock_t m_lock;
+    };
 
     class Multithread {
     public:
@@ -47,6 +190,8 @@ namespace Framework {
         std::function<void()> m_cb;
         // 线程名称
         std::string m_name;
+
+        Semaphore m_semaphore;
     };
 
 }
