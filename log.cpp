@@ -71,7 +71,9 @@ namespace Framework {
 
     // 向日志记录器中添加一个日志输出器（appender）
     void Logger::addAppender(LogAppender::ptr appender) {
+        Spinlock::Lock lock(m_mutex);
         if (!appender->getFormatter()){
+            Spinlock::Lock innerlock(appender->m_mutex);
             appender->m_formatter = m_formatter;
         }
         m_appenders.push_back(appender);
@@ -79,8 +81,8 @@ namespace Framework {
 
     // 从日志记录器中删除指定的日志输出器（appender）
     void Logger::delAppender(LogAppender::ptr appender) {
-        for (auto it = m_appenders.begin();
-            it != m_appenders.end(); ++it) {
+        Spinlock::Lock lock(m_mutex);
+        for (auto it = m_appenders.begin(); it != m_appenders.end(); ++it) {
             if (*it == appender) {
                 m_appenders.erase(it);
                 break;
@@ -93,9 +95,11 @@ namespace Framework {
     }
 
     void Logger::setFormatter(LogFormatter::ptr val) {
+        Spinlock::Lock lock(m_mutex);
         m_formatter = val;
 
         for (auto& i : m_appenders) {
+            Spinlock::Lock innerlock(i->m_mutex);
             if (!i->m_hasFormatter) {
                 i->m_formatter = m_formatter;
             }
@@ -118,8 +122,10 @@ namespace Framework {
     void Logger::log(LogLevel::Level level, LogEvent::ptr event) {
         if (level >= m_level) {
             auto self = shared_from_this();
+            Spinlock::Lock lock(m_mutex);
             if (!m_appenders.empty()) {
                 for (auto& i : m_appenders) {
+                    //Spinlock::Lock innerlock(i->m_mutex);
                     i->log(self, level, event);
                 }
             }
@@ -155,6 +161,7 @@ namespace Framework {
     }
 
     std::string Logger::toYamlString() {
+        Spinlock::Lock lock(m_mutex);
         YAML::Node node;
         node["name"] = m_name;
         node["level"] = LogLevel::toString(m_level);
@@ -183,7 +190,14 @@ namespace Framework {
     void FileLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
         // 判断当前日志级别是否大于等于设定的日志级别
         if (level >= m_level) {
-            // 如果满足条件，将格式化后的日志事件写入到文件流m_filestream中
+            // 这里检测到中途文件是否突然被删除，当被删除时立刻重新打开文件
+            uint64_t now = time(0);
+            if (now != m_reopenTime) {
+                reopen();
+                m_reopenTime = now;
+            }
+            Spinlock::Lock lock(m_mutex);
+            // 如果满足条件，将格式化后的日志事件写入到文件流m_filestream中  
             m_filestream << m_formatter->format(logger, level, event);
         }
     }
@@ -191,6 +205,7 @@ namespace Framework {
     // FileLogAppender类的reopen函数，用于重新打开日志文件流
     // 返回值：如果文件流成功打开（即文件流对象有效），返回true；否则返回false
     bool FileLogAppender::reopen() {
+        Spinlock::Lock lock(m_mutex);
         // 判断文件流对象m_filestream是否存在（不为nullptr）
         if (m_filestream) {
             // 关闭当前的文件流
@@ -199,10 +214,11 @@ namespace Framework {
         // 尝试打开指定文件名的文件流
         m_filestream.open(m_filename);
         // 返回文件流是否成功打开的状态，!m_filestream为false表示打开失败，true表示打开成功
-        return!m_filestream;
+        return m_filestream.is_open();
     }
 
     std::string FileLogAppender::toYamlString() {
+        Spinlock::Lock lock(m_mutex);
         YAML::Node node;
         node["type"] = "FileLogAppender";
         node["file"] = m_filename;
@@ -215,17 +231,35 @@ namespace Framework {
         return ss.str();
     }
 
+    void LogAppender::setFormatter(LogFormatter::ptr val) {
+        Spinlock::Lock lock(m_mutex);
+        m_formatter = val;
+        if (m_formatter) {
+            m_hasFormatter = true;
+        }
+        else {
+            m_hasFormatter = false;
+        }
+    }
+
+    LogFormatter::ptr LogAppender::getFormatter() {
+        Spinlock::Lock lock(m_mutex);
+        return m_formatter;
+    }
+
     // StdoutLogAppender类的log函数，用于将日志事件输出到标准输出流
     // level：日志级别
     // event：指向日志事件对象的智能指针
     void StdoutLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
         // 判断当前日志级别是否大于等于设置的日志级别
         if (level >= m_level) {
+            Spinlock::Lock lock(m_mutex);
             // 将格式化后的日志事件输出到标准输出流std::cout
             std::cout << m_formatter->format(logger, level, event);
         }
     }
     std::string StdoutLogAppender::toYamlString() {
+        Spinlock::Lock lock(m_mutex);
         YAML::Node node;
         node["type"] = "StdoutLogAppender";
         node["level"] = LogLevel::toString(m_level);
@@ -529,6 +563,7 @@ namespace Framework {
     }
 
     Logger::ptr LoggerManager::getLogger(const std::string& name) {
+        Spinlock::Lock lock(m_mutex);
         auto it = m_loggers.find(name);
         if (it != m_loggers.end()) {
             return it->second;
@@ -541,6 +576,7 @@ namespace Framework {
     }
 
     std::string LoggerManager::toYamlString() {
+        Spinlock::Lock lock(m_mutex);
         YAML::Node node;
         for (auto& i : m_loggers) {
             node.push_back(YAML::Load(i.second->toYamlString()));

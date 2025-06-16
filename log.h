@@ -16,6 +16,7 @@
 #include <format>
 #include "utils.h"
 #include "singleton.h"
+#include "multithread.h"
 
 #ifdef _WIN32
 #include <stdio.h>
@@ -197,16 +198,8 @@ namespace Framework {
         virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
         virtual std::string toYamlString() = 0;
 
-        void setFormatter(LogFormatter::ptr val) {
-            m_formatter = val; 
-            if (m_formatter) {
-                m_hasFormatter = true;
-            }
-            else {
-                m_hasFormatter = false;
-            }
-        }
-        LogFormatter::ptr getFormatter() const { return m_formatter; }
+        void setFormatter(LogFormatter::ptr val);
+        LogFormatter::ptr getFormatter();
 
         LogLevel::Level getLevel() const { return m_level; }
         void setLevel(LogLevel::Level val) { m_level = val; }
@@ -215,6 +208,8 @@ namespace Framework {
         LogLevel::Level m_level = LogLevel::DEBUG;
         bool m_hasFormatter = false;
         LogFormatter::ptr m_formatter;
+
+        Spinlock m_mutex;
     };
 
     // 日志器类定义
@@ -247,7 +242,7 @@ namespace Framework {
 
         void setFormatter(LogFormatter::ptr val);
         void setFormatter(const std::string& val);
-        LogFormatter::ptr getFormatter() { return m_formatter; }
+        LogFormatter::ptr getFormatter() { Spinlock::Lock lock(m_mutex); return m_formatter; }
 
         std::string toYamlString();
     private:
@@ -259,6 +254,8 @@ namespace Framework {
         std::list<LogAppender::ptr> m_appenders;
         LogFormatter::ptr m_formatter;
         Logger::ptr m_root;
+
+        Spinlock m_mutex;
     };
 
     // 输出到控制台的Appender
@@ -288,6 +285,7 @@ namespace Framework {
         std::string m_filename;
         // 用于写入日志的文件流对象
         std::ofstream m_filestream;
+        uint64_t m_reopenTime;
     };
 }
 
@@ -303,6 +301,8 @@ namespace Framework {
     private:
         std::map<std::string, Logger::ptr> m_loggers;
         Logger::ptr m_root;
+
+        Spinlock m_mutex;
     };
 
     typedef Framework::Singleton<LoggerManager> loggerMgr;
