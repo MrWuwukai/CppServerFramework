@@ -147,7 +147,7 @@ void test_yaml_change_listener() {
     LOG_INFO(LOG_ROOT()) << g_person->getValue().toString();
     LOG_INFO(LOG_ROOT()) << g_person->toString();
 
-    g_person->addListener(10, [](const Person& old_value, const Person& new_value) {
+    g_person->addListener([](const Person& old_value, const Person& new_value) {
         LOG_INFO(LOG_ROOT()) << "old_value=" << old_value.toString() << " new_value=" << new_value.toString();
     });
 
@@ -173,5 +173,12 @@ int main(int argc, char** argv) {
     //test_yaml_set();
     //test_yaml_change_listener();
     test_new_log();
+    static Framework::Logger::ptr g_logger = LOG_NAME("system");
+    Framework::Config::visit([](Framework::ConfigVarBase::ptr var) {
+        LOG_INFO(g_logger) << "name=" << var->getName()
+            << " description=" << var->getDescription()
+            << " typename=" << var->getTypeName()
+            << " value=" << var->toString();
+        });
     return 0;
 }

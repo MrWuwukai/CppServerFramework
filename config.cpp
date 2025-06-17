@@ -29,6 +29,7 @@ namespace Framework {
     }
 
     ConfigVarBase::ptr Config::LookupBase(const std::string& name) {
+        RWMutex::ReadLock lock(GetMutex());
         auto it = GetDatas().find(name);
         return it == GetDatas().end() ? nullptr : it->second;
     }
@@ -70,6 +71,14 @@ namespace Framework {
                     var->fromString(ss.str());
                 }
             }
+        }
+    }
+
+    void Config::visit(std::function<void(ConfigVarBase::ptr)> cb) {
+        RWMutex::ReadLock lock(GetMutex());
+        ConfigVarMap& m = GetDatas();
+        for (auto it = m.begin(); it != m.end(); ++it) {
+            cb(it->second);
         }
     }
 }

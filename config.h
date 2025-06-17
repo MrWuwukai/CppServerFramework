@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "log.h"
+#include "multithread.h"
 
 namespace Framework {
 
@@ -238,6 +239,7 @@ namespace Framework {
 
         const std::string& getName() const { return m_name; }
         const std::string& getDescription() const { return m_description; }
+        virtual std::string getTypeName() const = 0;
 
         virtual std::string toString() = 0;
         virtual bool fromString(const std::string& val) = 0;
@@ -259,9 +261,14 @@ namespace Framework {
             , m_val(default_value) {
         }
 
+        std::string getTypeName() const override {
+            return typeid(T).name();
+        }
+
         std::string toString() override {
             try {
                 //return boost::lexical_cast<std::string>(m_val);
+                RWMutex::ReadLock lock(m_mutex);
                 return ToStr()(m_val);
             }
             catch (std::exception& e) {
@@ -283,29 +290,45 @@ namespace Framework {
             return false;
         }
 
-        const T getValue() const { return m_val; }
+        const T getValue() const { 
+            // 锁会改变内部成员，这个方法不能成为常函数，除非m_mutex加上mutable修饰符
+            RWMutex::ReadLock lock(m_mutex);
+            return m_val; 
+        }
 
         void setValue(const T& v) { 
-            if (v == m_val) {
-                return;
+            // 出这个大括号域读锁自动析构
+            {
+                RWMutex::ReadLock lock(m_mutex);
+                if (v == m_val) {
+                    return;
+                }
+                for (auto& i : m_cbs) {
+                    i.second(m_val, v);
+                }
             }
-            for (auto& i : m_cbs) {
-                i.second(m_val, v);
-            }
+            RWMutex::WriteLock lock(m_mutex);
             m_val = v;
         }
 
         // 监听配置更改事件
-        void addListener(uint64_t key, on_change_cb cb) {
-            m_cbs[key] = cb;
+        uint64_t addListener(on_change_cb cb) {
+            static uint64_t s_fun_id = 0; // 给每个回调函数设置唯一id
+            RWMutex::WriteLock lock(m_mutex);
+            ++s_fun_id;
+            m_cbs[s_fun_id] = cb;
+            return s_fun_id;
         }
         void delListener(uint64_t key) {
+            RWMutex::WriteLock lock(m_mutex);
             m_cbs.erase(key);
         }
         void clearListener() {
+            RWMutex::WriteLock lock(m_mutex);
             m_cbs.clear();
         }
         on_change_cb getListener(uint64_t key) {
+            RWMutex::ReadLock lock(m_mutex);
             auto it = m_cbs.find(key);
             return it == m_cbs.end() ? nullptr : it->second;
         }
@@ -316,6 +339,8 @@ namespace Framework {
         为什么回调函数还要包一层？
         因为functional包装的函数难以比较是否是同一函数。        
         */
+
+        mutable RWMutex m_mutex;
     };
 
     class Config {
@@ -328,6 +353,7 @@ namespace Framework {
         static typename ConfigVar<T>::ptr Lookup(const std::string& name, const T& default_value, const std::string& description = "") {
             // 尝试查找已存在的配置变量
             auto tmp = Lookup<T>(name);
+            RWMutex::WriteLock lock(GetMutex());
             if (tmp.first != "NOT_FOUND") {
                 return tmp.second;
             }
@@ -349,6 +375,8 @@ namespace Framework {
         // 模板函数，用于查找指定名称的配置变量（不创建新变量）
         template<class T>
         static std::pair<std::string, typename ConfigVar<T>::ptr> Lookup(const std::string& name) {
+            RWMutex::ReadLock lock(GetMutex());
+
             // 在静态数据成员中查找配置变量
             auto it = GetDatas().find(name);
             if (it == GetDatas().end()) {
@@ -374,10 +402,17 @@ namespace Framework {
         static void LoadFromYaml(const YAML::Node& root);
 
         static ConfigVarBase::ptr LookupBase(const std::string& name);
+
+        static void visit(std::function<void(ConfigVarBase::ptr)> cb);
     private:
+        // 静态全局变量创建时机未知，所以需要把它包在函数里确保他先创建再使用
         static ConfigVarMap& GetDatas() {
             static ConfigVarMap s_datas;
             return s_datas;
+        };
+        static RWMutex& GetMutex() {
+            static RWMutex s_mutex;
+            return s_mutex;
         }
     };
 }
