@@ -1,6 +1,11 @@
 ﻿#include "utils.h"
+#include "fiber.h"
+#include "log.h"
+#include <execinfo.h>
 
 namespace Framework {
+    static Framework::Logger::ptr g_logger = LOG_NAME("system");
+
     uint32_t GetThreadId() {
     #ifdef _WIN32
         std::thread::id tid = std::this_thread::get_id();
@@ -29,19 +34,7 @@ namespace Framework {
         uint32_t fiber_id = static_cast<uint32_t>(hash_value);
         return fiber_id;
     #else
-        // Linux 平台：使用 Boost.Fiber 获取当前 Fiber ID
-        // 注意：必须在 Boost.Fiber 环境下运行，否则会崩溃
-        try {
-            boost::fibers::fiber::id fiber_id = boost::this_fiber::get_id();
-            // 将 fiber_id 转换为 uint32_t（Boost 的 fiber::id 可以隐式转换为 size_t）
-            uint32_t id_num = static_cast<uint32_t>(fiber_id);
-            return id_num;
-        }
-        catch (...) {
-            // 如果不在 Boost.Fiber 环境下调用此函数，可能会抛出异常
-            // 返回 0 表示无效 Fiber ID
-            return 0;
-        }
+        return Fiber::GetFiberId();
     #endif
     }
 
@@ -55,4 +48,37 @@ namespace Framework {
         return wanted;
     }
     #endif
+}
+
+
+namespace Framework {
+    void Backtrace(std::vector<std::string>& bt, int size, int skip) {
+        // 之所以分配在堆上是因为协程的栈空间比线程小很多，所以要节省栈空间
+        void* array = (void*)malloc((sizeof(void*) * size));
+        size_t s = ::backtrace(array, size); // 当 :: 前面不加任何标识符​（即写成 :: 后直接跟名称）时，它表示全局作用域​（Global Scope）。
+        char** strings = backtrace_symbols(array, s);
+
+        if (strings == NULL) {
+            free(strings);
+            free(array);
+            LOG_ERROR(g_logger) << "backtrace_symbols error";
+            return;
+        }
+
+        for (size_t i = skip; i < s; ++i) {
+            bt.push_back(strings[i]);
+        }
+        free(strings);
+        free(array);
+    }
+
+    std::string BacktraceToString(int size, int skip, const std::string& prefix) {
+        std::vector<std::string> bt;
+        Backtrace(bt, size, skip);
+        std::stringstream ss;
+        for (size_t i = 0; i < bt.size(); ++i) {
+            ss << prefix << bt[i] << std::endl;
+        }
+        return ss.str();
+    }
 }

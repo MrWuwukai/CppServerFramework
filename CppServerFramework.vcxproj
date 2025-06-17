@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="fiber.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="multithread.cpp" />
     <ClCompile Include="testconfig.cpp" />
@@ -143,7 +144,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />
+    <ClInclude Include="fiber.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="macro.h" />
     <ClInclude Include="multithread.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="utils.h" />

@@ -33,14 +33,14 @@
 #undef ERROR  // 取消宏定义
 #endif
 
-#define LOG_LEVEL(logger, level) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::GetFiberId(), time(0)))).getSS()
+#define LOG_LEVEL(logger, level) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::Multithread::GetName(), Framework::GetFiberId(), time(0)))).getSS()
 #define LOG_DEBUG(logger) LOG_LEVEL(logger, Framework::LogLevel::DEBUG)
 #define LOG_INFO(logger) LOG_LEVEL(logger, Framework::LogLevel::INFO)
 #define LOG_WARN(logger) LOG_LEVEL(logger, Framework::LogLevel::WARN)
 #define LOG_ERROR(logger) LOG_LEVEL(logger, Framework::LogLevel::ERROR)
 #define LOG_FATAL(logger) LOG_LEVEL(logger, Framework::LogLevel::FATAL)
 
-#define LOG_FMT_LEVEL(logger, level, fmt, ...) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::GetFiberId(), time(0)))).getEvent()->format(fmt, __VA_ARGS__)
+#define LOG_FMT_LEVEL(logger, level, fmt, ...) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::Multithread::GetName(), Framework::GetFiberId(), time(0)))).getEvent()->format(fmt, __VA_ARGS__)
 #define LOG_FMT_DEBUG(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::DEBUG, fmt, __VA_ARGS__)
 #define LOG_FMT_INFO(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::INFO, fmt, __VA_ARGS__)
 #define LOG_FMT_WARN(logger, fmt, ...) LOG_FMT_LEVEL(logger, Framework::LogLevel::WARN, fmt, __VA_ARGS__)
@@ -74,13 +74,14 @@ namespace Framework {
     public:
         // 定义LogEvent智能指针类型别名ptr
         typedef std::shared_ptr<LogEvent> ptr;
-        LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level, const char* file, int32_t m_line, uint32_t elapse, uint32_t thread_id, uint32_t fiber_id, uint64_t time);
+        LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level, const char* file, int32_t m_line, uint32_t elapse, uint32_t thread_id, const std::string& thread_name, uint32_t fiber_id, uint64_t time);
 
         const char* getFile() const { return m_file; }
         int32_t getLine() const { return m_line; }
         uint32_t getElapse() const { return m_elapse; }
         uint32_t getThreadId() const { return m_threadId; }
         uint32_t getFiberId() const { return m_fiberId; }
+        const std::string& getThreadName() const { return m_threadName; }
         uint64_t getTime() const { return m_time; }
         std::string getContent() const { return m_content.str(); }
 
@@ -130,6 +131,7 @@ namespace Framework {
         int32_t m_elapse = 0;
         // 线程ID，初始化为0
         uint32_t m_threadId = 0;
+        std::string m_threadName;
         // 协程ID，初始化为0
         uint32_t m_fiberId = 0;
         // 日志记录的时间戳，初始化为0

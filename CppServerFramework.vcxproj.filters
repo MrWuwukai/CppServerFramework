@@ -36,6 +36,9 @@
     <ClCompile Include="testmultithread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="fiber.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -51,6 +54,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="multithread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="macro.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fiber.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
