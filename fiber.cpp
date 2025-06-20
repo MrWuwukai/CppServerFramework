@@ -1,6 +1,7 @@
 #include "fiber.h"
 #include "config.h"
 #include "macro.h"
+#include "scheduler.h"
 #include <atomic>
 
 namespace Framework {
@@ -38,7 +39,7 @@ namespace Framework {
         ++s_fiber_count;
     }
 
-    Fiber::Fiber(std::function<void()> cb, size_t stacksize)
+    Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool use_caller)
         : m_id(++s_fiber_id)  // 初始化协程的唯一ID，使用静态成员变量s_fiber_id自增来生成唯一标识
         , m_cb(cb) {  // 保存传入的任务函数
         ++s_fiber_count;  // 协程计数器自增，记录当前创建的协程数量
@@ -53,7 +54,12 @@ namespace Framework {
         m_ctx.uc_stack.ss_sp = m_stack;  // 设置上下文的栈指针为分配的栈内存起始地址
         m_ctx.uc_stack.ss_size = m_stacksize;  // 设置上下文的栈大小
 
-        makecontext(&m_ctx, &Fiber::MainFunc, 0);  // 初始化上下文，设置执行函数为Fiber::MainFunc，参数个数为0
+        if (use_caller){
+            makecontext(&m_ctx, &Fiber::MainFunc, 0);  // 初始化上下文，设置执行函数为Fiber::MainFunc，参数个数为0
+        }
+        else {
+            makecontext(&m_ctx, &Fiber::MainFuncCaller, 0);
+        }
     }
 
     Fiber::~Fiber() {
@@ -94,18 +100,33 @@ namespace Framework {
         SetThis(this);
         ASSERT(m_state != EXEC);
         m_state = EXEC;
+        if (swapcontext(&Scheduler::GetMainFiber()->m_ctx, &m_ctx)) {
+            ASSERT_W(false, "swapcontext");
+        }
+    }
+
+	void Fiber::swapOut() {
+		SetThis(Scheduler::GetMainFiber());
+		if (swapcontext(&m_ctx, &Scheduler::GetMainFiber()->m_ctx)) {
+			ASSERT_W(false, "swapcontext");
+		}
+	}
+
+    void Fiber::call() {
+        SetThis(this);
+        m_state = EXEC;
         if (swapcontext(&t_threadFiber->m_ctx, &m_ctx)) {
-            ASSERT_W(false, "swapcontext");
-        }
+			ASSERT_W(false, "swapcontext");
+		}
     }
 
-    void Fiber::swapOut() {
-        SetThis(t_threadFiber.get());
+	void Fiber::uncall() {
+		SetThis(t_threadFiber.get());
+		if (swapcontext(&m_ctx, &t_threadFiber->m_ctx)) {
+			ASSERT_W(false, "swapcontext");
+		}
 
-        if (swapcontext(&m_ctx, &t_threadFiber->m_ctx)) {
-            ASSERT_W(false, "swapcontext");
-        }
-    }
+	}
 
     //设置当前协程
     void Fiber::SetThis(Fiber* f) {
@@ -169,6 +190,28 @@ namespace Framework {
         // cur->swapOut(); // 手动返回主协程，但是此时Fiber::ptr cur = GetThis();申请的智能指针并未被释放引用计数在此处一定>=1
         auto raw_ptr = cur.get(); // 需要使用裸指针
         cur.reset();
-        cur->swapOut();
+        raw_ptr->swapOut();
+    }
+
+    void Fiber::MainFuncCaller() {
+        Fiber::ptr cur = GetThis();
+        ASSERT(cur);
+        try {
+            cur->m_cb();
+            cur->m_cb = nullptr;
+            cur->m_state = TERM;
+        }
+        catch (std::exception& ex) {
+            cur->m_state = EXCEPT;
+            LOG_ERROR(g_logger) << "Fiber Except: " << ex.what();
+        }
+        catch (...) {
+            cur->m_state = EXCEPT;
+            LOG_ERROR(g_logger) << "Fiber Except";
+        }
+
+        auto raw_ptr = cur.get();
+        cur.reset();
+        raw_ptr->uncall();
     }
 }

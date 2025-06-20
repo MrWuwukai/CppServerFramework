@@ -20,7 +20,7 @@ namespace Framework {
             EXCEPT
         };
 
-        Fiber(std::function<void()> cb, size_t stacksize = 0);
+        Fiber(std::function<void()> cb, size_t stacksize = 0, bool use_caller = false);
         ~Fiber();
 
         //重置协程函数，并重置状态
@@ -30,6 +30,10 @@ namespace Framework {
         void swapIn();
         //切换到后台执行
         void swapOut();
+        // 直接切换协程，不需要通过主协程
+        void call();
+        void uncall();
+
         //设置当前协程
         static void SetThis(Fiber* f);
         //返回当前协程
@@ -38,6 +42,12 @@ namespace Framework {
 		uint64_t getId() const {
 			return m_id;
 		}
+        Fiber::State getState() const {
+            return m_state;
+        }
+        void setState(const State state) {
+            m_state = state;
+        }
 
         static uint64_t GetFiberId();
         //协程切换到后台，并且设置为Ready状态
@@ -48,6 +58,7 @@ namespace Framework {
         static uint64_t TotalFibers();
 
         static void MainFunc();
+        static void MainFuncCaller();
     private:
         Fiber(); // 思考：为什么无参构造要写成私有？
     private:

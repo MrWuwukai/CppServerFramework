@@ -137,9 +137,11 @@
     <ClCompile Include="fiber.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="multithread.cpp" />
+    <ClCompile Include="scheduler.cpp" />
     <ClCompile Include="testconfig.cpp" />
     <ClCompile Include="testlog.cpp" />
     <ClCompile Include="testmultithread.cpp" />
+    <ClCompile Include="testscheduler.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +150,7 @@
     <ClInclude Include="log.h" />
     <ClInclude Include="macro.h" />
     <ClInclude Include="multithread.h" />
+    <ClInclude Include="scheduler.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
