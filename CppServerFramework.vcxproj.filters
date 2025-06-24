@@ -45,6 +45,12 @@
     <ClCompile Include="testscheduler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="iomanager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="testiomanager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -69,6 +75,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="scheduler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iomanager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

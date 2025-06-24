@@ -135,10 +135,12 @@
   <ItemGroup>
     <ClCompile Include="config.cpp" />
     <ClCompile Include="fiber.cpp" />
+    <ClCompile Include="iomanager.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="multithread.cpp" />
     <ClCompile Include="scheduler.cpp" />
     <ClCompile Include="testconfig.cpp" />
+    <ClCompile Include="testiomanager.cpp" />
     <ClCompile Include="testlog.cpp" />
     <ClCompile Include="testmultithread.cpp" />
     <ClCompile Include="testscheduler.cpp" />
@@ -147,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="config.h" />
     <ClInclude Include="fiber.h" />
+    <ClInclude Include="iomanager.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="macro.h" />
     <ClInclude Include="multithread.h" />
