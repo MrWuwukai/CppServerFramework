@@ -1,8 +1,9 @@
 #pragma once
 #include "scheduler.h"
+#include "timer.h"
 
 namespace Framework {
-    class IOManager : public Scheduler {
+    class IOManager : public Scheduler, public TimerManager {
     public:
         typedef std::shared_ptr<IOManager> ptr;
 
@@ -46,8 +47,11 @@ namespace Framework {
         bool stopping() override;
         void idle() override;
 
+        void onTimerInsertedAtFront() override;
+
         void contextResize(size_t size); // 重置事件队列大小
         bool hasIdleThreads() { return m_idleThreadCount > 0; }
+        bool stopping(uint64_t& timer);
     private:
         int m_epfd = 0;
         int m_tickleFds[2]; // 通知的pipe管道

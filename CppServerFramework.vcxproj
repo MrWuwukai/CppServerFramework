@@ -144,6 +144,7 @@
     <ClCompile Include="testlog.cpp" />
     <ClCompile Include="testmultithread.cpp" />
     <ClCompile Include="testscheduler.cpp" />
+    <ClCompile Include="timer.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +156,7 @@
     <ClInclude Include="multithread.h" />
     <ClInclude Include="scheduler.h" />
     <ClInclude Include="singleton.h" />
+    <ClInclude Include="timer.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>

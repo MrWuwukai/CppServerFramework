@@ -289,8 +289,14 @@ namespace Framework {
     }
 
     // 满足父类的停止条件，且未解决的事件为0，即可停止
-    bool IOManager::stopping() {
-        return Scheduler::stopping() && m_pendingEventCount == 0;
+	bool IOManager::stopping() {
+        uint64_t t = 0;
+		return stopping(t);
+	}
+
+    bool IOManager::stopping(uint64_t& timer) {
+        timer = getNextTimer();
+        return timer == ~0ull && m_pendingEventCount == 0 && Scheduler::stopping();
     }
 
     void IOManager::idle() {
@@ -300,15 +306,25 @@ namespace Framework {
         }); // 智能指针不一定支持数组，必须显式指定自定义删除器​（如 delete[]）
 
         while (true) {
-            if (stopping()) {
-                LOG_INFO(g_logger) << "name=" << getName() << " idle stopping exit";
-                break;
-            }
-
+            uint64_t next_timeout = 0;
+			if (stopping(next_timeout)) {
+				LOG_INFO(g_logger) << "name=" << getName() << " idle stopping exit";
+				break;
+			}
+           
             int rt = 0;
             do {
                 static const int MAX_TIMEOUT = 5000; // epoll支持毫秒级粒度，设置定时器也只需设置成毫秒级即可
-                rt = epoll_wait(m_epfd, events, 64, MAX_TIMEOUT); // 等待事件，没有事件超时后自动唤醒
+
+                // Timer
+                if (next_timeout == ~0ull) {
+                    next_timeout = (int)next_timeout > MAX_TIMEOUT ? MAX_TIMEOUT : next_timeout;
+                }
+                else {
+                    next_timeout = MAX_TIMEOUT;
+                }
+
+                rt = epoll_wait(m_epfd, events, 64, (int)next_timeout); // 等待事件，没有事件超时后自动唤醒
 
                 if (rt < 0 && errno == EINTR) { // 如果没有等待到事件，或只是操作系统的中断事件，则继续等待
                 }
@@ -316,6 +332,14 @@ namespace Framework {
                     break; // 有事件，则退出这层循环
                 }
             } while (true);
+
+            // Timer task
+            std::vector<std::function<void()> > cbs;
+            listExpiredCb(cbs);
+            if (!cbs.empty()) {
+                schedule(cbs.begin(), cbs.end());
+                cbs.clear();
+            }
 
             // 对于epoll_wait获取的所有事件做操作
             for (int i = 0; i < rt; ++i) {
@@ -378,5 +402,12 @@ namespace Framework {
             cur.reset();
             raw_ptr->swapOut();
         }
+    }
+}
+
+// 实现父类虚函数
+namespace Framework {
+    void IOManager::onTimerInsertedAtFront() {
+        tickle();
     }
 }

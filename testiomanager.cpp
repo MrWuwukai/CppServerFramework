@@ -31,7 +31,19 @@ void test1() {
     connect(sock, (const sockaddr*) &addr, sizeof(addr));
 }
 
+Framework::Timer::ptr timer;
+void testTimer() {
+    Framework::IOManager iom(2);
+    timer = iom.addTimer(500, []() {
+        LOG_INFO(g_logger) << "hello timer";
+        static int i = 0;
+        if (++i == 5) {
+            timer->cancel();
+        }
+        }, true);
+}
+
 int main(int argc, char** argv) {
-    test1();
+    testTimer();
     return 0;
 }

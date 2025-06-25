@@ -43,7 +43,7 @@ namespace Framework {
             {
                 MutexType::Lock lock(m_mutex);
                 while (begin != end) {
-                    need_tickle = scheduleNoLock(&*begin) || need_tickle; // 思考：这里指针指出又取地址是为什么？
+                    need_tickle = scheduleNoLock(&*begin, -1) || need_tickle; // 思考：这里指针指出又取地址是为什么？
                     ++begin;
                 }
             }

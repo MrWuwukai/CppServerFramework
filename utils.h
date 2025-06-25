@@ -34,6 +34,9 @@ namespace Framework {
 
 	void Backtrace(std::vector<std::string>& bt, int size, int skip); // 获取函数层级，方便查询报错位置
 	std::string BacktraceToString(int size, int skip, const std::string& prefix = "");
+
+	uint64_t GetCurrentMS(); // Timer
+	uint64_t GetCurrentUS(); // Timer
 }
 
 #endif
