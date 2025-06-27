@@ -2,6 +2,7 @@
 #include "scheduler.h"
 #include "log.h"
 #include "macro.h"
+#include "hook.h"
 
 namespace Framework {
 	static Logger::ptr g_logger = LOG_NAME("system");
@@ -135,6 +136,7 @@ namespace Framework {
     }
 
     void Scheduler::run() {
+        set_hook_enable(true);
         // 设置当前调度器为本线程所属调度器
         setThis();
         // 如果当前线程不是主线程，设置一下当前线程的正在执行run的协程
