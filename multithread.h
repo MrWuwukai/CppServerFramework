@@ -8,9 +8,11 @@
 #include <stdint.h>
 #include <atomic>
 
+#include "noncopyable.h"
+
 namespace Framework {
 
-    class Semaphore {
+    class Semaphore : public Noncopyable {
     public:
         // 构造函数，接受一个无符号 32 位整数作为信号量的初始计数值，默认为 0
         Semaphore(uint32_t count = 0);
@@ -21,10 +23,10 @@ namespace Framework {
         void wait();
         // 发布信号量，将信号量的计数值加 1，若有线程因等待该信号量而阻塞，则唤醒其中一个线程
         void notify();
-    private:
-        Semaphore(const Semaphore&) = delete;
-        Semaphore(Semaphore&&) = delete;
-        Semaphore& operator=(const Semaphore&) = delete;
+    //private:
+    //    Semaphore(const Semaphore&) = delete;
+    //    Semaphore(Semaphore&&) = delete;
+    //    Semaphore& operator=(const Semaphore&) = delete;
     private:
         sem_t m_semaphore; // 用于存储信号量的成员变量
     };
@@ -123,7 +125,7 @@ namespace Framework {
         bool m_locked;
     };
 
-    class RWMutex {
+    class RWMutex : public Noncopyable {
     public:
         typedef ReadScopedLockImpl<RWMutex> ReadLock;
         typedef WriteScopedLockImpl<RWMutex> WriteLock;
@@ -151,7 +153,7 @@ namespace Framework {
         pthread_rwlock_t m_lock;
     };
 
-    class Mutex {
+    class Mutex : public Noncopyable {
     public:
         typedef ScopedLockImpl<Mutex> Lock;
         Mutex() {
@@ -170,7 +172,7 @@ namespace Framework {
         pthread_mutex_t m_mutex;
     };
 
-    class Spinlock {
+    class Spinlock : public Noncopyable {
     public:
         typedef ScopedLockImpl<Spinlock> Lock;
         Spinlock() {
@@ -192,7 +194,7 @@ namespace Framework {
         pthread_spinlock_t m_mutex;
     };
 
-    class CASLock {
+    class CASLock : public Noncopyable {
     public:
         typedef ScopedLockImpl<CASLock> Lock;
         CASLock() {

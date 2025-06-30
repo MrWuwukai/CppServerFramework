@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="fdmanager.cpp" />
     <ClCompile Include="fiber.cpp" />
     <ClCompile Include="hook.cpp" />
     <ClCompile Include="iomanager.cpp" />
@@ -151,12 +152,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />
+    <ClInclude Include="fdmanager.h" />
     <ClInclude Include="fiber.h" />
     <ClInclude Include="hook.h" />
     <ClInclude Include="iomanager.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="macro.h" />
     <ClInclude Include="multithread.h" />
+    <ClInclude Include="noncopyable.h" />
     <ClInclude Include="scheduler.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="timer.h" />
