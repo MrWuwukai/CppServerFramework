@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -138,6 +138,7 @@
     <ClCompile Include="fiber.cpp" />
     <ClCompile Include="hook.cpp" />
     <ClCompile Include="iomanager.cpp" />
+    <ClCompile Include="ipaddress.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="multithread.cpp" />
     <ClCompile Include="scheduler.cpp" />
@@ -146,16 +147,19 @@
     <ClCompile Include="testlog.cpp" />
     <ClCompile Include="testmultithread.cpp" />
     <ClCompile Include="testscheduler.cpp" />
+    <ClCompile Include="test_address.cpp" />
     <ClCompile Include="test_hook.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />
+    <ClInclude Include="endian.h" />
     <ClInclude Include="fdmanager.h" />
     <ClInclude Include="fiber.h" />
     <ClInclude Include="hook.h" />
     <ClInclude Include="iomanager.h" />
+    <ClInclude Include="ipaddress.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="macro.h" />
     <ClInclude Include="multithread.h" />
