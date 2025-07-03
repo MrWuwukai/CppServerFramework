@@ -6,7 +6,7 @@
 #include <ifaddrs.h>
 
 namespace Framework {
-    static Logger::ptr g_logger = LOG_ROOT();
+    static Logger::ptr g_logger = LOG_NAME("system");
 
     template<class T>
     static T CreateMask(uint32_t bits) { // 掩码位数
@@ -271,7 +271,7 @@ namespace Framework {
 namespace Framework {
 
     // 从地址字符串创造地址，管你是v4还是v6还是域名
-    IPAddress::ptr IPAddress::Create(const char* address, uint32_t port) {
+    IPAddress::ptr IPAddress::Create(const char* address, uint16_t port) {
         addrinfo hints, *results;
         memset(&hints, 0, sizeof(addrinfo));  // 初始化hints结构体，将内存置为0
 
@@ -300,6 +300,11 @@ namespace Framework {
         }
     }
 
+    IPv4Address::IPv4Address() {
+        memset(&m_addr, 0, sizeof(m_addr));
+        m_addr.sin_family = AF_INET;
+
+    }
     IPv4Address::IPv4Address(const sockaddr_in& address) {
         m_addr = address;
     }
@@ -312,7 +317,7 @@ namespace Framework {
         代码中通过THIS_BYTE_ORDER宏判断当前系统的字节序，然后决定是否需要交换字节序。
         这种设计使得代码在大小端系统上都能正确工作，而且逻辑更集中和明确。
     */
-    IPv4Address::IPv4Address(uint32_t address, uint32_t port) {
+    IPv4Address::IPv4Address(uint32_t address, uint16_t port) {
         memset(&m_addr, 0, sizeof(m_addr));
         m_addr.sin_family = AF_INET;
         m_addr.sin_port = byteswapOnLittleEndian(port);
@@ -320,6 +325,10 @@ namespace Framework {
     }
 
     const sockaddr* IPv4Address::getAddr() const {
+        return (sockaddr*)&m_addr;
+    }
+
+    sockaddr* IPv4Address::getAddr() {
         return (sockaddr*)&m_addr;
     }
 
@@ -365,16 +374,16 @@ namespace Framework {
         return IPv4Address::ptr(new IPv4Address(subnet));
     }
 
-    uint32_t IPv4Address::getPort() const {
+    uint16_t IPv4Address::getPort() const {
         return byteswapOnLittleEndian(m_addr.sin_port);
     }
 
-    void IPv4Address::setPort(uint32_t v) {
+    void IPv4Address::setPort(uint16_t v) {
         m_addr.sin_port = byteswapOnLittleEndian(v);
     }
 
     // 从地址字符串创造地址
-    IPv4Address::ptr IPv4Address::Create(const char* address, uint32_t port) {
+    IPv4Address::ptr IPv4Address::Create(const char* address, uint16_t port) {
         IPv4Address::ptr rt(new IPv4Address);
         rt->m_addr.sin_port = byteswapOnLittleEndian(port);
         int result = inet_pton(AF_INET, address, &rt->m_addr.sin_addr);
@@ -396,7 +405,7 @@ namespace Framework {
         m_addr = address;
     }
 
-    IPv6Address::IPv6Address(const uint8_t address[16], uint32_t port) {
+    IPv6Address::IPv6Address(const uint8_t address[16], uint16_t port) {
         memset(&m_addr, 0, sizeof(m_addr));
         m_addr.sin6_family = AF_INET6;
         m_addr.sin6_port = byteswapOnLittleEndian(port);
@@ -404,6 +413,10 @@ namespace Framework {
     }
 
     const sockaddr* IPv6Address::getAddr() const {
+        return (sockaddr*)&m_addr;
+    }
+
+    sockaddr* IPv6Address::getAddr() {
         return (sockaddr*)&m_addr;
     }
 
@@ -461,16 +474,16 @@ namespace Framework {
         return IPv6Address::ptr(new IPv6Address(subnet));
     }
 
-    uint32_t IPv6Address::getPort() const {
+    uint16_t IPv6Address::getPort() const {
         return byteswapOnLittleEndian(m_addr.sin6_port);
     }
 
-    void IPv6Address::setPort(uint32_t v) {
+    void IPv6Address::setPort(uint16_t v) {
         m_addr.sin6_port = byteswapOnLittleEndian(v);
     }
 
     // 从地址字符串创造地址
-    IPv6Address::ptr IPv6Address::Create(const char* address, uint32_t port) {
+    IPv6Address::ptr IPv6Address::Create(const char* address, uint16_t port) {
         IPv6Address::ptr rt(new IPv6Address);
         rt->m_addr.sin6_port = byteswapOnLittleEndian(port);
         int result = inet_pton(AF_INET6, address, &rt->m_addr.sin6_addr);
@@ -514,8 +527,16 @@ namespace Framework {
         return (sockaddr*)&m_addr;
     }
 
+    sockaddr* UnixAddress::getAddr() {
+        return (sockaddr*)&m_addr;
+    }
+
     socklen_t UnixAddress::getAddrLen() const {
         return m_length;
+    }
+
+    void UnixAddress::setAddrLen(uint32_t v) {
+        m_length = v;
     }
 
     std::ostream& UnixAddress::insert(std::ostream& os) const {
@@ -538,6 +559,10 @@ namespace Framework {
     }
 
     const sockaddr* UnknownAddress::getAddr() const {
+        return &m_addr;
+    }
+
+    sockaddr* UnknownAddress::getAddr() {
         return &m_addr;
     }
 

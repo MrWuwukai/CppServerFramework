@@ -5,9 +5,9 @@
 #include "fdmanager.h"
 #include <dlfcn.h> // dlsym
 
-namespace Framework {
+static Framework::Logger::ptr g_logger = LOG_NAME("system");
 
-    static Framework::Logger::ptr g_logger = LOG_NAME("system");
+namespace Framework {
     static Framework::ConfigVar<int>::ptr g_tcp_connect_timeout = Framework::Config::Lookup("tcp.connect.timeout", (int)5000, "tcp connect timeout");
     static thread_local bool t_hook_enable = false; // 线程级的hook
 
@@ -174,8 +174,17 @@ namespace Framework {
 
         return n;
     }
+}
 
-    static int IOHook_connect(int fd, const struct sockaddr* addr, socklen_t addrlen, uint64_t timeout_ms) {
+extern "C" {
+    #define XX(name) name ## _fun name ## _f = nullptr;
+    HOOK_FUN(XX);
+    #undef XX
+
+    struct timer_info {
+        int cancelled = 0;
+    };
+    int IOHook_connect(int fd, const struct sockaddr* addr, socklen_t addrlen, uint64_t timeout_ms) {
         if (!Framework::t_hook_enable) {
             return connect_f(fd, addr, addrlen);
         }
@@ -250,12 +259,6 @@ namespace Framework {
             return -1;
         }
     }
-}
-
-extern "C" {
-    #define XX(name) name ## _fun name ## _f = nullptr;
-    HOOK_FUN(XX);
-    #undef XX
 
     unsigned int sleep(unsigned int seconds) {
         if (!Framework::t_hook_enable) {
