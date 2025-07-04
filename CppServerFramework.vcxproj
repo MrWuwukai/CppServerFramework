@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bytearray.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="fdmanager.cpp" />
     <ClCompile Include="fiber.cpp" />
@@ -155,6 +156,7 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bytearray.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="endian.h" />
     <ClInclude Include="fdmanager.h" />

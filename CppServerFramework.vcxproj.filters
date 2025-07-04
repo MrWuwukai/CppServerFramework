@@ -75,6 +75,9 @@
     <ClCompile Include="test_socket.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="bytearray.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -123,6 +126,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="socket.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="bytearray.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
