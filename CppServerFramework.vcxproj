@@ -144,6 +144,7 @@
     <ClCompile Include="multithread.cpp" />
     <ClCompile Include="scheduler.cpp" />
     <ClCompile Include="socket.cpp" />
+    <ClCompile Include="testbytearray.cpp" />
     <ClCompile Include="testconfig.cpp" />
     <ClCompile Include="testiomanager.cpp" />
     <ClCompile Include="testlog.cpp" />

@@ -2,7 +2,10 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <stdint.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #include "endian.h"
 
@@ -79,8 +82,10 @@ namespace Framework {
         void clear();
 
         void write(const void* buf, size_t size);
-        void read(char* buf, size_t size);
+        void read(void* buf, size_t size);
+        void read(void* buf, size_t size, size_t position) const;
 
+        size_t getSize() const { return m_size; }
         size_t getBaseSize() const { return m_baseSize; }
         size_t getReadSize() const { return m_size - m_position; }
         size_t getPosition() const { return m_position; }
@@ -96,14 +101,22 @@ namespace Framework {
         }
 
         bool writeToFile(const std::string& name) const;
-        void readFromFile(const std::string& name);        
+        bool readFromFile(const std::string& name);  
+
+        std::string toString() const;
+        std::string toHexString() const;
+
+        // IO vec跟这里的链表结构很类似，将本链表转成iovec再通过socket传输较为方便
+        uint64_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len = ~0ull) const; // 从当前位置读
+        uint64_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len, uint64_t position) const; // 从指定位置读
+        uint64_t getWriteBuffers(std::vector<iovec>& buffers, uint64_t len);
     private:
         void addCapacity(size_t size);
         size_t getCapacity() const { return m_capacity - m_position; }
     private:
         size_t m_baseSize; // 基础大小
         size_t m_position; // 全局操作位置
-        size_t m_capacity; // 容量
+        size_t m_capacity; // 每个节点加在一块的总容量
         size_t m_size; // 当前的大小
         int8_t m_endian; // 网络大小端
         Node* m_root;
