@@ -138,6 +138,7 @@
     <ClCompile Include="fdmanager.cpp" />
     <ClCompile Include="fiber.cpp" />
     <ClCompile Include="hook.cpp" />
+    <ClCompile Include="http.cpp" />
     <ClCompile Include="iomanager.cpp" />
     <ClCompile Include="ipaddress.cpp" />
     <ClCompile Include="log.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="fdmanager.h" />
     <ClInclude Include="fiber.h" />
     <ClInclude Include="hook.h" />
+    <ClInclude Include="http.h" />
     <ClInclude Include="iomanager.h" />
     <ClInclude Include="ipaddress.h" />
     <ClInclude Include="log.h" />
