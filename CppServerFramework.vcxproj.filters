@@ -96,6 +96,15 @@
     <ClCompile Include="test_http.cpp">
       <Filter>源文件\test</Filter>
     </ClCompile>
+    <ClCompile Include="httprespond_parser.c">
+      <Filter>源文件\http</Filter>
+    </ClCompile>
+    <ClCompile Include="httprequest_parser.c">
+      <Filter>源文件\http</Filter>
+    </ClCompile>
+    <ClCompile Include="http_parser.cpp">
+      <Filter>源文件\http</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -152,15 +161,33 @@
     <ClInclude Include="http.h">
       <Filter>头文件\http</Filter>
     </ClInclude>
+    <ClInclude Include="http_common.h">
+      <Filter>头文件\http</Filter>
+    </ClInclude>
+    <ClInclude Include="httprequest_parser.h">
+      <Filter>头文件\http</Filter>
+    </ClInclude>
+    <ClInclude Include="httprespond_parser.h">
+      <Filter>头文件\http</Filter>
+    </ClInclude>
+    <ClInclude Include="http_parser.h">
+      <Filter>头文件\http</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeList.txt">
       <Filter>资源文件</Filter>
     </Text>
+    <Text Include="httprequest_parser.rl">
+      <Filter>源文件\http</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="log.yml">
       <Filter>资源文件</Filter>
+    </None>
+    <None Include="httprespond_parser.rl">
+      <Filter>源文件\http</Filter>
     </None>
   </ItemGroup>
 </Project>

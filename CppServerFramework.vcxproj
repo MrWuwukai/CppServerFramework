@@ -139,6 +139,9 @@
     <ClCompile Include="fiber.cpp" />
     <ClCompile Include="hook.cpp" />
     <ClCompile Include="http.cpp" />
+    <ClCompile Include="httprequest_parser.c" />
+    <ClCompile Include="httprespond_parser.c" />
+    <ClCompile Include="http_parser.cpp" />
     <ClCompile Include="iomanager.cpp" />
     <ClCompile Include="ipaddress.cpp" />
     <ClCompile Include="log.cpp" />
@@ -166,6 +169,10 @@
     <ClInclude Include="fiber.h" />
     <ClInclude Include="hook.h" />
     <ClInclude Include="http.h" />
+    <ClInclude Include="httprespond_parser.h" />
+    <ClInclude Include="http_common.h" />
+    <ClInclude Include="httprequest_parser.h" />
+    <ClInclude Include="http_parser.h" />
     <ClInclude Include="iomanager.h" />
     <ClInclude Include="ipaddress.h" />
     <ClInclude Include="log.h" />
@@ -180,8 +187,10 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeList.txt" />
+    <Text Include="httprequest_parser.rl" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="httprespond_parser.rl" />
     <None Include="log.yml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
