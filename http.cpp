@@ -149,7 +149,7 @@ namespace Framework {
         std::ostream& HttpRequest::dump(std::ostream& os) {
             /*
             GET / uri HTTP / 1.1
-            Host: www.sylar.top
+            Host: www.baidu.com
             */
             os << HttpMethodToString(m_method) << " "
                 << m_path

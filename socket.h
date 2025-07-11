@@ -7,7 +7,7 @@
 #include "hook.h"
 
 namespace Framework {
-    class Socket : public std::enable_shared_from_this<Socket>, public Noncopyable {
+    class Socket : public std::enable_shared_from_this<Socket>, private Noncopyable {
     public:
         typedef std::shared_ptr<Socket> ptr;
         typedef std::weak_ptr<Socket> weak_ptr;
@@ -65,6 +65,7 @@ namespace Framework {
         int getError();
 
         std::ostream& dump(std::ostream& os) const;
+        std::string toString() const;
         int getSocket() const { return m_sock; }
 
         bool cancelRead();

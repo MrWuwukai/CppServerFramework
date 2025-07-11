@@ -12,7 +12,7 @@
 
 namespace Framework {
 
-    class Semaphore : public Noncopyable {
+    class Semaphore : private Noncopyable {
     public:
         // 构造函数，接受一个无符号 32 位整数作为信号量的初始计数值，默认为 0
         Semaphore(uint32_t count = 0);
@@ -125,7 +125,7 @@ namespace Framework {
         bool m_locked;
     };
 
-    class RWMutex : public Noncopyable {
+    class RWMutex : private Noncopyable {
     public:
         typedef ReadScopedLockImpl<RWMutex> ReadLock;
         typedef WriteScopedLockImpl<RWMutex> WriteLock;
@@ -153,7 +153,7 @@ namespace Framework {
         pthread_rwlock_t m_lock;
     };
 
-    class Mutex : public Noncopyable {
+    class Mutex : private Noncopyable {
     public:
         typedef ScopedLockImpl<Mutex> Lock;
         Mutex() {
@@ -172,7 +172,7 @@ namespace Framework {
         pthread_mutex_t m_mutex;
     };
 
-    class Spinlock : public Noncopyable {
+    class Spinlock : private Noncopyable {
     public:
         typedef ScopedLockImpl<Spinlock> Lock;
         Spinlock() {
@@ -194,7 +194,7 @@ namespace Framework {
         pthread_spinlock_t m_mutex;
     };
 
-    class CASLock : public Noncopyable {
+    class CASLock : private Noncopyable {
     public:
         typedef ScopedLockImpl<CASLock> Lock;
         CASLock() {

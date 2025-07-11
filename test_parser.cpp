@@ -4,7 +4,7 @@
 static Framework::Logger::ptr g_logger = LOG_ROOT();
 
 const char test_request_data[] = "GET / HTTP/1.1\r\n"
-                                 "Host: www.sylar.top\r\n"
+                                 "Host: www.baidu.top\r\n"
                                  "Content-Length: 10\r\n\r\n"
                                  "1234567890";
 

@@ -3,15 +3,15 @@
 
 void test() {
     Framework::HTTP::HttpRequest::ptr req(new Framework::HTTP::HttpRequest);
-    req->setHeader("host", "www.sylar.top");
-    req->setBody("hello sylar");
+    req->setHeader("host", "www.baidu.com");
+    req->setBody("hello baidu");
     req->dump(std::cout) << std::endl;
 }
 
 void test_response() {
     Framework::HTTP::HttpResponse::ptr rsp(new Framework::HTTP::HttpResponse);
-    rsp->setHeader("X-X", "sylar");
-    rsp->setBody("hello sylar");
+    rsp->setHeader("X-X", "baidu");
+    rsp->setBody("hello baidu");
 
     rsp->dump(std::cout) << std::endl;
 }

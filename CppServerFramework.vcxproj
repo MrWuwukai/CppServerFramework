@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="bytearray.cpp" />
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="echo_server.cpp" />
     <ClCompile Include="fdmanager.cpp" />
     <ClCompile Include="fiber.cpp" />
     <ClCompile Include="hook.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="multithread.cpp" />
     <ClCompile Include="scheduler.cpp" />
     <ClCompile Include="socket.cpp" />
+    <ClCompile Include="tcpserver.cpp" />
     <ClCompile Include="testbytearray.cpp" />
     <ClCompile Include="testconfig.cpp" />
     <ClCompile Include="testiomanager.cpp" />
@@ -159,6 +161,7 @@
     <ClCompile Include="test_http.cpp" />
     <ClCompile Include="test_parser.cpp" />
     <ClCompile Include="test_socket.cpp" />
+    <ClCompile Include="test_tcpserver.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
@@ -183,6 +186,7 @@
     <ClInclude Include="scheduler.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="socket.h" />
+    <ClInclude Include="tcpserver.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

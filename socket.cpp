@@ -208,6 +208,12 @@ namespace Framework {
         return os;
     }
 
+    std::string Socket::toString() const {
+        std::stringstream ss;
+        dump(ss);
+        return ss.str();
+    }
+
     bool Socket::cancelRead() {
         return IOManager::GetThis()->cancelEvent(m_sock, Framework::IOManager::READ);
     }

@@ -90,6 +90,7 @@ namespace Framework {
         size_t getReadSize() const { return m_size - m_position; }
         size_t getPosition() const { return m_position; }
         void setPosition(size_t v);
+        //bool setPositionLonger(size_t v);
         bool isLittleEndian() const {return m_endian == THIS_LITTLE_ENDIAN;}
         void setIsLittleEndian(bool val) {
             if (val) {
