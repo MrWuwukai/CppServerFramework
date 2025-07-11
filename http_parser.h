@@ -18,6 +18,7 @@ namespace Framework {
             int hasError();
 
             HttpRequest::ptr getData() const { return m_data; }
+            uint64_t getContentLength();
 
             void setError(int v) { m_error = v; }
         private:
@@ -30,11 +31,12 @@ namespace Framework {
         public:
             typedef std::shared_ptr<HttpResponseParser> ptr;
             HttpResponseParser();
-            size_t execute(const char* data, size_t len, size_t off);
+            size_t execute(char* data, size_t len);
             int isFinished();
             int hasError();
 
             HttpResponse::ptr getData() const { return m_data; }
+            uint64_t getContentLength();
 
             void setError(int v) { m_error = v; }
         private:

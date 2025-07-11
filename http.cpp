@@ -24,7 +24,7 @@ namespace Framework {
         #undef DELETE
         #endif
         #define XX(num, name, string) \
-            if(strcmp(#string, m) == 0) { \
+            if(strncmp(#string, m, strlen(#string)) == 0) { \
                 return HttpMethod::name; \
             }
             HTTP_METHOD_MAP(XX);
@@ -174,6 +174,12 @@ namespace Framework {
             }
             return os;
         }
+
+        std::string HttpRequest::toString() {
+            std::stringstream ss;
+            dump(ss);
+            return ss.str();
+        }
 	}
 
     namespace HTTP {
@@ -223,6 +229,12 @@ namespace Framework {
                 os << "\r\n";
             }
             return os;
+        }
+
+        std::string HttpResponse::toString() {
+            std::stringstream ss;
+            dump(ss);
+            return ss.str();
         }
     }
 }

@@ -242,6 +242,7 @@ namespace Framework {
             }
 
             std::ostream& dump(std::ostream& os); 
+            std::string toString();
         private:
             HttpMethod m_method;
             uint8_t m_version;
@@ -292,6 +293,7 @@ namespace Framework {
             }
 
             std::ostream& dump(std::ostream& os);
+            std::string toString();
         private:
             HttpStatus m_status;
             uint8_t m_version;
