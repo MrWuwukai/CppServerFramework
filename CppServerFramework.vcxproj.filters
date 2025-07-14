@@ -123,6 +123,9 @@
     <ClCompile Include="echo_server.cpp">
       <Filter>源文件\server</Filter>
     </ClCompile>
+    <ClCompile Include="stream.cpp">
+      <Filter>源文件\http</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="tcpserver.h">
       <Filter>头文件\server</Filter>
+    </ClInclude>
+    <ClInclude Include="stream.h">
+      <Filter>头文件\http</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

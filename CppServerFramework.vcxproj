@@ -149,6 +149,7 @@
     <ClCompile Include="multithread.cpp" />
     <ClCompile Include="scheduler.cpp" />
     <ClCompile Include="socket.cpp" />
+    <ClCompile Include="stream.cpp" />
     <ClCompile Include="tcpserver.cpp" />
     <ClCompile Include="testbytearray.cpp" />
     <ClCompile Include="testconfig.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="scheduler.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="socket.h" />
+    <ClInclude Include="stream.h" />
     <ClInclude Include="tcpserver.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="utils.h" />
