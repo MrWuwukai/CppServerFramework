@@ -126,6 +126,15 @@
     <ClCompile Include="stream.cpp">
       <Filter>源文件\http</Filter>
     </ClCompile>
+    <ClCompile Include="session.cpp">
+      <Filter>源文件\http</Filter>
+    </ClCompile>
+    <ClCompile Include="httpserver.cpp">
+      <Filter>源文件\server</Filter>
+    </ClCompile>
+    <ClCompile Include="test_httpserver.cpp">
+      <Filter>源文件\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -199,6 +208,12 @@
     </ClInclude>
     <ClInclude Include="stream.h">
       <Filter>头文件\http</Filter>
+    </ClInclude>
+    <ClInclude Include="session.h">
+      <Filter>头文件\http</Filter>
+    </ClInclude>
+    <ClInclude Include="httpserver.h">
+      <Filter>头文件\server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

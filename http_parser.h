@@ -21,6 +21,9 @@ namespace Framework {
             uint64_t getContentLength();
 
             void setError(int v) { m_error = v; }
+        public:
+            static uint64_t GetHttpRequestBufferSize();
+            static uint64_t GetHttpRequestMaxBodySize();
         private:
             http_parser m_parser;
             HttpRequest::ptr m_data;

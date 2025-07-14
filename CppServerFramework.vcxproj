@@ -142,12 +142,14 @@
     <ClCompile Include="http.cpp" />
     <ClCompile Include="httprequest_parser.c" />
     <ClCompile Include="httprespond_parser.c" />
+    <ClCompile Include="httpserver.cpp" />
     <ClCompile Include="http_parser.cpp" />
     <ClCompile Include="iomanager.cpp" />
     <ClCompile Include="ipaddress.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="multithread.cpp" />
     <ClCompile Include="scheduler.cpp" />
+    <ClCompile Include="session.cpp" />
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="stream.cpp" />
     <ClCompile Include="tcpserver.cpp" />
@@ -160,6 +162,7 @@
     <ClCompile Include="test_address.cpp" />
     <ClCompile Include="test_hook.cpp" />
     <ClCompile Include="test_http.cpp" />
+    <ClCompile Include="test_httpserver.cpp" />
     <ClCompile Include="test_parser.cpp" />
     <ClCompile Include="test_socket.cpp" />
     <ClCompile Include="test_tcpserver.cpp" />
@@ -175,6 +178,7 @@
     <ClInclude Include="hook.h" />
     <ClInclude Include="http.h" />
     <ClInclude Include="httprespond_parser.h" />
+    <ClInclude Include="httpserver.h" />
     <ClInclude Include="http_common.h" />
     <ClInclude Include="httprequest_parser.h" />
     <ClInclude Include="http_parser.h" />
@@ -185,6 +189,7 @@
     <ClInclude Include="multithread.h" />
     <ClInclude Include="noncopyable.h" />
     <ClInclude Include="scheduler.h" />
+    <ClInclude Include="session.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="socket.h" />
     <ClInclude Include="stream.h" />
