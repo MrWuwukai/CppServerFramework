@@ -135,6 +135,9 @@
     <ClCompile Include="test_httpserver.cpp">
       <Filter>源文件\test</Filter>
     </ClCompile>
+    <ClCompile Include="servlet.cpp">
+      <Filter>源文件\http</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -214,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="httpserver.h">
       <Filter>头文件\server</Filter>
+    </ClInclude>
+    <ClInclude Include="servlet.h">
+      <Filter>头文件\http</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

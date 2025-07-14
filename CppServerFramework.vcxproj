@@ -149,6 +149,7 @@
     <ClCompile Include="log.cpp" />
     <ClCompile Include="multithread.cpp" />
     <ClCompile Include="scheduler.cpp" />
+    <ClCompile Include="servlet.cpp" />
     <ClCompile Include="session.cpp" />
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="stream.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="multithread.h" />
     <ClInclude Include="noncopyable.h" />
     <ClInclude Include="scheduler.h" />
+    <ClInclude Include="servlet.h" />
     <ClInclude Include="session.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="socket.h" />

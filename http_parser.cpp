@@ -93,7 +93,7 @@ namespace Framework {
             HttpRequestParser* parser = static_cast<HttpRequestParser*>(data);
             if (flen == 0) {
                 LOG_WARN(g_logger) << "invalid http request field length == 0";
-                parser->setError(1002);
+                //parser->setError(1002);
                 return;
             }
             parser->getData()->setHeader(std::string(field, flen), std::string(value, vlen));
@@ -188,7 +188,7 @@ namespace Framework {
             HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
             if (flen == 0) {
                 LOG_WARN(g_logger) << "invalid http response field length == 0";
-                parser->setError(1002);
+                //parser->setError(1002);
                 return;
             }
             parser->getData()->setHeader(std::string(field, flen), std::string(value, vlen));
