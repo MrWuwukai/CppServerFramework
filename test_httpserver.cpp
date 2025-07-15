@@ -20,13 +20,13 @@ void run() {
     }
 
     auto sd = server->getServletDispatch();
-    sd->addMatchedServlet("/sylar", [](Framework::HTTP::HttpRequest::ptr req
+    sd->addMatchedServlet("/a", [](Framework::HTTP::HttpRequest::ptr req
         , Framework::HTTP::HttpResponse::ptr rsp
         , Framework::HTTP::HttpSession::ptr session) {
             rsp->setBody(req->toString());
             return 0;
         });
-    sd->addFuzzyServlet("/sylar", [](Framework::HTTP::HttpRequest::ptr req
+    sd->addFuzzyServlet("/a", [](Framework::HTTP::HttpRequest::ptr req
         , Framework::HTTP::HttpResponse::ptr rsp
         , Framework::HTTP::HttpSession::ptr session) {
             rsp->setBody("F" + req->toString());

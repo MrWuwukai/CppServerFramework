@@ -18,6 +18,7 @@ namespace Framework {
             int hasError();
 
             HttpRequest::ptr getData() const { return m_data; }
+            const http_parser& getParser() const { return m_parser; }
             uint64_t getContentLength();
 
             void setError(int v) { m_error = v; }
@@ -34,14 +35,18 @@ namespace Framework {
         public:
             typedef std::shared_ptr<HttpResponseParser> ptr;
             HttpResponseParser();
-            size_t execute(char* data, size_t len);
+            size_t execute(char* data, size_t len, bool chunk);
             int isFinished();
             int hasError();
 
             HttpResponse::ptr getData() const { return m_data; }
+            const httpclient_parser& getParser() const { return m_parser; }
             uint64_t getContentLength();
 
             void setError(int v) { m_error = v; }
+        public:
+            static uint64_t GetHttpResponseBufferSize();
+            static uint64_t GetHttpResponseMaxBodySize();
         private:
             httpclient_parser m_parser;
             HttpResponse::ptr m_data;

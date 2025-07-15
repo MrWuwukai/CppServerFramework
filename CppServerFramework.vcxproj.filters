@@ -138,6 +138,12 @@
     <ClCompile Include="servlet.cpp">
       <Filter>源文件\http</Filter>
     </ClCompile>
+    <ClCompile Include="connection.cpp">
+      <Filter>源文件\http</Filter>
+    </ClCompile>
+    <ClCompile Include="test_httpconnectioncpp.cpp">
+      <Filter>源文件\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="log.h">
@@ -219,6 +225,9 @@
       <Filter>头文件\server</Filter>
     </ClInclude>
     <ClInclude Include="servlet.h">
+      <Filter>头文件\http</Filter>
+    </ClInclude>
+    <ClInclude Include="connection.h">
       <Filter>头文件\http</Filter>
     </ClInclude>
   </ItemGroup>
