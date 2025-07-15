@@ -155,12 +155,12 @@
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="stream.cpp" />
     <ClCompile Include="tcpserver.cpp" />
-    <ClCompile Include="testbytearray.cpp" />
-    <ClCompile Include="testconfig.cpp" />
-    <ClCompile Include="testiomanager.cpp" />
-    <ClCompile Include="testlog.cpp" />
-    <ClCompile Include="testmultithread.cpp" />
-    <ClCompile Include="testscheduler.cpp" />
+    <ClCompile Include="test_bytearray.cpp" />
+    <ClCompile Include="test_config.cpp" />
+    <ClCompile Include="test_iomanager.cpp" />
+    <ClCompile Include="test_log.cpp" />
+    <ClCompile Include="test_multithread.cpp" />
+    <ClCompile Include="test_scheduler.cpp" />
     <ClCompile Include="test_address.cpp" />
     <ClCompile Include="test_hook.cpp" />
     <ClCompile Include="test_http.cpp" />
@@ -169,6 +169,7 @@
     <ClCompile Include="test_parser.cpp" />
     <ClCompile Include="test_socket.cpp" />
     <ClCompile Include="test_tcpserver.cpp" />
+    <ClCompile Include="test_uri.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
@@ -200,6 +201,7 @@
     <ClInclude Include="stream.h" />
     <ClInclude Include="tcpserver.h" />
     <ClInclude Include="timer.h" />
+    <ClInclude Include="uri.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +211,7 @@
   <ItemGroup>
     <None Include="httprespond_parser.rl" />
     <None Include="log.yml" />
+    <None Include="uri.rl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
