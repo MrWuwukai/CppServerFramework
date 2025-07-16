@@ -164,7 +164,7 @@
     <ClCompile Include="test_address.cpp" />
     <ClCompile Include="test_hook.cpp" />
     <ClCompile Include="test_http.cpp" />
-    <ClCompile Include="test_httpconnectioncpp.cpp" />
+    <ClCompile Include="test_httpconnection.cpp" />
     <ClCompile Include="test_httpserver.cpp" />
     <ClCompile Include="test_parser.cpp" />
     <ClCompile Include="test_socket.cpp" />

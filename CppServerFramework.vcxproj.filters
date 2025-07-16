@@ -141,7 +141,7 @@
     <ClCompile Include="connection.cpp">
       <Filter>源文件\http</Filter>
     </ClCompile>
-    <ClCompile Include="test_httpconnectioncpp.cpp">
+    <ClCompile Include="test_httpconnection.cpp">
       <Filter>源文件\test</Filter>
     </ClCompile>
     <ClCompile Include="test_uri.cpp">

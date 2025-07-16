@@ -32,6 +32,12 @@ void run() {
         return;
     }
     LOG_INFO(g_logger) << "rsp:" << std::endl << rsp->toString();
+
+    LOG_INFO(g_logger) << "=========================";
+    auto rt2 = Framework::HTTP::HttpConnection::GET("http://www.baidu.com/", 300);
+    LOG_INFO(g_logger) << "result=" << rt2->result
+        << " error=" << rt2->error
+        << " rsp=" << (rt2->response ? rt2->response->toString() : "");
 }
 
 int main(int argc, char** argv) {
