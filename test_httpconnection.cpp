@@ -5,6 +5,16 @@
 
 static Framework::Logger::ptr g_logger = LOG_ROOT();
 
+void test_pool() {
+    Framework::HTTP::HttpConnectionPool::ptr pool(new Framework::HTTP::HttpConnectionPool(
+        "www.baidu.com", "", 80, 10, 1000 * 30, 20));
+
+    Framework::IOManager::GetThis()->addTimer(1000, [pool]() {
+        auto r = pool->GET("/", 300);
+        LOG_INFO(g_logger) << r->toString();
+        }, true);
+}
+
 void run() {
     Framework::Address::ptr addr = Framework::Address::LookupAnyIPAddress("www.baidu.com:80");
     if (!addr) {
@@ -38,6 +48,9 @@ void run() {
     LOG_INFO(g_logger) << "result=" << rt2->result
         << " error=" << rt2->error
         << " rsp=" << (rt2->response ? rt2->response->toString() : "");
+
+    LOG_INFO(g_logger) << "=============================";
+    test_pool();
 }
 
 int main(int argc, char** argv) {
