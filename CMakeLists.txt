@@ -1,25 +1,23 @@
 cmake_minimum_required(VERSION 2.8)
-project(sylar)
+project(CppServerFramework)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -ggdb -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function")
+set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -ggdb -std=c++20 -Wall -Wno-deprecated -Wno-unused-function")
 
 include_directories(.)
-include_directories(/apps/sylar/include)
-link_directories(/apps/sylar/lib)
+# include_directories(/apps/sylar/include)
+# link_directories(/apps/sylar/lib)
 
 find_library(YAMLCPP yaml-cpp)
 message("***", ${YAMLCPP})
 
 set(LIB_SRC
-    sylar/log.cc
-    sylar/util.cc
-    sylar/config.cc
+    src/log.cpp
+    src/util.cpp
+    src/config.cpp
     )
 
 add_library(sylar SHARED ${LIB_SRC})
-#add_library(sylar_static STATIC ${LIB_SRC})
-#SET_TARGET_PROPERTIES (sylar_static PROPERTIES OUTPUT_NAME "sylar")
 
 add_executable(test tests/test.cc)
 add_dependencies(test sylar)

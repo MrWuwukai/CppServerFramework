@@ -28,28 +28,28 @@ namespace Framework {
     template<class T>
     class ConfigCast<std::string, std::vector<T> > {
     public:
-        // ÖØÔØº¯Êıµ÷ÓÃÔËËã·û£¬ÓÃÓÚ½«×Ö·û´®×ª»»Îª std::vector<T>
+        // é‡è½½å‡½æ•°è°ƒç”¨è¿ç®—ç¬¦ï¼Œç”¨äºå°†å­—ç¬¦ä¸²è½¬æ¢ä¸º std::vector<T>
         std::vector<T> operator()(const std::string& v) {
-            // Ê¹ÓÃ YAML ¿â¼ÓÔØ×Ö·û´®Îª YAML ½Úµã
+            // ä½¿ç”¨ YAML åº“åŠ è½½å­—ç¬¦ä¸²ä¸º YAML èŠ‚ç‚¹
             YAML::Node node = YAML::Load(v);
-            // ¶¨ÒåÒ»¸ö std::vector<T> ÀàĞÍµÄ±äÁ¿ vec
+            // å®šä¹‰ä¸€ä¸ª std::vector<T> ç±»å‹çš„å˜é‡ vec
             std::vector<T> vec;
-            // ¶¨ÒåÒ»¸ö×Ö·û´®Á÷ ss
+            // å®šä¹‰ä¸€ä¸ªå­—ç¬¦ä¸²æµ ss
             std::stringstream ss;
-            // ±éÀú YAML ½ÚµãÖĞµÄÃ¿¸öÔªËØ
+            // éå† YAML èŠ‚ç‚¹ä¸­çš„æ¯ä¸ªå…ƒç´ 
             for (size_t i = 0; i < node.size(); ++i) {
-                ss.str(""); // Çå¿Õ×Ö·û´®Á÷
-                ss << node[i]; // ½«µ±Ç°½ÚµãÔªËØĞ´Èë×Ö·û´®Á÷
-                // µİ¹é½«×Ö·û´®×ª»»Îª T ÀàĞÍ£¬²¢Ìí¼Óµ½ vec ÖĞ
+                ss.str(""); // æ¸…ç©ºå­—ç¬¦ä¸²æµ
+                ss << node[i]; // å°†å½“å‰èŠ‚ç‚¹å…ƒç´ å†™å…¥å­—ç¬¦ä¸²æµ
+                // é€’å½’å°†å­—ç¬¦ä¸²è½¬æ¢ä¸º T ç±»å‹ï¼Œå¹¶æ·»åŠ åˆ° vec ä¸­
                 vec.push_back(ConfigCast<std::string, T>()(ss.str()));
             }
-            // ·µ»Ø×ª»»ºóµÄ vector
+            // è¿”å›è½¬æ¢åçš„ vector
             return vec;
             /*
-            return vec;ÎªÊ²Ã´¿ÉÒÔ²»Ê¹ÓÃstd::move£¿
-            µ±º¯Êı·µ»ØÒ»¸ö¾Ö²¿±äÁ¿£¨Èç vec£©Ê±£¬Èç¹ûÂú×ãÌØ¶¨Ìõ¼ş£¨Èç·µ»ØµÄÊÇ´¿ÓÒÖµ»ò¾Ö²¿±äÁ¿£©£¬±àÒëÆ÷¿ÉÒÔÓÅ»¯µô¿½±´»òÒÆ¶¯²Ù×÷£¨RVO/NRVO ÓÅ»¯£©£¬Ö±½ÓÔÚµ÷ÓÃÕßµÄÕ»Ö¡ÉÏ¹¹Ôì·µ»ØÖµ¡£
-            ¼´Ê¹Ã»ÓĞ RVO/NRVO£¬std::vector Ò²Ö§³ÖÒÆ¶¯ÓïÒå¡£Èç¹û±àÒëÆ÷ÎŞ·¨Ó¦ÓÃ RVO/NRVO£¬Ëü»á³¢ÊÔµ÷ÓÃ std::vector µÄÒÆ¶¯¹¹Ôìº¯Êı£¨¶ø²»ÊÇ¿½±´¹¹Ôìº¯Êı£©À´·µ»Ø vec¡£
-            ÒÆ¶¯¹¹Ôìº¯ÊıµÄ´ú¼ÛºÜµÍ£¨Ö»ÊÇÖ¸Õë½»»»£©£¬ËùÒÔ¼´Ê¹Ã»ÓĞ std::move£¬ĞÔÄÜËğÊ§Ò²ºÜĞ¡¡£
+            return vec;ä¸ºä»€ä¹ˆå¯ä»¥ä¸ä½¿ç”¨std::moveï¼Ÿ
+            å½“å‡½æ•°è¿”å›ä¸€ä¸ªå±€éƒ¨å˜é‡ï¼ˆå¦‚ vecï¼‰æ—¶ï¼Œå¦‚æœæ»¡è¶³ç‰¹å®šæ¡ä»¶ï¼ˆå¦‚è¿”å›çš„æ˜¯çº¯å³å€¼æˆ–å±€éƒ¨å˜é‡ï¼‰ï¼Œç¼–è¯‘å™¨å¯ä»¥ä¼˜åŒ–æ‰æ‹·è´æˆ–ç§»åŠ¨æ“ä½œï¼ˆRVO/NRVO ä¼˜åŒ–ï¼‰ï¼Œç›´æ¥åœ¨è°ƒç”¨è€…çš„æ ˆå¸§ä¸Šæ„é€ è¿”å›å€¼ã€‚
+            å³ä½¿æ²¡æœ‰ RVO/NRVOï¼Œstd::vector ä¹Ÿæ”¯æŒç§»åŠ¨è¯­ä¹‰ã€‚å¦‚æœç¼–è¯‘å™¨æ— æ³•åº”ç”¨ RVO/NRVOï¼Œå®ƒä¼šå°è¯•è°ƒç”¨ std::vector çš„ç§»åŠ¨æ„é€ å‡½æ•°ï¼ˆè€Œä¸æ˜¯æ‹·è´æ„é€ å‡½æ•°ï¼‰æ¥è¿”å› vecã€‚
+            ç§»åŠ¨æ„é€ å‡½æ•°çš„ä»£ä»·å¾ˆä½ï¼ˆåªæ˜¯æŒ‡é’ˆäº¤æ¢ï¼‰ï¼Œæ‰€ä»¥å³ä½¿æ²¡æœ‰ std::moveï¼Œæ€§èƒ½æŸå¤±ä¹Ÿå¾ˆå°ã€‚
             */
         }
     };
@@ -58,17 +58,17 @@ namespace Framework {
     template<class T>
     class ConfigCast<std::vector<T>, std::string> {
     public:
-        // ÖØÔØº¯Êıµ÷ÓÃÔËËã·û£¬ÓÃÓÚ½« std::vector<T> ×ª»»Îª std::string
+        // é‡è½½å‡½æ•°è°ƒç”¨è¿ç®—ç¬¦ï¼Œç”¨äºå°† std::vector<T> è½¬æ¢ä¸º std::string
         std::string operator()(const std::vector<T>& v) {
-            YAML::Node node; // ´´½¨Ò»¸ö YAML ½Úµã
-            // ±éÀúÏòÁ¿ÖĞµÄÃ¿¸öÔªËØ
+            YAML::Node node; // åˆ›å»ºä¸€ä¸ª YAML èŠ‚ç‚¹
+            // éå†å‘é‡ä¸­çš„æ¯ä¸ªå…ƒç´ 
             for (auto& i : v) {
-                // µİ¹é×ª»»Îª×Ö·û´®£¬²¢Ìí¼Óµ½ YAML ½ÚµãÖĞ
+                // é€’å½’è½¬æ¢ä¸ºå­—ç¬¦ä¸²ï¼Œå¹¶æ·»åŠ åˆ° YAML èŠ‚ç‚¹ä¸­
                 node.push_back(YAML::Load(ConfigCast<T, std::string>()(i)));
             }
-            std::stringstream ss; // ´´½¨Ò»¸ö×Ö·û´®Á÷
-            ss << node; // ½« YAML ½ÚµãÊä³öµ½×Ö·û´®Á÷ÖĞ
-            return ss.str(); // ·µ»Ø×Ö·û´®Á÷µÄÄÚÈİ
+            std::stringstream ss; // åˆ›å»ºä¸€ä¸ªå­—ç¬¦ä¸²æµ
+            ss << node; // å°† YAML èŠ‚ç‚¹è¾“å‡ºåˆ°å­—ç¬¦ä¸²æµä¸­
+            return ss.str(); // è¿”å›å­—ç¬¦ä¸²æµçš„å†…å®¹
         }
     };
 
@@ -280,7 +280,7 @@ namespace Framework {
 
         bool fromString(const std::string& val) override {
             try {
-                // m_val = boost::lexical_cast<T>(val); // ¼òµ¥ÀàĞÍ×ª»¯
+                // m_val = boost::lexical_cast<T>(val); // ç®€å•ç±»å‹è½¬åŒ–
                 setValue(FromStr()(val));
             }
             catch (std::exception& e) {
@@ -291,13 +291,13 @@ namespace Framework {
         }
 
         const T getValue() const { 
-            // Ëø»á¸Ä±äÄÚ²¿³ÉÔ±£¬Õâ¸ö·½·¨²»ÄÜ³ÉÎª³£º¯Êı£¬³ı·Çm_mutex¼ÓÉÏmutableĞŞÊÎ·û
+            // é”ä¼šæ”¹å˜å†…éƒ¨æˆå‘˜ï¼Œè¿™ä¸ªæ–¹æ³•ä¸èƒ½æˆä¸ºå¸¸å‡½æ•°ï¼Œé™¤ém_mutexåŠ ä¸Šmutableä¿®é¥°ç¬¦
             RWMutex::ReadLock lock(m_mutex);
             return m_val; 
         }
 
         void setValue(const T& v) { 
-            // ³öÕâ¸ö´óÀ¨ºÅÓò¶ÁËø×Ô¶¯Îö¹¹
+            // å‡ºè¿™ä¸ªå¤§æ‹¬å·åŸŸè¯»é”è‡ªåŠ¨ææ„
             {
                 RWMutex::ReadLock lock(m_mutex);
                 if (v == m_val) {
@@ -311,9 +311,9 @@ namespace Framework {
             m_val = v;
         }
 
-        // ¼àÌıÅäÖÃ¸ü¸ÄÊÂ¼ş
+        // ç›‘å¬é…ç½®æ›´æ”¹äº‹ä»¶
         uint64_t addListener(on_change_cb cb) {
-            static uint64_t s_fun_id = 0; // ¸øÃ¿¸ö»Øµ÷º¯ÊıÉèÖÃÎ¨Ò»id
+            static uint64_t s_fun_id = 0; // ç»™æ¯ä¸ªå›è°ƒå‡½æ•°è®¾ç½®å”¯ä¸€id
             RWMutex::WriteLock lock(m_mutex);
             ++s_fun_id;
             m_cbs[s_fun_id] = cb;
@@ -336,8 +336,8 @@ namespace Framework {
         T m_val;
         std::map<uint64_t, on_change_cb> m_cbs;
         /*
-        ÎªÊ²Ã´»Øµ÷º¯Êı»¹Òª°üÒ»²ã£¿
-        ÒòÎªfunctional°ü×°µÄº¯ÊıÄÑÒÔ±È½ÏÊÇ·ñÊÇÍ¬Ò»º¯Êı¡£        
+        ä¸ºä»€ä¹ˆå›è°ƒå‡½æ•°è¿˜è¦åŒ…ä¸€å±‚ï¼Ÿ
+        å› ä¸ºfunctionalåŒ…è£…çš„å‡½æ•°éš¾ä»¥æ¯”è¾ƒæ˜¯å¦æ˜¯åŒä¸€å‡½æ•°ã€‚        
         */
 
         mutable RWMutex m_mutex;
@@ -345,54 +345,54 @@ namespace Framework {
 
     class Config {
     public:
-        // ¶¨ÒåÒ»¸öÓ³ÉäÀàĞÍ£¬½«×Ö·û´®¼üÓ³Éäµ½ConfigVarBaseµÄÖÇÄÜÖ¸Õë
+        // å®šä¹‰ä¸€ä¸ªæ˜ å°„ç±»å‹ï¼Œå°†å­—ç¬¦ä¸²é”®æ˜ å°„åˆ°ConfigVarBaseçš„æ™ºèƒ½æŒ‡é’ˆ
         typedef std::map<std::string, ConfigVarBase::ptr> ConfigVarMap;
 
-        // Ä£°åº¯Êı£¬ÓÃÓÚ²éÕÒ»ò´´½¨Ö¸¶¨Ãû³ÆµÄÅäÖÃ±äÁ¿
+        // æ¨¡æ¿å‡½æ•°ï¼Œç”¨äºæŸ¥æ‰¾æˆ–åˆ›å»ºæŒ‡å®šåç§°çš„é…ç½®å˜é‡
         template<class T>
         static typename ConfigVar<T>::ptr Lookup(const std::string& name, const T& default_value, const std::string& description = "") {
-            // ³¢ÊÔ²éÕÒÒÑ´æÔÚµÄÅäÖÃ±äÁ¿
+            // å°è¯•æŸ¥æ‰¾å·²å­˜åœ¨çš„é…ç½®å˜é‡
             auto tmp = Lookup<T>(name);
             RWMutex::WriteLock lock(GetMutex());
             if (tmp.first != "NOT_FOUND") {
                 return tmp.second;
             }
 
-            // ¼ì²éÃû³ÆÊÇ·ñ°üº¬ÎŞĞ§×Ö·û
+            // æ£€æŸ¥åç§°æ˜¯å¦åŒ…å«æ— æ•ˆå­—ç¬¦
             if (name.find_first_not_of("abcdefghijklmnopqrstuvwxyz._0123456789") // ABCDEFGHIJKLMNOPQRSTUVWXYZ
                 != std::string::npos) {
-                // Èç¹û°üº¬ÎŞĞ§×Ö·û£¬¼ÇÂ¼´íÎóÈÕÖ¾²¢Å×³öÒì³£
+                // å¦‚æœåŒ…å«æ— æ•ˆå­—ç¬¦ï¼Œè®°å½•é”™è¯¯æ—¥å¿—å¹¶æŠ›å‡ºå¼‚å¸¸
                 LOG_ERROR(LOG_ROOT()) << "Lookup name invalid " << name;
                 throw std::invalid_argument(name);
             }
 
-            // ´´½¨ĞÂµÄÅäÖÃ±äÁ¿²¢´æ´¢µ½¾²Ì¬Êı¾İ³ÉÔ±ÖĞ
+            // åˆ›å»ºæ–°çš„é…ç½®å˜é‡å¹¶å­˜å‚¨åˆ°é™æ€æ•°æ®æˆå‘˜ä¸­
             typename ConfigVar<T>::ptr v(new ConfigVar<T>(name, default_value, description));
             GetDatas()[name] = v;
             return v;
         }
 
-        // Ä£°åº¯Êı£¬ÓÃÓÚ²éÕÒÖ¸¶¨Ãû³ÆµÄÅäÖÃ±äÁ¿£¨²»´´½¨ĞÂ±äÁ¿£©
+        // æ¨¡æ¿å‡½æ•°ï¼Œç”¨äºæŸ¥æ‰¾æŒ‡å®šåç§°çš„é…ç½®å˜é‡ï¼ˆä¸åˆ›å»ºæ–°å˜é‡ï¼‰
         template<class T>
         static std::pair<std::string, typename ConfigVar<T>::ptr> Lookup(const std::string& name) {
             RWMutex::ReadLock lock(GetMutex());
 
-            // ÔÚ¾²Ì¬Êı¾İ³ÉÔ±ÖĞ²éÕÒÅäÖÃ±äÁ¿
+            // åœ¨é™æ€æ•°æ®æˆå‘˜ä¸­æŸ¥æ‰¾é…ç½®å˜é‡
             auto it = GetDatas().find(name);
             if (it == GetDatas().end()) {
-                // Èç¹ûÎ´ÕÒµ½£¬·µ»Ø "NOT_FOUND" ×´Ì¬ºÍ¿ÕÖ¸Õë
+                // å¦‚æœæœªæ‰¾åˆ°ï¼Œè¿”å› "NOT_FOUND" çŠ¶æ€å’Œç©ºæŒ‡é’ˆ
                 return { "NOT_FOUND", nullptr };
             }
             else {
-                // ³¢ÊÔÀàĞÍ×ª»»
+                // å°è¯•ç±»å‹è½¬æ¢
                 auto tmp = std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
                 if (tmp) {
-                    // Èç¹ûÕÒµ½£¬¼ÇÂ¼ÈÕÖ¾²¢·µ»Ø "FOUND" ×´Ì¬ºÍÖ¸Õë
+                    // å¦‚æœæ‰¾åˆ°ï¼Œè®°å½•æ—¥å¿—å¹¶è¿”å› "FOUND" çŠ¶æ€å’ŒæŒ‡é’ˆ
                     LOG_INFO(LOG_ROOT()) << "Lookup name=" << name << " exists";
                     return { "FOUND", tmp };
                 }
                 else {
-                    // ÀàĞÍ²»Æ¥Åä£¬·µ»Ø´íÎó×´Ì¬ºÍ¿ÕÖ¸Õë
+                    // ç±»å‹ä¸åŒ¹é…ï¼Œè¿”å›é”™è¯¯çŠ¶æ€å’Œç©ºæŒ‡é’ˆ
                     LOG_ERROR(LOG_ROOT()) << "Lookup name=" << name << " type wrong: " << typeid(T).name();
                     return { "TYPE_WRONG", nullptr };
                 }
@@ -405,7 +405,7 @@ namespace Framework {
 
         static void visit(std::function<void(ConfigVarBase::ptr)> cb);
     private:
-        // ¾²Ì¬È«¾Ö±äÁ¿´´½¨Ê±»úÎ´Öª£¬ËùÒÔĞèÒª°ÑËü°üÔÚº¯ÊıÀïÈ·±£ËûÏÈ´´½¨ÔÙÊ¹ÓÃ
+        // é™æ€å…¨å±€å˜é‡åˆ›å»ºæ—¶æœºæœªçŸ¥ï¼Œæ‰€ä»¥éœ€è¦æŠŠå®ƒåŒ…åœ¨å‡½æ•°é‡Œç¡®ä¿ä»–å…ˆåˆ›å»ºå†ä½¿ç”¨
         static ConfigVarMap& GetDatas() {
             static ConfigVarMap s_datas;
             return s_datas;

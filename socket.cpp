@@ -41,7 +41,7 @@ namespace Framework {
         int val = 1;
         setOption(SOL_SOCKET, SO_REUSEADDR, val);
         if (m_type == SOCK_STREAM) { // TCP
-            setOption(IPPROTO_TCP, TCP_NODELAY, val); // È¡ÏûNagleËã·¨µÄ½«¶à¸öĞ¡Êı¾İ×é³ÉÒ»¸ö´óÊı¾İÔÙ·¢£¬Nagle»áÊ¹µÃÑÓ³Ù±ä¸ß
+            setOption(IPPROTO_TCP, TCP_NODELAY, val); // å–æ¶ˆNagleç®—æ³•çš„å°†å¤šä¸ªå°æ•°æ®ç»„æˆä¸€ä¸ªå¤§æ•°æ®å†å‘ï¼ŒNagleä¼šä½¿å¾—å»¶è¿Ÿå˜é«˜
         }
     }
 
@@ -234,7 +234,7 @@ namespace Framework {
 // socket API
 namespace Framework {
     bool Socket::bind(const Address::ptr addr) {
-        if (UNLIKELY(!isValid())) { // UNLIKELY£ºÉú³Ésocket³ö´íÊÇĞ¡¸ÅÂÊÊÂ¼ş
+        if (UNLIKELY(!isValid())) { // UNLIKELYï¼šç”Ÿæˆsocketå‡ºé”™æ˜¯å°æ¦‚ç‡äº‹ä»¶
             newSock();
             if (UNLIKELY(!isValid())) {
                 return false;
@@ -252,7 +252,7 @@ namespace Framework {
             LOG_ERROR(g_logger) << "bind error errno=" << errno << " errstr=" << strerror(errno);
             return false;
         }
-        getLocalAddress(); // ·şÎñÆ÷¶ËÃ»ÓĞremoteµØÖ·£¬Ö»Ğè±¾µØµØÖ·
+        getLocalAddress(); // æœåŠ¡å™¨ç«¯æ²¡æœ‰remoteåœ°å€ï¼Œåªéœ€æœ¬åœ°åœ°å€
         return true;
     }
 
@@ -271,7 +271,7 @@ namespace Framework {
 
     Socket::ptr Socket::accept() {
         Socket::ptr sock(new Socket(m_family, m_type, m_protocol));
-        int newsock = ::accept(m_sock, nullptr, nullptr); // ·Ç±¾accept£¬¶øÊÇÖ®Ç°hookµÄÄÇ¸öaccept
+        int newsock = ::accept(m_sock, nullptr, nullptr); // éæœ¬acceptï¼Œè€Œæ˜¯ä¹‹å‰hookçš„é‚£ä¸ªaccept
         if (newsock == -1) {
             LOG_ERROR(g_logger) << "accept(" << m_sock << ") errno=" << errno << " errstr=" << strerror(errno);
             return nullptr;

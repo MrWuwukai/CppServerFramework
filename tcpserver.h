@@ -18,8 +18,8 @@ namespace Framework {
 
         virtual bool bind(Framework::Address::ptr addr);
         virtual bool bind(const std::vector<Address::ptr>& addrs, std::vector<Address::ptr>& failedAddrs);
-        virtual bool start(); // ·şÎñÆ÷Æô¶¯
-        virtual void stop(); // ·şÎñÆ÷¹Ø±Õ
+        virtual bool start(); // æœåŠ¡å™¨å¯åŠ¨
+        virtual void stop(); // æœåŠ¡å™¨å…³é—­
 
         uint64_t getReadTimeout() const { return m_readTimeout; }
         std::string getName() const { return m_name; }
@@ -31,9 +31,9 @@ namespace Framework {
         virtual void handleClient(Socket::ptr client) {}
         virtual void startAccept(Socket::ptr sock);
     private:
-        std::vector<Socket::ptr> m_socks; // ¿ÉÍ¬Ê±listen¶à¸öµØÖ·
-        IOManager* m_acceptWorker; // Ö»ÓÃÓÚ½¨Á¢acceptÁ¬½ÓµÄÏß³Ì³Ø
-        IOManager* m_handleClientWorker; // Ã¿accept½¨Á¢Ò»¸öÁ¬½Ó¾Í°ÑĞÂµÄÁ¬½Ó·Åµ½Ïß³Ì³ØÀï½øĞĞ´¦Àí
+        std::vector<Socket::ptr> m_socks; // å¯åŒæ—¶listenå¤šä¸ªåœ°å€
+        IOManager* m_acceptWorker; // åªç”¨äºå»ºç«‹acceptè¿æ¥çš„çº¿ç¨‹æ± 
+        IOManager* m_handleClientWorker; // æ¯acceptå»ºç«‹ä¸€ä¸ªè¿æ¥å°±æŠŠæ–°çš„è¿æ¥æ”¾åˆ°çº¿ç¨‹æ± é‡Œè¿›è¡Œå¤„ç†
         uint64_t m_readTimeout;
         std::string m_name;
         bool m_isStop;

@@ -41,7 +41,7 @@ namespace Framework {
 
         class HttpConnectionPool;
         class HttpConnection : public SocketStream {
-            friend class HttpConnectionPool; // ĞèÒª·ÃÎÊm_createTime
+            friend class HttpConnectionPool; // éœ€è¦è®¿é—®m_createTime
         public:
             typedef std::shared_ptr<HttpConnection> ptr;
 
@@ -51,7 +51,7 @@ namespace Framework {
             static HttpResult::ptr POST(Uri::ptr uri, uint64_t timeout_ms, const std::map<std::string, std::string>& headers = {}, const std::string& body = "");
             static HttpResult::ptr DoRequest(HttpMethod method, const std::string& url, uint64_t timeout_ms, const std::map<std::string, std::string>& headers = {}, const std::string& body = "");
             static HttpResult::ptr DoRequest(HttpMethod method, Uri::ptr uri, uint64_t timeout_ms, const std::map<std::string, std::string>& headers = {}, const std::string& body = "");
-            static HttpResult::ptr DoRequest(HttpRequest::ptr req, Uri::ptr uri, uint64_t timeout_ms); // ½«Ç°¶ËÇëÇó×ª·¢µ½ÁíÒ»¸ö·şÎñÆ÷
+            static HttpResult::ptr DoRequest(HttpRequest::ptr req, Uri::ptr uri, uint64_t timeout_ms); // å°†å‰ç«¯è¯·æ±‚è½¬å‘åˆ°å¦ä¸€ä¸ªæœåŠ¡å™¨
 
             HttpConnection(Socket::ptr sock, bool owner = true);
             ~HttpConnection();
@@ -62,8 +62,8 @@ namespace Framework {
             uint64_t m_request = 0;
         };
 
-        // Êı¾İ¿âÁ¬½Ó³Ø£¬URI¹Ì¶¨host£¬µ«¿ÉÒÔÓĞ¶à¸öÁ¬½Ó
-        // TODO: ÂÖÑ¯¡¢È¨ÖØÂÖÑ¯¡¢Á¬½ÓÊ§°ÜÖÊÁ¿¼à¿Ø
+        // æ•°æ®åº“è¿æ¥æ± ï¼ŒURIå›ºå®šhostï¼Œä½†å¯ä»¥æœ‰å¤šä¸ªè¿æ¥
+        // TODO: è½®è¯¢ã€æƒé‡è½®è¯¢ã€è¿æ¥å¤±è´¥è´¨é‡ç›‘æ§
         class HttpConnectionPool {
         public:
             typedef std::shared_ptr<HttpConnectionPool> ptr;
@@ -85,7 +85,7 @@ namespace Framework {
             HttpResult::ptr DoRequest(HttpMethod method, Uri::ptr uri, uint64_t timeout_ms, const std::map<std::string, std::string>& headers = {}, const std::string& body = "");
             HttpResult::ptr DoRequest(HttpRequest::ptr req, uint64_t timeout_ms);
         private:
-            /*Á¬½Ó³ØÄÚ´æ·ÅµÄÊÇÂãÖ¸Õë£¬½«ÂãÖ¸Õë´æ·Å½øÖÇÄÜÖ¸Õë£¬ÖÇÄÜÖ¸ÕëÎö¹¹Ê±£¬¿ÉÒÔµ÷ÓÃÎÒÃÇµÄÎö¹¹º¯Êı£¬²¢²»Á¢¼´ÊÍ·Å£¬¶øÊÇ¿ÉÒÔ´æ·Å»ØÁ¬½Ó³Ø*/
+            /*è¿æ¥æ± å†…å­˜æ”¾çš„æ˜¯è£¸æŒ‡é’ˆï¼Œå°†è£¸æŒ‡é’ˆå­˜æ”¾è¿›æ™ºèƒ½æŒ‡é’ˆï¼Œæ™ºèƒ½æŒ‡é’ˆææ„æ—¶ï¼Œå¯ä»¥è°ƒç”¨æˆ‘ä»¬çš„ææ„å‡½æ•°ï¼Œå¹¶ä¸ç«‹å³é‡Šæ”¾ï¼Œè€Œæ˜¯å¯ä»¥å­˜æ”¾å›è¿æ¥æ± */
             static void ReleasePtr(HttpConnection* ptr, HttpConnectionPool* pool);
         private:
             std::string m_host;

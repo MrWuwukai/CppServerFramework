@@ -29,8 +29,8 @@ namespace Framework {
     private:
         bool m_isInit : 1;
         bool m_isSocket : 1;
-        bool m_sysNonblock : 1; // 系统设置为异步（非阻塞）
-        bool m_userNonblock : 1; // 系统设置为异步（非阻塞）
+        bool m_sysNonblock : 1; // 绯荤粺璁剧疆涓哄紓姝ワ紙闈為樆濉烇級
+        bool m_userNonblock : 1; // 绯荤粺璁剧疆涓哄紓姝ワ紙闈為樆濉烇級
         bool m_isClosed : 1;
         int m_fd;
         uint64_t m_recvTimeout;
@@ -50,5 +50,5 @@ namespace Framework {
         std::vector<FdCtx::ptr> m_datas;
     };
 
-    typedef Singleton<FdManager> FdMgr; // 把FdManager弄成单例模式
+    typedef Singleton<FdManager> FdMgr; // 鎶奆dManager寮勬垚鍗曚緥妯″紡
 }

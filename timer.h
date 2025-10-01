@@ -13,17 +13,17 @@ namespace Framework {
         bool refresh();
         bool reset(uint64_t ms, bool from_now);
     private:
-        Timer(uint64_t ms, std::function<void()> cb, bool recurring, TimerManager* manager); // Ë½ÓĞ¹¹Ôì£¬²»ÔÊĞíÖ±½ÓÊ¹ÓÃTimer£¬¶øÊÇĞèÒªmanager¹¹Ôì
+        Timer(uint64_t ms, std::function<void()> cb, bool recurring, TimerManager* manager); // ç§æœ‰æ„é€ ï¼Œä¸å…è®¸ç›´æ¥ä½¿ç”¨Timerï¼Œè€Œæ˜¯éœ€è¦manageræ„é€ 
         Timer(uint64_t next);       
     private:
-        bool m_recurring = false;        //ÊÇ·ñÑ­»·¶¨Ê±Æ÷
-        uint64_t m_ms = 0;               //Ö´ĞĞÖÜÆÚ
-        uint64_t m_next = 0;             //ÏÂÒ»´ÎÓ¦¸Ã±»´¥·¢µÄ¾ø¶ÔÊ±¼ä
+        bool m_recurring = false;        //æ˜¯å¦å¾ªç¯å®šæ—¶å™¨
+        uint64_t m_ms = 0;               //æ‰§è¡Œå‘¨æœŸ
+        uint64_t m_next = 0;             //ä¸‹ä¸€æ¬¡åº”è¯¥è¢«è§¦å‘çš„ç»å¯¹æ—¶é—´
         std::function<void()> m_cb;
         TimerManager* m_manager = nullptr;
     private:
         struct Comparator {
-            bool operator()(const Timer::ptr& lhs, const Timer::ptr& rhs) const; // Éè¶¨Ò»¸ö·Âº¯Êı×¨ÃÅÓÃÓÚ±È½Ï
+            bool operator()(const Timer::ptr& lhs, const Timer::ptr& rhs) const; // è®¾å®šä¸€ä¸ªä»¿å‡½æ•°ä¸“é—¨ç”¨äºæ¯”è¾ƒ
         };
     };
 
@@ -35,18 +35,18 @@ namespace Framework {
 
         Timer::ptr addTimer(uint64_t ms, std::function<void()> cb, bool recurring = false);
         void addTimer(Timer::ptr p, RWMutex::WriteLock& lock);
-        // Ìõ¼ş¶¨Ê±Æ÷£¬Âú×ãÌõ¼ş²Å´¥·¢£¬weak_ptrÒıÓÃ¼ÆÊıÎª0Ê±¸ÃÌõ¼ş±äÁ¿Ê§Ğ§
+        // æ¡ä»¶å®šæ—¶å™¨ï¼Œæ»¡è¶³æ¡ä»¶æ‰è§¦å‘ï¼Œweak_ptrå¼•ç”¨è®¡æ•°ä¸º0æ—¶è¯¥æ¡ä»¶å˜é‡å¤±æ•ˆ
         Timer::ptr addConditionTimer(uint64_t ms, std::function<void()> cb, std::weak_ptr<void> weak_cond, bool recurring = false);
         uint64_t getNextTimer();
-        void listExpiredCb(std::vector<std::function<void()> >& cbs); // ÁĞ³öÒÑ¾­µ½Ê±¼ä¿ÉÒÔÖ´ĞĞµÄ¶¨Ê±Æ÷
+        void listExpiredCb(std::vector<std::function<void()> >& cbs); // åˆ—å‡ºå·²ç»åˆ°æ—¶é—´å¯ä»¥æ‰§è¡Œçš„å®šæ—¶å™¨
     protected:
         virtual void onTimerInsertedAtFront() = 0;
         bool hasTimer();
     private:
-        bool detectClockRollover(uint64_t now_ms); // ·ÀÖ¹·şÎñÆ÷Í»È»ĞŞ¸ÄÊ±¼ä
+        bool detectClockRollover(uint64_t now_ms); // é˜²æ­¢æœåŠ¡å™¨çªç„¶ä¿®æ”¹æ—¶é—´
     private:
         RWMutex m_mutex;
-        std::set<Timer::ptr, Timer::Comparator> m_timers; // ÓĞĞò´æ·ÅTimer£¬µ«ÊÇsetµÄÄ¬ÈÏÅÅĞò°´ÕÕÖ¸ÕëµØÖ·ÅÅĞò£¬ĞèÒªÉè¶¨ÅÅĞò¹æÔò
+        std::set<Timer::ptr, Timer::Comparator> m_timers; // æœ‰åºå­˜æ”¾Timerï¼Œä½†æ˜¯setçš„é»˜è®¤æ’åºæŒ‰ç…§æŒ‡é’ˆåœ°å€æ’åºï¼Œéœ€è¦è®¾å®šæ’åºè§„åˆ™
         bool m_tickled = false;
         uint64_t m_previous = 0;
     };

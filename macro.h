@@ -5,14 +5,14 @@
 #include "log.h"
 
 /*
-C++20 ÒıÈëÁË±ê×¼µÄÊôĞÔ [[likely]] ºÍ [[unlikely]]£¬¿ÉÒÔÌæ´úÕâÖÖ±àÒëÆ÷ÌØ¶¨µÄºê¶¨Òå¡£
+C++20 å¼•å…¥äº†æ ‡å‡†çš„å±æ€§ [[likely]] å’Œ [[unlikely]]ï¼Œå¯ä»¥æ›¿ä»£è¿™ç§ç¼–è¯‘å™¨ç‰¹å®šçš„å®å®šä¹‰ã€‚
 if (condition) [[likely]] {
-    // ±àÒëÆ÷ÇãÏòÓÚÈÏÎª condition ÎªÕæ
+    // ç¼–è¯‘å™¨å€¾å‘äºè®¤ä¸º condition ä¸ºçœŸ
 } else [[unlikely]] {
-    // ±àÒëÆ÷ÇãÏòÓÚÈÏÎª condition Îª¼Ù
+    // ç¼–è¯‘å™¨å€¾å‘äºè®¤ä¸º condition ä¸ºå‡
 }
 */
-// ±àÒëÆ÷¼ÓËÙÓÅ»¯µÄºê
+// ç¼–è¯‘å™¨åŠ é€Ÿä¼˜åŒ–çš„å®
 #if defined __GNUC__ || defined __llvm__
 #define LIKELY(x)       __builtin_expect(!!(x), 1)
 #define UNLIKELY(x)     __builtin_expect(!!(x), 0)
@@ -21,6 +21,6 @@ if (condition) [[likely]] {
 #define UNLIKELY(x)     (x)
 #endif
 
-// ¶ÏÑÔºê
+// æ–­è¨€å®
 #define ASSERT_W(x, w) if(UNLIKELY(!(x))) { LOG_ERROR(LOG_ROOT()) << "ASSERTION: " #x << "\n" << w << "\nbacktrace:\n" << Framework::BacktraceToString(100, 2, "    "); assert(x); }
 #define ASSERT(x) if(UNLIKELY(!(x))) { LOG_ERROR(LOG_ROOT()) << "ASSERTION: " #x << "\nbacktrace:\n" << Framework::BacktraceToString(100, 2, "    "); assert(x); }

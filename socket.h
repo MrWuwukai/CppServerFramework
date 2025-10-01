@@ -40,7 +40,7 @@ namespace Framework {
         Socket::ptr accept();       
 
         int send(const void* buffer, size_t length, int flags = 0);
-        int send(const iovec* buffers, size_t length, int flags = 0); // length = buffers数组里的个数
+        int send(const iovec* buffers, size_t length, int flags = 0); // length = buffers鏁扮粍閲岀殑涓暟
         int sendTo(const void* buffer, size_t length, const Address::ptr to, int flags = 0); // UDP
         int sendTo(const iovec* buffers, size_t length, const Address::ptr to, int flags = 0); // UDP
 

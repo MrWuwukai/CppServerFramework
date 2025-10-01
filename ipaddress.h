@@ -34,8 +34,8 @@ namespace Framework {
     public:
         static Address::ptr Create(const sockaddr* addr, socklen_t addrlen);
         static bool Lookup(std::vector<Address::ptr>& result, const std::string& host, int family = AF_INET, int type = 0, int protocol = 0);
-        static Address::ptr LookupAny(const std::string& host, int family = AF_INET, int type = 0, int protocol = 0); // »ñÈ¡Ò»¸öµØÖ·
-        static std::shared_ptr<IPAddress> LookupAnyIPAddress(const std::string& host, int family = AF_INET, int type = 0, int protocol = 0); // »ñÈ¡Ò»¸öµØÖ·
+        static Address::ptr LookupAny(const std::string& host, int family = AF_INET, int type = 0, int protocol = 0); // è·å–ä¸€ä¸ªåœ°å€
+        static std::shared_ptr<IPAddress> LookupAnyIPAddress(const std::string& host, int family = AF_INET, int type = 0, int protocol = 0); // è·å–ä¸€ä¸ªåœ°å€
         static bool GetInterfaceAddresses(std::multimap<std::string, std::pair<Address::ptr, uint32_t> >& result, int family = AF_INET);
         static bool GetInterfaceAddresses(std::vector<std::pair<Address::ptr, uint32_t> >& result, const std::string& iface, int family = AF_INET);
     };
@@ -100,7 +100,7 @@ namespace Framework {
         sockaddr_in6 m_addr;
     };
 
-    // ±¾µØÌ×½Ó×Ö
+    // æœ¬åœ°å¥—æ¥å­—
     class UnixAddress : public Address {
     public:
         typedef std::shared_ptr<UnixAddress> ptr;

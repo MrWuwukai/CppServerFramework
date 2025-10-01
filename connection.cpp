@@ -149,7 +149,7 @@ namespace Framework {
                     break;
                 }
             } while (true);
-            // chunk£¬±»Ñ¹ËõµÄÊı¾İ£¬²»¸ù¾İgetContentLength
+            // chunkï¼Œè¢«å‹ç¼©çš„æ•°æ®ï¼Œä¸æ ¹æ®getContentLength
             auto& client_parser = parser->getParser();
             if (client_parser.chunked) {
                 std::string body;
@@ -177,7 +177,7 @@ namespace Framework {
                         }
                     } while (!parser->isFinished());
 
-                    len -= 2; // È¥µô/r/n
+                    len -= 2; // å»æ‰/r/n
                     if (client_parser.content_len <= len) {
                         body.append(data, client_parser.content_len);
                         memmove(data, data + client_parser.content_len, static_cast<size_t>(len) - client_parser.content_len);
@@ -201,7 +201,7 @@ namespace Framework {
                 parser->getData()->setBody(body);
             }
 			else {
-				// body£¬¸ù¾İgetContentLength
+				// bodyï¼Œæ ¹æ®getContentLength
 				int64_t length = parser->getContentLength();
 				if (length > 0) {
 					std::string body;
@@ -358,7 +358,7 @@ namespace Framework {
         }
 
         HttpConnection::ptr HttpConnectionPool::getConnection() {
-            /*´ÓÁ¬½Ó³ØÀïÈ¡³öÒ»¸öÎ´³¬Ê±µÄÁ¬½Ó£¬Ã»ÓĞÔò´´½¨Ò»¸ö*/
+            /*ä»è¿æ¥æ± é‡Œå–å‡ºä¸€ä¸ªæœªè¶…æ—¶çš„è¿æ¥ï¼Œæ²¡æœ‰åˆ™åˆ›å»ºä¸€ä¸ª*/
             uint64_t now_ms = Framework::GetCurrentMS();
             std::vector<HttpConnection*> invalid_conns;
             HttpConnection* ptr = nullptr;
@@ -405,11 +405,11 @@ namespace Framework {
                 ptr = new HttpConnection(sock);
                 ++m_total;
             }
-            // ·µ»ØÒ»¸öÖÇÄÜÖ¸Õë£¬²¢°ó¶¨ËûµÄÉ¾³ıÆ÷£¬Ö¸¶¨ÓÃReleasePtr·½·¨É¾³ı¸ÃÖÇÄÜÖ¸Õë
+            // è¿”å›ä¸€ä¸ªæ™ºèƒ½æŒ‡é’ˆï¼Œå¹¶ç»‘å®šä»–çš„åˆ é™¤å™¨ï¼ŒæŒ‡å®šç”¨ReleasePtræ–¹æ³•åˆ é™¤è¯¥æ™ºèƒ½æŒ‡é’ˆ
             return HttpConnection::ptr(ptr, std::bind(&HttpConnectionPool::ReleasePtr, std::placeholders::_1, this));
         }
 
-        // ²»Îö¹¹£¬Ö±½Ó·µ»ØÁ¬½Ó³Ø
+        // ä¸ææ„ï¼Œç›´æ¥è¿”å›è¿æ¥æ± 
         void HttpConnectionPool::ReleasePtr(HttpConnection* ptr, HttpConnectionPool* pool) {
             ++ptr->m_request;
             if (!ptr->isConnected() || ((ptr->m_createTime + pool->m_maxAliveTime) >= Framework::GetCurrentMS()) || (ptr->m_request >= pool->m_maxRequest)) {

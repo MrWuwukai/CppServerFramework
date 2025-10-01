@@ -38,7 +38,7 @@ namespace Framework {
         bool isConnected() const;
     protected:
         Socket::ptr m_socket;
-        bool m_owner; // 该Socket是否全权交给本类管理
+        bool m_owner; // 璇ocket鏄惁鍏ㄦ潈浜ょ粰鏈被绠＄悊
     };
 
 }

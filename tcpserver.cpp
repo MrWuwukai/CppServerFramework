@@ -62,7 +62,7 @@ namespace Framework {
             Socket::ptr client = sock->accept();
             if (client) {
                 client->setRecvTimeout(m_readTimeout);
-                // °ó¶¨µ½×Ô¼ºµÄÖÇÄÜÖ¸ÕëÉÏÈ·±£ÖÇÄÜÖ¸Õë´æ»î²»±»ÊÍ·Å
+                // ç»‘å®šåˆ°è‡ªå·±çš„æ™ºèƒ½æŒ‡é’ˆä¸Šç¡®ä¿æ™ºèƒ½æŒ‡é’ˆå­˜æ´»ä¸è¢«é‡Šæ”¾
                 m_handleClientWorker->schedule(std::bind(&TcpServer::handleClient, shared_from_this(), client));
             }
             else {
@@ -85,7 +85,7 @@ namespace Framework {
     void TcpServer::stop() {
         m_isStop = true;
         auto self = shared_from_this();
-        m_acceptWorker->schedule([this, self] { // ²¶»ñthisºÍself·ÀÖ¹Í»È»±»Îö¹¹
+        m_acceptWorker->schedule([this, self] { // æ•èŽ·thiså’Œselfé˜²æ­¢çªç„¶è¢«æžæž„
             for (auto& sock : m_socks) {
                 sock->cancelAll();
                 sock->close();

@@ -42,7 +42,7 @@ namespace Framework {
             callback m_cb;
         };
 
-        // servletµÄ¹ÜÀíÆ÷
+        // servletçš„ç®¡ç†å™¨
         class ServletDispatch : public Servlet {
         public:
             typedef std::shared_ptr<ServletDispatch> ptr;
@@ -68,11 +68,11 @@ namespace Framework {
             Servlet::ptr getServlet(const std::string& uri);
         private:
             RWMutex m_mutex;
-            // uri(¾«È·Æ¥Åä) -> servlet
+            // uri(ç²¾ç¡®åŒ¹é…) -> servlet
             std::unordered_map<std::string, Servlet::ptr> m_datas;
-            // uri(Ä£ºıÆ¥Åä) -> servlet
+            // uri(æ¨¡ç³ŠåŒ¹é…) -> servlet
             std::vector<std::pair<std::string, Servlet::ptr> > m_fuzzy;
-            // Ä¬ÈÏservlet, ËùÓĞÂ·¾¶¶¼Ã»Æ¥Åäµ½Ê±Ê¹ÓÃ
+            // é»˜è®¤servlet, æ‰€æœ‰è·¯å¾„éƒ½æ²¡åŒ¹é…åˆ°æ—¶ä½¿ç”¨
             Servlet::ptr m_default;
         };
 
@@ -85,6 +85,6 @@ namespace Framework {
                 , Framework::HTTP::HttpSession::ptr session) override;
         };
 
-        // »¹¿ÉÒÔ½øĞĞÀ©Õ¹£¬ÀıÈçÉÏ´«ÏÂÔØÎÄ¼şµÄServlet
+        // è¿˜å¯ä»¥è¿›è¡Œæ‰©å±•ï¼Œä¾‹å¦‚ä¸Šä¼ ä¸‹è½½æ–‡ä»¶çš„Servlet
     }
 }

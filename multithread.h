@@ -14,21 +14,21 @@ namespace Framework {
 
     class Semaphore : private Noncopyable {
     public:
-        // ¹¹Ôìº¯Êı£¬½ÓÊÜÒ»¸öÎŞ·ûºÅ 32 Î»ÕûÊı×÷ÎªĞÅºÅÁ¿µÄ³õÊ¼¼ÆÊıÖµ£¬Ä¬ÈÏÎª 0
+        // æ„é€ å‡½æ•°ï¼Œæ¥å—ä¸€ä¸ªæ— ç¬¦å· 32 ä½æ•´æ•°ä½œä¸ºä¿¡å·é‡çš„åˆå§‹è®¡æ•°å€¼ï¼Œé»˜è®¤ä¸º 0
         Semaphore(uint32_t count = 0);
-        // Îö¹¹º¯Êı
+        // ææ„å‡½æ•°
         ~Semaphore();
 
-        // µÈ´ıĞÅºÅÁ¿£¬ÈôĞÅºÅÁ¿¼ÆÊıÖµ´óÓÚ 0£¬Ôò½«Æä¼õ 1 ²¢¼ÌĞøÖ´ĞĞ£»Èô¼ÆÊıÖµÎª 0£¬ÔòÏß³Ì×èÈûÖ±µ½ĞÅºÅÁ¿±»»½ĞÑ
+        // ç­‰å¾…ä¿¡å·é‡ï¼Œè‹¥ä¿¡å·é‡è®¡æ•°å€¼å¤§äº 0ï¼Œåˆ™å°†å…¶å‡ 1 å¹¶ç»§ç»­æ‰§è¡Œï¼›è‹¥è®¡æ•°å€¼ä¸º 0ï¼Œåˆ™çº¿ç¨‹é˜»å¡ç›´åˆ°ä¿¡å·é‡è¢«å”¤é†’
         void wait();
-        // ·¢²¼ĞÅºÅÁ¿£¬½«ĞÅºÅÁ¿µÄ¼ÆÊıÖµ¼Ó 1£¬ÈôÓĞÏß³ÌÒòµÈ´ı¸ÃĞÅºÅÁ¿¶ø×èÈû£¬Ôò»½ĞÑÆäÖĞÒ»¸öÏß³Ì
+        // å‘å¸ƒä¿¡å·é‡ï¼Œå°†ä¿¡å·é‡çš„è®¡æ•°å€¼åŠ  1ï¼Œè‹¥æœ‰çº¿ç¨‹å› ç­‰å¾…è¯¥ä¿¡å·é‡è€Œé˜»å¡ï¼Œåˆ™å”¤é†’å…¶ä¸­ä¸€ä¸ªçº¿ç¨‹
         void notify();
     //private:
     //    Semaphore(const Semaphore&) = delete;
     //    Semaphore(Semaphore&&) = delete;
     //    Semaphore& operator=(const Semaphore&) = delete;
     private:
-        sem_t m_semaphore; // ÓÃÓÚ´æ´¢ĞÅºÅÁ¿µÄ³ÉÔ±±äÁ¿
+        sem_t m_semaphore; // ç”¨äºå­˜å‚¨ä¿¡å·é‡çš„æˆå‘˜å˜é‡
     };
 
     template<class T>
@@ -61,7 +61,7 @@ namespace Framework {
         T& m_mutex;
         bool m_locked;
     };
-    /*Ë¼¿¼£ºÕâ¸öËøµÄÄ£°åÀàÎªÊ²Ã´ÕâÃ´Éè¼Æ£¿RAII£¿*/
+    /*æ€è€ƒï¼šè¿™ä¸ªé”çš„æ¨¡æ¿ç±»ä¸ºä»€ä¹ˆè¿™ä¹ˆè®¾è®¡ï¼ŸRAIIï¼Ÿ*/
 
     template<class T>
     struct ReadScopedLockImpl {
@@ -214,43 +214,43 @@ namespace Framework {
 
     class Multithread {
     public:
-        // ¶¨ÒåÒ»¸öÖ¸ÏòMultithreadÀà¶ÔÏóµÄÖÇÄÜÖ¸ÕëÀàĞÍ±ğÃûptr
+        // å®šä¹‰ä¸€ä¸ªæŒ‡å‘Multithreadç±»å¯¹è±¡çš„æ™ºèƒ½æŒ‡é’ˆç±»å‹åˆ«åptr
         typedef std::shared_ptr<Multithread> ptr;
-        // ¹¹Ôìº¯Êı£¬½ÓÊÜÒ»¸öÎŞ²ÎÊıÎŞ·µ»ØÖµµÄº¯Êı¶ÔÏócbºÍÒ»¸ö×Ö·û´®name×÷Îª²ÎÊı
+        // æ„é€ å‡½æ•°ï¼Œæ¥å—ä¸€ä¸ªæ— å‚æ•°æ— è¿”å›å€¼çš„å‡½æ•°å¯¹è±¡cbå’Œä¸€ä¸ªå­—ç¬¦ä¸²nameä½œä¸ºå‚æ•°
         Multithread(std::function<void()> cb, const std::string& name);
-        // Îö¹¹º¯Êı
+        // ææ„å‡½æ•°
         ~Multithread();
 
-        // »ñÈ¡Ïß³ÌIDµÄ³ÉÔ±º¯Êı£¬·µ»ØÏß³ÌID
+        // è·å–çº¿ç¨‹IDçš„æˆå‘˜å‡½æ•°ï¼Œè¿”å›çº¿ç¨‹ID
         pid_t getId() const { return m_id; }
-        // »ñÈ¡Ïß³ÌÃû³ÆµÄ³ÉÔ±º¯Êı£¬·µ»ØÏß³ÌÃû³Æ
+        // è·å–çº¿ç¨‹åç§°çš„æˆå‘˜å‡½æ•°ï¼Œè¿”å›çº¿ç¨‹åç§°
         const std::string& getName() const { return m_name; }
 
-        // µÈ´ıÏß³Ì½áÊøµÄ³ÉÔ±º¯Êı
+        // ç­‰å¾…çº¿ç¨‹ç»“æŸçš„æˆå‘˜å‡½æ•°
         void join();
 
-        // ¾²Ì¬³ÉÔ±º¯Êı£¬»ñÈ¡µ±Ç°Ïß³Ì¶ÔÏóÖ¸Õë
+        // é™æ€æˆå‘˜å‡½æ•°ï¼Œè·å–å½“å‰çº¿ç¨‹å¯¹è±¡æŒ‡é’ˆ
         static Multithread* GetThis();
-        // ¾²Ì¬³ÉÔ±º¯Êı£¬»ñÈ¡µ±Ç°Ïß³ÌÃû³Æ
+        // é™æ€æˆå‘˜å‡½æ•°ï¼Œè·å–å½“å‰çº¿ç¨‹åç§°
         static const std::string& GetName();
         static void SetName(const std::string& name);
-        /*Ë¼¿¼£ºÕâ¸öÀàµÄGetThis¡¢GetNameÎªÊ²Ã´ÒªÉè¼Æ³É¾²Ì¬·½·¨£¿*/
+        /*æ€è€ƒï¼šè¿™ä¸ªç±»çš„GetThisã€GetNameä¸ºä»€ä¹ˆè¦è®¾è®¡æˆé™æ€æ–¹æ³•ï¼Ÿ*/
     private:
-        // ½ûÓÃ¿½±´¹¹Ôìº¯Êı
+        // ç¦ç”¨æ‹·è´æ„é€ å‡½æ•°
         Multithread(const Multithread&) = delete;
-        // ½ûÓÃ¿½±´¸³ÖµÔËËã·û
+        // ç¦ç”¨æ‹·è´èµ‹å€¼è¿ç®—ç¬¦
         Multithread(const Multithread&) = delete;
         Multithread& operator=(const Multithread&) = delete;
 
         static void* run(void* arg);
     private:
-        // Ïß³ÌID
+        // çº¿ç¨‹ID
         pid_t m_id = -1;
-        // POSIXÏß³Ì¾ä±ú
+        // POSIXçº¿ç¨‹å¥æŸ„
         long int m_thread = 0; // pthread_t
-        // ´æ´¢Ïß³ÌÖ´ĞĞº¯ÊıµÄº¯Êı¶ÔÏó
+        // å­˜å‚¨çº¿ç¨‹æ‰§è¡Œå‡½æ•°çš„å‡½æ•°å¯¹è±¡
         std::function<void()> m_cb;
-        // Ïß³ÌÃû³Æ
+        // çº¿ç¨‹åç§°
         std::string m_name;
 
         Semaphore m_semaphore;

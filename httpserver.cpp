@@ -27,7 +27,7 @@ namespace Framework {
                 HttpResponse::ptr rsp(new HttpResponse(req->getVersion(), req->isClose() || !m_isKeepAlive));
 
                 m_dispatch->handle(req, rsp, session);
-                /*handleÀï²»Ö±½Óresponse£¬ÕâÀïÊÇÇÐÃæ³ÌÐòË¼Ïë¡£¿ÉÄÜÔÚhandleµÄbeforeºÍafter¶¼ÓÐÆäËûÊÂÇéÐèÒª´¦Àí¡£*/
+                /*handleé‡Œä¸ç›´æŽ¥responseï¼Œè¿™é‡Œæ˜¯åˆ‡é¢ç¨‹åºæ€æƒ³ã€‚å¯èƒ½åœ¨handleçš„beforeå’Œafteréƒ½æœ‰å…¶ä»–äº‹æƒ…éœ€è¦å¤„ç†ã€‚*/
 
                 /*test*/
                 //rsp->setBody("hello world");

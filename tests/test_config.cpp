@@ -56,7 +56,7 @@ namespace Framework {
 }
 
 Framework::ConfigVar<int>::ptr g_int_value_config = Framework::Config::Lookup("system.port", (int)8080, "system port");
-//Framework::ConfigVar<float>::ptr g_int_valuex_config = Framework::Config::Lookup("system.port", (float)8080, "system port"); // ∏˙…œ“ª––∂®“Âµƒsystem.port¿‡–Õ≤ªÕ¨£¨ ‰≥ˆ¥ÌŒÛ»’÷æ
+//Framework::ConfigVar<float>::ptr g_int_valuex_config = Framework::Config::Lookup("system.port", (float)8080, "system port"); // Ë∑ü‰∏ä‰∏ÄË°åÂÆö‰πâÁöÑsystem.portÁ±ªÂûã‰∏çÂêåÔºåËæìÂá∫ÈîôËØØÊó•Âøó
 Framework::ConfigVar<std::vector<int> >::ptr g_int_vec_value_config = Framework::Config::Lookup("system.int_vec", std::vector<int>{1, 2}, "system int vec");
 Framework::ConfigVar<std::set<int> >::ptr g_int_set_value_config = Framework::Config::Lookup("system.int_set", std::set<int>{1, 2}, "system int set");
 Framework::ConfigVar<std::map<std::string, int> >::ptr g_int_map_value_config = Framework::Config::Lookup("system.int_map", std::map<std::string, int>{{ "a", 23 }, { "b", 2 }}, "system int map");
@@ -84,20 +84,20 @@ void print_yaml(const YAML::Node& node, int level) {
 }
 
 void test_yaml() {
-    YAML::Node root = YAML::LoadFile("./log.yml");
+    YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
     print_yaml(root, 0);
     //LOG_INFO(LOG_ROOT()) << root;
 }
 
 void test_yaml1() {
-    YAML::Node root = YAML::LoadFile("./log.yml");
+    YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
     Framework::Config::LoadFromYaml(root);
     LOG_INFO(LOG_ROOT()) << g_int_value_config->getValue();
     LOG_INFO(LOG_ROOT()) << g_int_value_config->toString();
 }
 
 void test_yaml_vec() {
-    YAML::Node root = YAML::LoadFile("./log.yml");
+    YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
     Framework::Config::LoadFromYaml(root);
     auto v = g_int_vec_value_config->getValue();
     for (auto& i : v) {
@@ -112,7 +112,7 @@ void test_yaml_set() {
     }
     LOG_INFO(LOG_ROOT()) << "int_set yaml: " << g_int_set_value_config->toString();
 
-    YAML::Node root = YAML::LoadFile("./log.yml");
+    YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
     Framework::Config::LoadFromYaml(root);
 
     v = g_int_set_value_config->getValue();
@@ -123,7 +123,7 @@ void test_yaml_set() {
 }
 
 void test_yaml_map() {
-    YAML::Node root = YAML::LoadFile("./log.yml");
+    YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
     Framework::Config::LoadFromYaml(root);
     auto v = g_int_map_value_config->getValue();
     for (auto& i : v) {
@@ -136,7 +136,7 @@ void test_yaml_anyclass() {
     LOG_INFO(LOG_ROOT()) << g_person->getValue().toString();
     LOG_INFO(LOG_ROOT()) << g_person->toString();
 
-    YAML::Node root = YAML::LoadFile("./log.yml");
+    YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
     Framework::Config::LoadFromYaml(root);
 
     LOG_INFO(LOG_ROOT()) << g_person->getValue().toString();
@@ -151,7 +151,7 @@ void test_yaml_change_listener() {
         LOG_INFO(LOG_ROOT()) << "old_value=" << old_value.toString() << " new_value=" << new_value.toString();
     });
 
-    YAML::Node root = YAML::LoadFile("./log.yml");
+    YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
     Framework::Config::LoadFromYaml(root);
 
     LOG_INFO(LOG_ROOT()) << g_person->getValue().toString();
@@ -160,7 +160,7 @@ void test_yaml_change_listener() {
 
 void test_new_log() {
     std::cout << Framework::loggerMgr::GetInstance()->toYamlString() << std::endl;
-    YAML::Node root = YAML::LoadFile("./log.yml");
+    YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
     Framework::Config::LoadFromYaml(root);
     std::cout << Framework::loggerMgr::GetInstance()->toYamlString() << std::endl;
 

@@ -7,24 +7,24 @@
 namespace Framework {
 	static Logger::ptr g_logger = LOG_NAME("system");
 
-	static thread_local Scheduler* t_scheduler = nullptr; // µ±Ç°Ïß³Ì¹ØÁªµÄµ÷¶ÈÆ÷
-	static thread_local Fiber* t_fiber = nullptr; // µ±Ç°Ïß³ÌÕıÔÚÖ´ĞĞµÄĞ­³Ì(µ±Ç°Ğ­³Ì)
+	static thread_local Scheduler* t_scheduler = nullptr; // å½“å‰çº¿ç¨‹å…³è”çš„è°ƒåº¦å™¨
+	static thread_local Fiber* t_fiber = nullptr; // å½“å‰çº¿ç¨‹æ­£åœ¨æ‰§è¡Œçš„åç¨‹(å½“å‰åç¨‹)
 
     Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name) 
         :m_name(name){
         ASSERT(threads > 0);
 
         if (use_caller) {
-            Fiber::GetThis(); // ±¾Ïß³ÌÒ²½ÓÊÜµ÷¶È£¬Ôò³¢ÊÔ»ñÈ¡¡¢Ã»ÓĞÔò´´½¨´´½¨Õâ¸öÏß³ÌµÄÖ÷Ğ­³Ì
-            --threads; // ±¾Ïß³ÌÒ²½ÓÊÜµ÷¶È£¬ÎŞĞè¶îÍâ¼ÓÒ»¸öÏß³Ì
+            Fiber::GetThis(); // æœ¬çº¿ç¨‹ä¹Ÿæ¥å—è°ƒåº¦ï¼Œåˆ™å°è¯•è·å–ã€æ²¡æœ‰åˆ™åˆ›å»ºåˆ›å»ºè¿™ä¸ªçº¿ç¨‹çš„ä¸»åç¨‹
+            --threads; // æœ¬çº¿ç¨‹ä¹Ÿæ¥å—è°ƒåº¦ï¼Œæ— éœ€é¢å¤–åŠ ä¸€ä¸ªçº¿ç¨‹
 
-            ASSERT(GetThis() == nullptr); // È·±£±¾Ïß³Ì²»ÄÜÒÑ¾­ÓµÓĞÒ»¸öµ÷¶ÈÆ÷
-            t_scheduler = this; // µ±Ç°Ïß³ÌµÄµ÷¶ÈÆ÷¾ÍÊÇÕıÔÚ¹¹ÔìµÄÕâ¸ö Scheduler ¶ÔÏó
-            m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true)); // ÉèÖÃµ÷¶ÈÆ÷Ö÷Ğ­³Ì
+            ASSERT(GetThis() == nullptr); // ç¡®ä¿æœ¬çº¿ç¨‹ä¸èƒ½å·²ç»æ‹¥æœ‰ä¸€ä¸ªè°ƒåº¦å™¨
+            t_scheduler = this; // å½“å‰çº¿ç¨‹çš„è°ƒåº¦å™¨å°±æ˜¯æ­£åœ¨æ„é€ çš„è¿™ä¸ª Scheduler å¯¹è±¡
+            m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true)); // è®¾ç½®è°ƒåº¦å™¨ä¸»åç¨‹
             Multithread::SetName(m_name);
             
-            t_fiber = m_rootFiber.get(); // µ±Ç°Ïß³ÌÕıÔÚÖ´ĞĞµÄĞ­³Ì¾ÍÊÇµ÷¶ÈÆ÷Ö÷Ğ­³Ì
-            m_rootThread = GetThreadId(); // ÉèÖÃµ÷¶ÈÆ÷Ö÷Ïß³Ì
+            t_fiber = m_rootFiber.get(); // å½“å‰çº¿ç¨‹æ­£åœ¨æ‰§è¡Œçš„åç¨‹å°±æ˜¯è°ƒåº¦å™¨ä¸»åç¨‹
+            m_rootThread = GetThreadId(); // è®¾ç½®è°ƒåº¦å™¨ä¸»çº¿ç¨‹
             m_threadIds.push_back(m_rootThread);
         }
         else {
@@ -53,7 +53,7 @@ namespace Framework {
     }
 
     void Scheduler::start() {
-        // Æô¶¯Ïß³Ì³Ø£¬ĞèÒªµ±Ç°Î´Æô¶¯ÇÒÏß³Ì³ØÎª¿Õ
+        // å¯åŠ¨çº¿ç¨‹æ± ï¼Œéœ€è¦å½“å‰æœªå¯åŠ¨ä¸”çº¿ç¨‹æ± ä¸ºç©º
         Mutex::Lock lock(m_mutex);
         if (!m_stopping) {
             return;
@@ -61,12 +61,12 @@ namespace Framework {
         m_stopping = false;
         ASSERT(m_threads.empty());
 
-        // ×¢²áÏß³Ìµ½Ïß³Ì³Ø£¬Í³Ò»Ö´ĞĞrun·½·¨
+        // æ³¨å†Œçº¿ç¨‹åˆ°çº¿ç¨‹æ± ï¼Œç»Ÿä¸€æ‰§è¡Œrunæ–¹æ³•
         m_threads.resize(m_threadCount);
         for (size_t i = 0; i < m_threadCount; ++i) {
             m_threads[i].reset(new Multithread(std::bind(&Scheduler::run, this)
                 , m_name + "_" + std::to_string(i)));
-            m_threadIds.push_back(m_threads[i]->getId()); // Ïß³Ì²¿ĞÅºÅÁ¿¿ØÖÆ±ØÄÜ»ñµÃid£¨¼ûÏß³ÌÍ·ÎÄ¼ş£©
+            m_threadIds.push_back(m_threads[i]->getId()); // çº¿ç¨‹éƒ¨ä¿¡å·é‡æ§åˆ¶å¿…èƒ½è·å¾—idï¼ˆè§çº¿ç¨‹å¤´æ–‡ä»¶ï¼‰
         }
         //lock.unlock();
 
@@ -76,10 +76,10 @@ namespace Framework {
     }
 
     void Scheduler::stop() {
-        // µÈËùÓĞÈÎÎñÖ´ĞĞÍê±Ïºó£¬Í£Ö¹Õû¸öÏß³Ì³Ø
+        // ç­‰æ‰€æœ‰ä»»åŠ¡æ‰§è¡Œå®Œæ¯•åï¼Œåœæ­¢æ•´ä¸ªçº¿ç¨‹æ± 
         m_autoStop = true;
 
-        // ÈôÏß³Ì³ØÀïÃ»ÓĞÏß³Ì£¬Ö»ÓĞÒ»¸ö¿ØÖÆÆ÷Ö÷Ğ­³Ì
+        // è‹¥çº¿ç¨‹æ± é‡Œæ²¡æœ‰çº¿ç¨‹ï¼Œåªæœ‰ä¸€ä¸ªæ§åˆ¶å™¨ä¸»åç¨‹
         if (m_rootFiber
             && m_threadCount == 0
             && (m_rootFiber->getState() == Fiber::TERM
@@ -92,7 +92,7 @@ namespace Framework {
             }
         }
 
-        // ÈôÏß³Ì³ØÀïÓĞÏß³Ì£¬Ôò»½ĞÑÏß³Ì²¢ÈÃËûÃÇ×Ô¶¯½áÊø£¬Èç¹ûuse_caller£¬Ôò¸ÃÏß³ÌĞèÒªÌØÊâ´¦Àí
+        // è‹¥çº¿ç¨‹æ± é‡Œæœ‰çº¿ç¨‹ï¼Œåˆ™å”¤é†’çº¿ç¨‹å¹¶è®©ä»–ä»¬è‡ªåŠ¨ç»“æŸï¼Œå¦‚æœuse_callerï¼Œåˆ™è¯¥çº¿ç¨‹éœ€è¦ç‰¹æ®Šå¤„ç†
         bool exit_on_this_fiber = false;
         if (m_rootThread != -1) {
             ASSERT(GetThis() == this);
@@ -137,49 +137,49 @@ namespace Framework {
 
     void Scheduler::run() {
         set_hook_enable(true);
-        // ÉèÖÃµ±Ç°µ÷¶ÈÆ÷Îª±¾Ïß³ÌËùÊôµ÷¶ÈÆ÷
+        // è®¾ç½®å½“å‰è°ƒåº¦å™¨ä¸ºæœ¬çº¿ç¨‹æ‰€å±è°ƒåº¦å™¨
         setThis();
-        // Èç¹ûµ±Ç°Ïß³Ì²»ÊÇÖ÷Ïß³Ì£¬ÉèÖÃÒ»ÏÂµ±Ç°Ïß³ÌµÄÕıÔÚÖ´ĞĞrunµÄĞ­³Ì
+        // å¦‚æœå½“å‰çº¿ç¨‹ä¸æ˜¯ä¸»çº¿ç¨‹ï¼Œè®¾ç½®ä¸€ä¸‹å½“å‰çº¿ç¨‹çš„æ­£åœ¨æ‰§è¡Œrunçš„åç¨‹
         if (Framework::GetThreadId() != m_rootThread) {
             t_fiber = Fiber::GetThis().get();
         }
 
-        // ´´½¨¿ÕÏĞĞ­³Ì£¬µ÷¶ÈÆ÷ÄÚÎŞÈÎÎñ¡¢»òµ÷¶È½áÊøÖ®ºó£¬¾Í»áÖ´ĞĞ¿ÕÏĞĞ­³Ì£¬¿ÕÏĞÊ±¸Ã¸ÉÊ²Ã´È¡¾öÓÚ¾ßÌåÊµÏÖ
+        // åˆ›å»ºç©ºé—²åç¨‹ï¼Œè°ƒåº¦å™¨å†…æ— ä»»åŠ¡ã€æˆ–è°ƒåº¦ç»“æŸä¹‹åï¼Œå°±ä¼šæ‰§è¡Œç©ºé—²åç¨‹ï¼Œç©ºé—²æ—¶è¯¥å¹²ä»€ä¹ˆå–å†³äºå…·ä½“å®ç°
         Fiber::ptr idle_fiber(new Fiber(std::bind(&Scheduler::idle, this)));
         Fiber::ptr cb_fiber;
 
         FiberAndThread ft;
         while (true) {
-            // ÖØÖÃFiberAndThread¶ÔÏó
+            // é‡ç½®FiberAndThreadå¯¹è±¡
             ft.reset();
-            // ±ê¼ÇÊÇ·ñÓĞÏß³ÌĞèÒª±»»½ĞÑ
+            // æ ‡è®°æ˜¯å¦æœ‰çº¿ç¨‹éœ€è¦è¢«å”¤é†’
             bool tickle_me = false;
             bool is_active = false;
-            // ´Ófibers¶ÓÁĞÀïÃæÈ¡³öÒ»¸öÈÎÎñ¸øft
+            // ä»fibersé˜Ÿåˆ—é‡Œé¢å–å‡ºä¸€ä¸ªä»»åŠ¡ç»™ft
             {
-                // Ëø¶¨»¥³âËø£¬±£»¤¶Ôm_fibersÈİÆ÷µÄ·ÃÎÊ
+                // é”å®šäº’æ–¥é”ï¼Œä¿æŠ¤å¯¹m_fiberså®¹å™¨çš„è®¿é—®
                 Mutex::Lock lock(m_mutex);
                 auto it = m_fibers.begin();
                 while (it != m_fibers.end()) {
-                    // Èç¹ûÖ¸¶¨Ö´ĞĞµÄÏß³Ì²»ÊÇ±¾Ïß³Ì£¬ÔòĞèÒª»½ĞÑÄÇ¸öÏß³Ì
+                    // å¦‚æœæŒ‡å®šæ‰§è¡Œçš„çº¿ç¨‹ä¸æ˜¯æœ¬çº¿ç¨‹ï¼Œåˆ™éœ€è¦å”¤é†’é‚£ä¸ªçº¿ç¨‹
                     if (it->thread != -1 && it->thread != Framework::GetThreadId()) {
-                        // ÒÆ¶¯µ½ÏÂÒ»¸öÈÎÎñ
+                        // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªä»»åŠ¡
                         ++it;
-                        // ±ê¼ÇĞèÒª»½ĞÑÆäËûÏß³Ì
+                        // æ ‡è®°éœ€è¦å”¤é†’å…¶ä»–çº¿ç¨‹
                         tickle_me = true;
                         continue;
                     }
-                    // ¶ÏÑÔ£ºÈÎÎñÒªÃ´ÓĞÏË³Ì£¬ÒªÃ´ÓĞ»Øµ÷º¯Êı
+                    // æ–­è¨€ï¼šä»»åŠ¡è¦ä¹ˆæœ‰çº¤ç¨‹ï¼Œè¦ä¹ˆæœ‰å›è°ƒå‡½æ•°
                     ASSERT(it->fiber || it->cb);
-                    // Èç¹ûÈÎÎñÓĞÏË³ÌÇÒÏË³Ì´¦ÓÚÖ´ĞĞ×´Ì¬£¬ÒÑ¾­Ö´ĞĞ¾Í²»ĞèÒªÖ´ĞĞÁË
+                    // å¦‚æœä»»åŠ¡æœ‰çº¤ç¨‹ä¸”çº¤ç¨‹å¤„äºæ‰§è¡ŒçŠ¶æ€ï¼Œå·²ç»æ‰§è¡Œå°±ä¸éœ€è¦æ‰§è¡Œäº†
                     if (it->fiber && it->fiber->getState() == Fiber::EXEC) {
-                        // ÒÆ¶¯µ½ÏÂÒ»¸öÈÎÎñ
+                        // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªä»»åŠ¡
                         ++it;
                         continue;
                     }
-                    // ½«µ±Ç°ÈÎÎñ¸³Öµ¸øft
+                    // å°†å½“å‰ä»»åŠ¡èµ‹å€¼ç»™ft
                     ft = *it;
-                    // ´ÓÈÎÎñÁĞ±íÖĞÒÆ³ı¸ÃÈÎÎñ
+                    // ä»ä»»åŠ¡åˆ—è¡¨ä¸­ç§»é™¤è¯¥ä»»åŠ¡
                     m_fibers.erase(it);
                     ++m_activeThreadCount;
                     is_active = true;
@@ -187,31 +187,31 @@ namespace Framework {
                     break;
                 }
             }
-            // Èç¹ûÓĞÏß³ÌĞèÒª±»»½ĞÑ
+            // å¦‚æœæœ‰çº¿ç¨‹éœ€è¦è¢«å”¤é†’
             if (tickle_me) {
-                // Ö´ĞĞ»½ĞÑ²Ù×÷
+                // æ‰§è¡Œå”¤é†’æ“ä½œ
                 tickle();
             }
-            // Èç¹ûftÖĞÓĞÏË³ÌÇÒÏË³Ì×´Ì¬²»ÊÇÖÕÖ¹×´Ì¬
+            // å¦‚æœftä¸­æœ‰çº¤ç¨‹ä¸”çº¤ç¨‹çŠ¶æ€ä¸æ˜¯ç»ˆæ­¢çŠ¶æ€
             if (ft.fiber && (ft.fiber->getState() != Fiber::TERM && ft.fiber->getState() != Fiber::EXCEPT)) {              
-                // ½«ÏË³ÌÇĞ»»½øÀ´Ö´ĞĞ
+                // å°†çº¤ç¨‹åˆ‡æ¢è¿›æ¥æ‰§è¡Œ
                 ft.fiber->swapIn();
                 --m_activeThreadCount;
 
-                // Èç¹ûÏË³Ì×´Ì¬±äÎª¾ÍĞ÷
+                // å¦‚æœçº¤ç¨‹çŠ¶æ€å˜ä¸ºå°±ç»ª
                 if (ft.fiber->getState() == Fiber::READY) {
-                    // ÖØĞÂÈÓµ½¶ÓÁĞÀï
+                    // é‡æ–°æ‰”åˆ°é˜Ÿåˆ—é‡Œ
                     schedule(ft.fiber);
                 }
-                // Èç¹ûÏË³Ì×´Ì¬¼È²»ÊÇÖÕÖ¹×´Ì¬Ò²²»ÊÇÒì³£×´Ì¬
+                // å¦‚æœçº¤ç¨‹çŠ¶æ€æ—¢ä¸æ˜¯ç»ˆæ­¢çŠ¶æ€ä¹Ÿä¸æ˜¯å¼‚å¸¸çŠ¶æ€
                 else if (ft.fiber->getState() != Fiber::TERM && ft.fiber->getState() != Fiber::EXCEPT) {
-                    // ½«ÏË³Ì×´Ì¬ÉèÖÃÎª±£³Ö
+                    // å°†çº¤ç¨‹çŠ¶æ€è®¾ç½®ä¸ºä¿æŒ
                     ft.fiber->setState(Fiber::HOLD);
                 }
-                // ÖØÖÃft
+                // é‡ç½®ft
                 ft.reset();
             }
-            // Èç¹û²»ÊÇFiber¶øÊÇÆÕÍ¨»Øµ÷
+            // å¦‚æœä¸æ˜¯Fiberè€Œæ˜¯æ™®é€šå›è°ƒ
             else if (ft.cb) {
                 if (cb_fiber) {
                     cb_fiber->reset(ft.cb);
@@ -236,7 +236,7 @@ namespace Framework {
                     cb_fiber.reset();
                 }
             }
-            // Ã»ÈÎÎñ×öÁË£¬Ö´ĞĞ¿ÕÏĞĞ­³Ì
+            // æ²¡ä»»åŠ¡åšäº†ï¼Œæ‰§è¡Œç©ºé—²åç¨‹
             else {
                 if (is_active) {
                     --m_activeThreadCount;

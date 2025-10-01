@@ -13,24 +13,15 @@
 #include <map>
 #include <functional>
 #include <cstdarg>
-#include <format>
 #include "utils.h"
 #include "singleton.h"
 #include "multithread.h"
 
-#ifdef _WIN32
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <ctime>
-#include <cstdio> 
-#else
 #include <time.h>
 #include <string.h>
-#endif
 
 #ifdef ERROR
-#undef ERROR  // È¡Ïûºê¶¨Òå
+#undef ERROR  // å–æ¶ˆå®å®šä¹‰
 #endif
 
 #define LOG_LEVEL(logger, level) Framework::LogEventWrap(Framework::LogEvent::ptr(new Framework::LogEvent(logger, level, __FILE__, __LINE__, 0, Framework::GetThreadId(), Framework::Multithread::GetName(), Framework::GetFiberId(), time(0)))).getSS()
@@ -56,23 +47,23 @@ namespace Framework {
 
     class LogLevel {
     public:
-        // ¶¨ÒåÈÕÖ¾¼¶±ğµÄÃ¶¾ÙÀàĞÍLevel
+        // å®šä¹‰æ—¥å¿—çº§åˆ«çš„æšä¸¾ç±»å‹Level
         enum Level {
-            DEBUG = 1,  // µ÷ÊÔ¼¶±ğ
-            INFO = 2,   // ĞÅÏ¢¼¶±ğ
-            WARN = 3,   // ¾¯¸æ¼¶±ğ
-            ERROR = 4,  // ´íÎó¼¶±ğ
-            FATAL = 5   // ÖÂÃü´íÎó¼¶±ğ
+            DEBUG = 1,  // è°ƒè¯•çº§åˆ«
+            INFO = 2,   // ä¿¡æ¯çº§åˆ«
+            WARN = 3,   // è­¦å‘Šçº§åˆ«
+            ERROR = 4,  // é”™è¯¯çº§åˆ«
+            FATAL = 5   // è‡´å‘½é”™è¯¯çº§åˆ«
         };
 
         static const char* toString(LogLevel::Level level);
         static LogLevel::Level FromString(const std::string& str);
     };
 
-    // ÈÕÖ¾ÊÂ¼ş
+    // æ—¥å¿—äº‹ä»¶
     class LogEvent {
     public:
-        // ¶¨ÒåLogEventÖÇÄÜÖ¸ÕëÀàĞÍ±ğÃûptr
+        // å®šä¹‰LogEventæ™ºèƒ½æŒ‡é’ˆç±»å‹åˆ«åptr
         typedef std::shared_ptr<LogEvent> ptr;
         LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level, const char* file, int32_t m_line, uint32_t elapse, uint32_t thread_id, const std::string& thread_name, uint32_t fiber_id, uint64_t time);
 
@@ -85,58 +76,56 @@ namespace Framework {
         uint64_t getTime() const { return m_time; }
         std::string getContent() const { return m_content.str(); }
 
-        // Á÷Ê½
+        // æµå¼
         std::stringstream& getSS() { return m_content; }
-        // format·½·¨
-		void format(const char* fmt, ...) {
-            va_list args;
-            va_start(args, fmt);
+        // formatæ–¹æ³•
+		// void format(const char* fmt, ...) {
+        //     va_list args;
+        //     va_start(args, fmt);
 
-            // ÏÈ¼ÆËãĞèÒªµÄ»º³åÇø´óĞ¡£¨Ê¹ÓÃ _vscprintf£©
-            int size = _vscprintf(fmt, args) + 1;  // +1 ÓÃÓÚ '\0'
-            va_end(args);
+        //     // å…ˆè®¡ç®—éœ€è¦çš„ç¼“å†²åŒºå¤§å°ï¼ˆä½¿ç”¨ _vscprintfï¼‰
+        //     int size = _vscprintf(fmt, args) + 1;  // +1 ç”¨äº '\0'
+        //     va_end(args);
 
-            // ¶¯Ì¬·ÖÅä»º³åÇø
-            char* buffer = (char*)malloc(size);
+        //     // åŠ¨æ€åˆ†é…ç¼“å†²åŒº
+        //     char* buffer = (char*)malloc(size);
 
-            // ÖØĞÂ»ñÈ¡¿É±ä²ÎÊı²¢°²È«¸ñÊ½»¯
-            va_start(args, fmt);
-            vsprintf_s(buffer, size, fmt, args);  // °²È«°æ±¾
-            va_end(args);
+        //     // é‡æ–°è·å–å¯å˜å‚æ•°å¹¶å®‰å…¨æ ¼å¼åŒ–
+        //     va_start(args, fmt);
+        //     vsprintf_s(buffer, size, fmt, args);  // å®‰å…¨ç‰ˆæœ¬
+        //     va_end(args);
 
-			this->getSS() << buffer;
-		}
-        #ifndef _WIN32
+		// 	this->getSS() << buffer;
+		// }
         void format(const char* fmt, va_list al) {
             char* buf = nullptr;
-            // Ê¹ÓÃvasprintfº¯Êı½«¸ñÊ½»¯µÄ×Ö·û´®Ğ´Èëbuf£¬²¢»ñÈ¡Æä³¤¶È
-            int len = Framework::vasprintf(&buf, fmt, al);
+            // ä½¿ç”¨vasprintfå‡½æ•°å°†æ ¼å¼åŒ–çš„å­—ç¬¦ä¸²å†™å…¥bufï¼Œå¹¶è·å–å…¶é•¿åº¦
+            int len = vasprintf(&buf, fmt, al);
             if (len != -1) {
-                // ½«¸ñÊ½»¯ºóµÄ×Ö·û´®´æ´¢µ½³ÉÔ±±äÁ¿m_ssÖĞ
+                // å°†æ ¼å¼åŒ–åçš„å­—ç¬¦ä¸²å­˜å‚¨åˆ°æˆå‘˜å˜é‡m_ssä¸­
                 //m_ss << std::string(buf, len);
-                // ÊÍ·Å¶¯Ì¬·ÖÅäµÄÄÚ´æ
+                // é‡Šæ”¾åŠ¨æ€åˆ†é…çš„å†…å­˜
                 free(buf);
             }
         }
-        #endif 
 
         std::shared_ptr<Logger> getLogger() const { return m_logger; }
         LogLevel::Level getLogLevel() const { return m_level; }
     private:
-        // ¼ÇÂ¼ÈÕÖ¾µÄÎÄ¼şÃû£¬³õÊ¼»¯Îª¿ÕÖ¸Õë
+        // è®°å½•æ—¥å¿—çš„æ–‡ä»¶åï¼Œåˆå§‹åŒ–ä¸ºç©ºæŒ‡é’ˆ
         const char* m_file = nullptr;
-        // ¼ÇÂ¼ÈÕÖ¾µÄĞĞºÅ£¬³õÊ¼»¯Îª0
+        // è®°å½•æ—¥å¿—çš„è¡Œå·ï¼Œåˆå§‹åŒ–ä¸º0
         int32_t m_line = 0;
-        //³ÌĞòÆô¶¯¿ªÊ¼µ½ÏÖÔÚµÄºÁÃëÊı
+        //ç¨‹åºå¯åŠ¨å¼€å§‹åˆ°ç°åœ¨çš„æ¯«ç§’æ•°
         int32_t m_elapse = 0;
-        // Ïß³ÌID£¬³õÊ¼»¯Îª0
+        // çº¿ç¨‹IDï¼Œåˆå§‹åŒ–ä¸º0
         uint32_t m_threadId = 0;
         std::string m_threadName;
-        // Ğ­³ÌID£¬³õÊ¼»¯Îª0
+        // åç¨‹IDï¼Œåˆå§‹åŒ–ä¸º0
         uint32_t m_fiberId = 0;
-        // ÈÕÖ¾¼ÇÂ¼µÄÊ±¼ä´Á£¬³õÊ¼»¯Îª0
+        // æ—¥å¿—è®°å½•çš„æ—¶é—´æˆ³ï¼Œåˆå§‹åŒ–ä¸º0
         uint64_t m_time = 0;
-        // ÈÕÖ¾ÄÚÈİ
+        // æ—¥å¿—å†…å®¹
         std::stringstream m_content;
 
         std::shared_ptr<Logger> m_logger;
@@ -153,26 +142,26 @@ namespace Framework {
         LogEvent::ptr m_event;
     };
 
-    //ÈÕÖ¾¸ñÊ½Æ÷
+    //æ—¥å¿—æ ¼å¼å™¨
     class LogFormatter {
     public:
-        // ¶¨ÒåÒ»¸öÖ¸ÏòLogFormatterµÄÖÇÄÜÖ¸ÕëÀàĞÍ
+        // å®šä¹‰ä¸€ä¸ªæŒ‡å‘LogFormatterçš„æ™ºèƒ½æŒ‡é’ˆç±»å‹
         typedef std::shared_ptr<LogFormatter> ptr;
-        // ¹¹Ôìº¯Êı£¬½ÓÊÜÒ»¸ö×Ö·û´®Ä£Ê½²ÎÊı
+        // æ„é€ å‡½æ•°ï¼Œæ¥å—ä¸€ä¸ªå­—ç¬¦ä¸²æ¨¡å¼å‚æ•°
         LogFormatter(const std::string& pattern);
-        // ¸ñÊ½»¯ÈÕÖ¾ÊÂ¼şµÄº¯Êı£¬½ÓÊÜÒ»¸öLogEventµÄÖÇÄÜÖ¸Õë²ÎÊı£¬·µ»Ø¸ñÊ½»¯ºóµÄ×Ö·û´®
+        // æ ¼å¼åŒ–æ—¥å¿—äº‹ä»¶çš„å‡½æ•°ï¼Œæ¥å—ä¸€ä¸ªLogEventçš„æ™ºèƒ½æŒ‡é’ˆå‚æ•°ï¼Œè¿”å›æ ¼å¼åŒ–åçš„å­—ç¬¦ä¸²
         std::string format(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event);
     public:
-        // ÄÚ²¿ÀàFormatItem£¬ÓÃÓÚ±íÊ¾¸ñÊ½»¯Ïî
+        // å†…éƒ¨ç±»FormatItemï¼Œç”¨äºè¡¨ç¤ºæ ¼å¼åŒ–é¡¹
         class FormatItem {
         public:
-            // ¶¨ÒåÒ»¸öÖ¸ÏòFormatItemµÄÖÇÄÜÖ¸ÕëÀàĞÍ
+            // å®šä¹‰ä¸€ä¸ªæŒ‡å‘FormatItemçš„æ™ºèƒ½æŒ‡é’ˆç±»å‹
             typedef std::shared_ptr<FormatItem> ptr;
-            // ¹¹Ôìº¯Êı
+            // æ„é€ å‡½æ•°
             //FormatItem(const std::string& fmt = "") {};
-            // ĞéÎö¹¹º¯Êı£¬È·±£ÅÉÉúÀàÕıÈ·Îö¹¹
+            // è™šææ„å‡½æ•°ï¼Œç¡®ä¿æ´¾ç”Ÿç±»æ­£ç¡®ææ„
             virtual ~FormatItem() {}
-            // ´¿Ğéº¯Êı£¬ÓÃÓÚ¸ñÊ½»¯ÈÕÖ¾ÊÂ¼ş£¬½ÓÊÜÒ»¸öLogEventµÄÖÇÄÜÖ¸Õë²ÎÊı£¬·µ»Ø¸ñÊ½»¯ºóµÄ×Ö·û´®
+            // çº¯è™šå‡½æ•°ï¼Œç”¨äºæ ¼å¼åŒ–æ—¥å¿—äº‹ä»¶ï¼Œæ¥å—ä¸€ä¸ªLogEventçš„æ™ºèƒ½æŒ‡é’ˆå‚æ•°ï¼Œè¿”å›æ ¼å¼åŒ–åçš„å­—ç¬¦ä¸²
             virtual void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
         };
 
@@ -181,22 +170,22 @@ namespace Framework {
         bool isError() const { return m_error; }
         const std::string getPattern() const { return m_pattern; }
     private:
-        // ´æ´¢ÈÕÖ¾¸ñÊ½Ä£Ê½µÄ×Ö·û´®
+        // å­˜å‚¨æ—¥å¿—æ ¼å¼æ¨¡å¼çš„å­—ç¬¦ä¸²
         std::string m_pattern;
-        // ´æ´¢¸ñÊ½»¯ÏîµÄÖÇÄÜÖ¸ÕëÏòÁ¿
+        // å­˜å‚¨æ ¼å¼åŒ–é¡¹çš„æ™ºèƒ½æŒ‡é’ˆå‘é‡
         std::vector<FormatItem::ptr> m_items;
         bool m_error = false;
     };
 
-    // ÈÕÖ¾Êä³öµØÏà¹ØÀà
+    // æ—¥å¿—è¾“å‡ºåœ°ç›¸å…³ç±»
     class LogAppender {
     friend class Logger;
     public:
-        // ¶¨ÒåÖ¸ÏòLogAppender¶ÔÏóµÄÖÇÄÜÖ¸ÕëÀàĞÍ
+        // å®šä¹‰æŒ‡å‘LogAppenderå¯¹è±¡çš„æ™ºèƒ½æŒ‡é’ˆç±»å‹
         typedef std::shared_ptr<LogAppender> ptr;
-        // ĞéÎö¹¹º¯Êı£¬ÓÃÓÚÔÚÅÉÉúÀàÎö¹¹Ê±ÕıÈ·ÊÍ·Å×ÊÔ´
+        // è™šææ„å‡½æ•°ï¼Œç”¨äºåœ¨æ´¾ç”Ÿç±»ææ„æ—¶æ­£ç¡®é‡Šæ”¾èµ„æº
         virtual ~LogAppender() {}
-        // ¼ÇÂ¼ÈÕÖ¾µÄº¯Êı£¬½ÓÊÜÈÕÖ¾¼¶±ğºÍÈÕÖ¾ÊÂ¼şÖ¸Õë×÷Îª²ÎÊı
+        // è®°å½•æ—¥å¿—çš„å‡½æ•°ï¼Œæ¥å—æ—¥å¿—çº§åˆ«å’Œæ—¥å¿—äº‹ä»¶æŒ‡é’ˆä½œä¸ºå‚æ•°
         virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
         virtual std::string toYamlString() = 0;
 
@@ -206,7 +195,7 @@ namespace Framework {
         LogLevel::Level getLevel() const { return m_level; }
         void setLevel(LogLevel::Level val) { m_level = val; }
     protected:
-        // ÈÕÖ¾¼¶±ğ
+        // æ—¥å¿—çº§åˆ«
         LogLevel::Level m_level = LogLevel::DEBUG;
         bool m_hasFormatter = false;
         LogFormatter::ptr m_formatter;
@@ -214,17 +203,17 @@ namespace Framework {
         Spinlock m_mutex;
     };
 
-    // ÈÕÖ¾Æ÷Àà¶¨Òå
+    // æ—¥å¿—å™¨ç±»å®šä¹‰
     class Logger : public std::enable_shared_from_this<Logger>{
     friend class LoggerManager;
     public:
-        // ¶¨ÒåÒ»¸öÖ¸ÏòLoggerµÄÖÇÄÜÖ¸ÕëÀàĞÍ±ğÃû
+        // å®šä¹‰ä¸€ä¸ªæŒ‡å‘Loggerçš„æ™ºèƒ½æŒ‡é’ˆç±»å‹åˆ«å
         typedef std::shared_ptr<Logger> ptr;
 
-        // ¹¹Ôìº¯Êı£¬½ÓÊÜÈÕÖ¾Ãû³Æ²ÎÊı£¬Ä¬ÈÏÖµÎª"root"
+        // æ„é€ å‡½æ•°ï¼Œæ¥å—æ—¥å¿—åç§°å‚æ•°ï¼Œé»˜è®¤å€¼ä¸º"root"
         Logger(const std::string& name = "root");
 
-        // ¼ÇÂ¼ÈÕÖ¾µÄ·½·¨£¬½ÓÊÜÈÕÖ¾¼¶±ğºÍÈÕÖ¾ÊÂ¼şÖ¸Õë×÷Îª²ÎÊı
+        // è®°å½•æ—¥å¿—çš„æ–¹æ³•ï¼Œæ¥å—æ—¥å¿—çº§åˆ«å’Œæ—¥å¿—äº‹ä»¶æŒ‡é’ˆä½œä¸ºå‚æ•°
         void log(LogLevel::Level level, LogEvent::ptr event);
 
         void debug(LogEvent::ptr event);
@@ -248,11 +237,11 @@ namespace Framework {
 
         std::string toYamlString();
     private:
-        // ÈÕÖ¾Ãû³Æ³ÉÔ±±äÁ¿
+        // æ—¥å¿—åç§°æˆå‘˜å˜é‡
         std::string m_name;
-        // ÈÕÖ¾¼¶±ğ³ÉÔ±±äÁ¿
+        // æ—¥å¿—çº§åˆ«æˆå‘˜å˜é‡
         LogLevel::Level m_level;
-        // Appender¼¯ºÏ³ÉÔ±±äÁ¿£¬ÓÃÓÚ´æ´¢¶à¸öAppenderÖ¸Õë
+        // Appenderé›†åˆæˆå‘˜å˜é‡ï¼Œç”¨äºå­˜å‚¨å¤šä¸ªAppenderæŒ‡é’ˆ
         std::list<LogAppender::ptr> m_appenders;
         LogFormatter::ptr m_formatter;
         Logger::ptr m_root;
@@ -260,32 +249,32 @@ namespace Framework {
         Spinlock m_mutex;
     };
 
-    // Êä³öµ½¿ØÖÆÌ¨µÄAppender
+    // è¾“å‡ºåˆ°æ§åˆ¶å°çš„Appender
     class StdoutLogAppender : public LogAppender {
     public:
-        // ¶¨ÒåÒ»¸öÖ¸ÏòStdoutLogAppenderµÄÖÇÄÜÖ¸ÕëÀàĞÍ±ğÃû
+        // å®šä¹‰ä¸€ä¸ªæŒ‡å‘StdoutLogAppenderçš„æ™ºèƒ½æŒ‡é’ˆç±»å‹åˆ«å
         typedef std::shared_ptr<StdoutLogAppender> ptr;
-        // ÖØĞ´¸¸ÀàµÄlog·½·¨£¬ÓÃÓÚ½«ÈÕÖ¾ÊÂ¼şÊä³öµ½¿ØÖÆÌ¨£¬level±íÊ¾ÈÕÖ¾¼¶±ğ£¬event±íÊ¾ÈÕÖ¾ÊÂ¼ş
+        // é‡å†™çˆ¶ç±»çš„logæ–¹æ³•ï¼Œç”¨äºå°†æ—¥å¿—äº‹ä»¶è¾“å‡ºåˆ°æ§åˆ¶å°ï¼Œlevelè¡¨ç¤ºæ—¥å¿—çº§åˆ«ï¼Œeventè¡¨ç¤ºæ—¥å¿—äº‹ä»¶
         void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
         std::string toYamlString() override;
     };
 
-    // ¶¨ÒåÊä³öµ½ÎÄ¼şµÄAppender
+    // å®šä¹‰è¾“å‡ºåˆ°æ–‡ä»¶çš„Appender
     class FileLogAppender : public LogAppender {
     public:
-        // ¶¨ÒåÒ»¸öÖ¸ÏòFileLogAppenderµÄÖÇÄÜÖ¸ÕëÀàĞÍ±ğÃû
+        // å®šä¹‰ä¸€ä¸ªæŒ‡å‘FileLogAppenderçš„æ™ºèƒ½æŒ‡é’ˆç±»å‹åˆ«å
         typedef std::shared_ptr<FileLogAppender> ptr;
-        // ¹¹Ôìº¯Êı£¬½ÓÊÜÒ»¸öÎÄ¼şÃû²ÎÊı£¬ÓÃÓÚÖ¸¶¨ÈÕÖ¾Êä³öµÄÎÄ¼ş
+        // æ„é€ å‡½æ•°ï¼Œæ¥å—ä¸€ä¸ªæ–‡ä»¶åå‚æ•°ï¼Œç”¨äºæŒ‡å®šæ—¥å¿—è¾“å‡ºçš„æ–‡ä»¶
         FileLogAppender(const std::string& filename);
-        // ÖØĞ´¸¸ÀàµÄlog·½·¨£¬ÓÃÓÚ½«ÈÕÖ¾ÊÂ¼şÊä³öµ½ÎÄ¼ş£¬level±íÊ¾ÈÕÖ¾¼¶±ğ£¬event±íÊ¾ÈÕÖ¾ÊÂ¼ş
+        // é‡å†™çˆ¶ç±»çš„logæ–¹æ³•ï¼Œç”¨äºå°†æ—¥å¿—äº‹ä»¶è¾“å‡ºåˆ°æ–‡ä»¶ï¼Œlevelè¡¨ç¤ºæ—¥å¿—çº§åˆ«ï¼Œeventè¡¨ç¤ºæ—¥å¿—äº‹ä»¶
         void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) override;
         std::string toYamlString() override;
 
         bool reopen();
     private:
-        // ÈÕÖ¾¼ÇÂ¼Æ÷µÄÃû³Æ
+        // æ—¥å¿—è®°å½•å™¨çš„åç§°
         std::string m_filename;
-        // ÓÃÓÚĞ´ÈëÈÕÖ¾µÄÎÄ¼şÁ÷¶ÔÏó
+        // ç”¨äºå†™å…¥æ—¥å¿—çš„æ–‡ä»¶æµå¯¹è±¡
         std::ofstream m_filestream;
         uint64_t m_reopenTime;
     };

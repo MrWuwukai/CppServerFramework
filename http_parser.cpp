@@ -7,7 +7,7 @@
 namespace {
     static Framework::Logger::ptr g_logger = LOG_NAME("system");
 
-    // ·ÀÖ¹ÇëÇóÍ·ºÍÇëÇóÌå¹ı´ó£¬²»È»¾Íµ±×öÊÇ¶ñÒâÇëÇó
+    // é˜²æ­¢è¯·æ±‚å¤´å’Œè¯·æ±‚ä½“è¿‡å¤§ï¼Œä¸ç„¶å°±å½“åšæ˜¯æ¶æ„è¯·æ±‚
     static Framework::ConfigVar<uint64_t>::ptr g_http_request_buffer_size =
         Framework::Config::Lookup("http.request.buffer_size", (uint64_t)(4 * 1024), "http request buffer size");
 
@@ -20,7 +20,7 @@ namespace {
     static Framework::ConfigVar<uint64_t>::ptr g_http_response_max_body_size =
         Framework::Config::Lookup("http.response.max_body_size", (uint64_t)(64 * 1024 * 1024), "http response max body size");
 
-    // È·±£ÕâĞ©ÅäÖÃÏî³õÊ¼»¯
+    // ç¡®ä¿è¿™äº›é…ç½®é¡¹åˆå§‹åŒ–
     static uint64_t s_http_request_buffer_size = 0;
     static uint64_t s_http_request_max_body_size = 0;
     static uint64_t s_http_response_buffer_size = 0;
@@ -138,12 +138,12 @@ namespace Framework {
             m_parser.data = this;
         }
 
-        // 1: ³É¹¦
-        // -1: ÓĞ´íÎó
-        // >0: ÒÑ´¦ÀíµÄ×Ö½ÚÊı£¬ÇÒdataÓĞĞ§Êı¾İÎªlen - v;
+        // 1: æˆåŠŸ
+        // -1: æœ‰é”™è¯¯
+        // >0: å·²å¤„ç†çš„å­—èŠ‚æ•°ï¼Œä¸”dataæœ‰æ•ˆæ•°æ®ä¸ºlen - v;
         size_t HttpRequestParser::execute(char* data, size_t len) {
             size_t offset = http_parser_execute(&m_parser, data, len, 0);
-            // »¹Ã»½âÎöÍê¾Í°ÑÒÑ¾­½âÎöµÄÒÆ×ß
+            // è¿˜æ²¡è§£æå®Œå°±æŠŠå·²ç»è§£æçš„ç§»èµ°
             memmove(data, data + offset, (len - offset));
             return offset;
         }

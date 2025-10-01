@@ -27,7 +27,7 @@ namespace Framework {
         m_recvTimeout = -1;
         m_sendTimeout = -1;
 
-        struct stat fd_stat; // fd_stat 判断文件类型
+        struct stat fd_stat; // fd_stat 鍒ゆ柇鏂囦欢绫诲瀷
         if (-1 == fstat(m_fd, &fd_stat)) {
             m_isInit = false;
             m_isSocket = false;

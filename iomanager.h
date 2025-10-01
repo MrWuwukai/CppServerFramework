@@ -15,15 +15,15 @@ namespace Framework {
     private:
         struct FdContext {
             struct EventContext {
-                Scheduler* scheduler = nullptr;     //ÊÂ¼şËùÊôscheduler
-                Fiber::ptr fiber;                   //ÊÂ¼şĞ­³Ì
-                std::function<void()> cb;           //ÊÂ¼şµÄ»Øµ÷º¯Êı
+                Scheduler* scheduler = nullptr;     //äº‹ä»¶æ‰€å±scheduler
+                Fiber::ptr fiber;                   //äº‹ä»¶åç¨‹
+                std::function<void()> cb;           //äº‹ä»¶çš„å›è°ƒå‡½æ•°
             };
 
-            EventContext read;     //¶ÁÊÂ¼ş
-            EventContext write;    //Ğ´ÊÂ¼ş
-            int fd = 0;                //ÊÂ¼ş¹ØÁªµÄ¾ä±ú
-            Event m_events = NONE; //ÒÑ¾­×¢²áµÄÊÂ¼ş
+            EventContext read;     //è¯»äº‹ä»¶
+            EventContext write;    //å†™äº‹ä»¶
+            int fd = 0;                //äº‹ä»¶å…³è”çš„å¥æŸ„
+            Event m_events = NONE; //å·²ç»æ³¨å†Œçš„äº‹ä»¶
             Mutex mutex;
 
             EventContext& getContext(Event event);
@@ -49,16 +49,16 @@ namespace Framework {
 
         void onTimerInsertedAtFront() override;
 
-        void contextResize(size_t size); // ÖØÖÃÊÂ¼ş¶ÓÁĞ´óĞ¡
+        void contextResize(size_t size); // é‡ç½®äº‹ä»¶é˜Ÿåˆ—å¤§å°
         bool hasIdleThreads() { return m_idleThreadCount > 0; }
         bool stopping(uint64_t& timer);
     private:
         int m_epfd = 0;
-        int m_tickleFds[2]; // Í¨ÖªµÄpipe¹ÜµÀ
+        int m_tickleFds[2]; // é€šçŸ¥çš„pipeç®¡é“
 
-        std::atomic<size_t> m_pendingEventCount = { 0 }; // µÈ´ıÖ´ĞĞµÄÊÂ¼şÊıÁ¿
-        RWMutex m_mutex; // IOµ÷¶ÈÆ÷µÄ¶ÁĞ´Ëø
-        std::vector<FdContext*> m_fdContexts; // ÊÂ¼ş¶ÓÁĞ
+        std::atomic<size_t> m_pendingEventCount = { 0 }; // ç­‰å¾…æ‰§è¡Œçš„äº‹ä»¶æ•°é‡
+        RWMutex m_mutex; // IOè°ƒåº¦å™¨çš„è¯»å†™é”
+        std::vector<FdContext*> m_fdContexts; // äº‹ä»¶é˜Ÿåˆ—
     };
 
 

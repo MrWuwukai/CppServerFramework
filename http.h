@@ -135,7 +135,7 @@ namespace Framework {
             bool operator()(const std::string& lhs, const std::string& rhs) const;
         };
 
-        // 转map里的数据类型，看是否能转成功
+        // 杞琺ap閲岀殑鏁版嵁绫诲瀷锛岀湅鏄惁鑳借浆鎴愬姛
         template<class HttpMap, class T>
         bool checkGetAs(const HttpMap& m, const std::string& key, T& val, const T& def = T()) {
             auto it = m.find(key);
@@ -153,7 +153,7 @@ namespace Framework {
             return false;
         }
 
-        // 转map里的数据类型，不管成不成功直接转
+        // 杞琺ap閲岀殑鏁版嵁绫诲瀷锛屼笉绠℃垚涓嶆垚鍔熺洿鎺ヨ浆
         template<class HttpMap, class T>
         T getAs(const HttpMap& m, const std::string& key, const T& def = T()) {
             auto it = m.find(key);

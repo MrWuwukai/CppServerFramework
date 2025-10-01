@@ -15,7 +15,7 @@ namespace Framework {
     public:
         typedef std::shared_ptr<ByteArray> ptr;
 
-        // Á´±íÊµÏÖ£¬Ğ¡¿éÄÚ´æ´æ´¢£¬²»ÓÃvector£¬vectorÀÏÊÇÀ©Èİ²Ù×÷Âı
+        // é“¾è¡¨å®ç°ï¼Œå°å—å†…å­˜å­˜å‚¨ï¼Œä¸ç”¨vectorï¼Œvectorè€æ˜¯æ‰©å®¹æ“ä½œæ…¢
         struct Node {
             Node(size_t s);
             Node();
@@ -29,7 +29,7 @@ namespace Framework {
         ByteArray(size_t base_size = 4096);
         ~ByteArray();
 
-        // write ¹Ì¶¨³¤¶È
+        // write å›ºå®šé•¿åº¦
         void writeFint8(int8_t value);
         void writeFuint8(uint8_t value);
         void writeFint16(int16_t value);
@@ -39,22 +39,22 @@ namespace Framework {
         void writeFint64(int64_t value);
         void writeFuint64(uint64_t value);
 
-        // write ¿É±ä³¤¶È Ñ¹Ëõ
+        // write å¯å˜é•¿åº¦ å‹ç¼©
         void writeInt32(int32_t value);
         void writeUint32(uint32_t value);
         void writeInt64(int64_t value);
         void writeUint64(uint64_t value);
 
-        // write ÆäËûÊı¾İÀàĞÍ
+        // write å…¶ä»–æ•°æ®ç±»å‹
         void writeFloat(float value);
         void writeDouble(double value);      
-        void writeStringF16(const std::string& value); // ³¤¶Èint16£¬ÏÈ´æ´¢³¤¶ÈÔÙ´æ´¢×Ö·û´®±¾Éí
-        void writeStringF32(const std::string& value); // ³¤¶Èint32
-        void writeStringF64(const std::string& value); // ³¤¶Èint64
-        void writeStringVint(const std::string& value); // ³¤¶ÈÈÎÒâ
-        void writeStringWithoutLength(const std::string& value); // ÎŞ³¤¶È
+        void writeStringF16(const std::string& value); // é•¿åº¦int16ï¼Œå…ˆå­˜å‚¨é•¿åº¦å†å­˜å‚¨å­—ç¬¦ä¸²æœ¬èº«
+        void writeStringF32(const std::string& value); // é•¿åº¦int32
+        void writeStringF64(const std::string& value); // é•¿åº¦int64
+        void writeStringVint(const std::string& value); // é•¿åº¦ä»»æ„
+        void writeStringWithoutLength(const std::string& value); // æ— é•¿åº¦
 
-        // read ¹Ì¶¨³¤¶È
+        // read å›ºå®šé•¿åº¦
         int8_t    readFint8();
         uint8_t   readFuint8();
         int16_t   readFint16();
@@ -64,13 +64,13 @@ namespace Framework {
         int64_t   readFint64();
         uint64_t  readFuint64();
 
-        // read ¿É±ä³¤¶È Ñ¹Ëõ
+        // read å¯å˜é•¿åº¦ å‹ç¼©
         int32_t   readInt32();
         uint32_t  readUint32();
         int64_t   readInt64();
         uint64_t  readUint64();
 
-        // read ÆäËûÊı¾İÀàĞÍ
+        // read å…¶ä»–æ•°æ®ç±»å‹
         float     readFloat();
         double    readDouble();
         std::string readStringF16();
@@ -78,7 +78,7 @@ namespace Framework {
         std::string readStringF64();
         std::string readStringVint();
 
-        // ÄÚ²¿·½·¨
+        // å†…éƒ¨æ–¹æ³•
         void clear();
 
         void write(const void* buf, size_t size);
@@ -107,20 +107,20 @@ namespace Framework {
         std::string toString() const;
         std::string toHexString() const;
 
-        // IO vec¸úÕâÀïµÄÁ´±í½á¹¹ºÜÀàËÆ£¬½«±¾Á´±í×ª³ÉiovecÔÙÍ¨¹ısocket´«Êä½ÏÎª·½±ã
-        uint64_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len = ~0ull) const; // ´Óµ±Ç°Î»ÖÃ¶Á
-        uint64_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len, uint64_t position) const; // ´ÓÖ¸¶¨Î»ÖÃ¶Á
+        // IO vecè·Ÿè¿™é‡Œçš„é“¾è¡¨ç»“æ„å¾ˆç±»ä¼¼ï¼Œå°†æœ¬é“¾è¡¨è½¬æˆiovecå†é€šè¿‡socketä¼ è¾“è¾ƒä¸ºæ–¹ä¾¿
+        uint64_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len = ~0ull) const; // ä»å½“å‰ä½ç½®è¯»
+        uint64_t getReadBuffers(std::vector<iovec>& buffers, uint64_t len, uint64_t position) const; // ä»æŒ‡å®šä½ç½®è¯»
         uint64_t getWriteBuffers(std::vector<iovec>& buffers, uint64_t len);
     private:
         void addCapacity(size_t size);
         size_t getCapacity() const { return m_capacity - m_position; }
     private:
-        size_t m_baseSize; // »ù´¡´óĞ¡
-        size_t m_position; // È«¾Ö²Ù×÷Î»ÖÃ
-        size_t m_capacity; // Ã¿¸ö½Úµã¼ÓÔÚÒ»¿éµÄ×ÜÈİÁ¿
-        size_t m_size; // µ±Ç°µÄ´óĞ¡
-        int8_t m_endian; // ÍøÂç´óĞ¡¶Ë
+        size_t m_baseSize; // åŸºç¡€å¤§å°
+        size_t m_position; // å…¨å±€æ“ä½œä½ç½®
+        size_t m_capacity; // æ¯ä¸ªèŠ‚ç‚¹åŠ åœ¨ä¸€å—çš„æ€»å®¹é‡
+        size_t m_size; // å½“å‰çš„å¤§å°
+        int8_t m_endian; // ç½‘ç»œå¤§å°ç«¯
         Node* m_root;
-        Node* m_cur; // µ±Ç°Á´±íÖ¸Õë
+        Node* m_cur; // å½“å‰é“¾è¡¨æŒ‡é’ˆ
 	};
 }

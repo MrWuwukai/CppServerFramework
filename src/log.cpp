@@ -354,7 +354,7 @@ namespace Framework {
             #ifdef _WIN32
             strftime(buf, sizeof(buf), m_format.c_str(), &tm);
             #else
-            strptime(buf, sizeof(tm), m_format.c_str(), &tm);
+            strftime(buf, sizeof(tm), m_format.c_str(), &tm);
             #endif
             os << buf;
         }

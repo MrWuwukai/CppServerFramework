@@ -11,18 +11,18 @@ namespace Framework {
     static void ListAllYamlMember(const std::string& prefix,
         const YAML::Node& node,
         std::list<std::pair<std::string, const YAML::Node> >& output) {
-        // ¼ì²éÅäÖÃÃû³ÆÊÇ·ñÓĞĞ§£¨Ö»ÔÊĞí°üº¬ÌØ¶¨×Ö·û£©
+        // æ£€æŸ¥é…ç½®åç§°æ˜¯å¦æœ‰æ•ˆï¼ˆåªå…è®¸åŒ…å«ç‰¹å®šå­—ç¬¦ï¼‰
         if (prefix.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._0123456789")
             != std::string::npos) {
             LOG_ERROR(LOG_ROOT()) << "Config invalid name: " << prefix << " : " << node;
             return;
         }
-        // ½«µ±Ç°½ÚµãÌí¼Óµ½Êä³öÁĞ±í
+        // å°†å½“å‰èŠ‚ç‚¹æ·»åŠ åˆ°è¾“å‡ºåˆ—è¡¨
         output.push_back(std::make_pair(prefix, node));
-        // Èç¹ûµ±Ç°½ÚµãÊÇMapÀàĞÍ£¬µİ¹é´¦ÀíÆä×Ó½Úµã
+        // å¦‚æœå½“å‰èŠ‚ç‚¹æ˜¯Mapç±»å‹ï¼Œé€’å½’å¤„ç†å…¶å­èŠ‚ç‚¹
         if (node.IsMap()) {
             for (auto it = node.begin(); it != node.end(); ++it) {
-                // µİ¹éµ÷ÓÃ£¬Îª×Ó½Úµã¹¹½¨Ç°×º
+                // é€’å½’è°ƒç”¨ï¼Œä¸ºå­èŠ‚ç‚¹æ„å»ºå‰ç¼€
                 ListAllYamlMember(prefix.empty() ? it->first.Scalar() : prefix + "." + it->first.Scalar(), it->second, output);
             }
         }
@@ -34,40 +34,40 @@ namespace Framework {
         return it == GetDatas().end() ? nullptr : it->second;
     }
 
-    // º¯Êı¹¦ÄÜ£ºLoadFromYaml º¯ÊıÓÃÓÚ´Ó YAML::Node ÖĞ¼ÓÔØÅäÖÃ£¬²¢½«ÅäÖÃÖµÉèÖÃµ½¶ÔÓ¦µÄ ConfigVarBase ¶ÔÏóÖĞ¡£
+    // å‡½æ•°åŠŸèƒ½ï¼šLoadFromYaml å‡½æ•°ç”¨äºä» YAML::Node ä¸­åŠ è½½é…ç½®ï¼Œå¹¶å°†é…ç½®å€¼è®¾ç½®åˆ°å¯¹åº”çš„ ConfigVarBase å¯¹è±¡ä¸­ã€‚
     void Config::LoadFromYaml(const YAML::Node& root) {
-        // ¶¨ÒåÒ»¸öÁĞ±í£¬ÓÃÓÚ´æ´¢ËùÓĞ½Úµã£¨¼üÖµ¶Ô£©
+        // å®šä¹‰ä¸€ä¸ªåˆ—è¡¨ï¼Œç”¨äºå­˜å‚¨æ‰€æœ‰èŠ‚ç‚¹ï¼ˆé”®å€¼å¯¹ï¼‰
         std::list<std::pair<std::string, const YAML::Node> > all_nodes;
-        // µ÷ÓÃ ListAllYamlMember º¯Êı£¬µİ¹é±éÀú YAML ½ÚµãÊ÷£¬½«ËùÓĞ½Úµã´æÈë all_nodes
+        // è°ƒç”¨ ListAllYamlMember å‡½æ•°ï¼Œé€’å½’éå† YAML èŠ‚ç‚¹æ ‘ï¼Œå°†æ‰€æœ‰èŠ‚ç‚¹å­˜å…¥ all_nodes
         ListAllYamlMember("", root, all_nodes);
 
-        // ±éÀúËùÓĞ½Úµã
+        // éå†æ‰€æœ‰èŠ‚ç‚¹
         for (auto& i : all_nodes) {
-            // »ñÈ¡µ±Ç°½ÚµãµÄ¼ü£¨key£©
+            // è·å–å½“å‰èŠ‚ç‚¹çš„é”®ï¼ˆkeyï¼‰
             std::string key = i.first;
-            // Èç¹û¼üÎª¿Õ£¬Ìø¹ıµ±Ç°½Úµã
+            // å¦‚æœé”®ä¸ºç©ºï¼Œè·³è¿‡å½“å‰èŠ‚ç‚¹
             if (key.empty()) {
                 continue;
             }
 
-            // ½«¼ü×ª»»ÎªĞ¡Ğ´£¨¿ÉÄÜÊÇÎªÁËÍ³Ò»´¦Àí£¬ºöÂÔ´óĞ¡Ğ´²îÒì£©
+            // å°†é”®è½¬æ¢ä¸ºå°å†™ï¼ˆå¯èƒ½æ˜¯ä¸ºäº†ç»Ÿä¸€å¤„ç†ï¼Œå¿½ç•¥å¤§å°å†™å·®å¼‚ï¼‰
             std::transform(key.begin(), key.end(), key.begin(), ::tolower);
-            // ¸ù¾İ¼ü²éÕÒ¶ÔÓ¦µÄ ConfigVarBase ¶ÔÏó
+            // æ ¹æ®é”®æŸ¥æ‰¾å¯¹åº”çš„ ConfigVarBase å¯¹è±¡
             ConfigVarBase::ptr var = LookupBase(key);
 
-            // Èç¹ûÕÒµ½ÁË¶ÔÓ¦µÄ ConfigVarBase ¶ÔÏó
+            // å¦‚æœæ‰¾åˆ°äº†å¯¹åº”çš„ ConfigVarBase å¯¹è±¡
             if (var) {
-                // Èç¹ûµ±Ç°½ÚµãÊÇ±êÁ¿£¨Scalar£©
+                // å¦‚æœå½“å‰èŠ‚ç‚¹æ˜¯æ ‡é‡ï¼ˆScalarï¼‰
                 if (i.second.IsScalar()) {
-                    // ´Ó×Ö·û´®ÖĞ¼ÓÔØÅäÖÃÖµ
+                    // ä»å­—ç¬¦ä¸²ä¸­åŠ è½½é…ç½®å€¼
                     var->fromString(i.second.Scalar());
                 }
                 else {
-                    // Èç¹ûµ±Ç°½Úµã²»ÊÇ±êÁ¿£¨ÀıÈçÊÇ Map »ò Sequence£©
-                    // Ê¹ÓÃ×Ö·û´®Á÷½«½Úµã×ª»»Îª×Ö·û´®
+                    // å¦‚æœå½“å‰èŠ‚ç‚¹ä¸æ˜¯æ ‡é‡ï¼ˆä¾‹å¦‚æ˜¯ Map æˆ– Sequenceï¼‰
+                    // ä½¿ç”¨å­—ç¬¦ä¸²æµå°†èŠ‚ç‚¹è½¬æ¢ä¸ºå­—ç¬¦ä¸²
                     std::stringstream ss;
                     ss << i.second;
-                    // ´Ó×Ö·û´®ÖĞ¼ÓÔØÅäÖÃÖµ
+                    // ä»å­—ç¬¦ä¸²ä¸­åŠ è½½é…ç½®å€¼
                     var->fromString(ss.str());
                 }
             }

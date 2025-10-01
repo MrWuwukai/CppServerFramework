@@ -1,5 +1,5 @@
 #pragma once
-// Ïß³Ì³ØºÍĞ­³Ìµ÷¶ÈÆ÷
+// çº¿ç¨‹æ± å’Œåç¨‹è°ƒåº¦å™¨
 #include <memory>
 #include <functional>
 #include "fiber.h"
@@ -10,13 +10,13 @@ namespace Framework {
     public:
         typedef std::shared_ptr<Scheduler> ptr;
 
-        Scheduler(size_t threads = 1, bool use_caller = true, const std::string& name = ""); // use_caller±íÊ¾ÊÇ·ñ´´½¨µ÷¶ÈÆ÷µÄÏß³Ì±¾ÉíÊÇ·ñ½ÓÊÜµ÷¶È
+        Scheduler(size_t threads = 1, bool use_caller = true, const std::string& name = ""); // use_callerè¡¨ç¤ºæ˜¯å¦åˆ›å»ºè°ƒåº¦å™¨çš„çº¿ç¨‹æœ¬èº«æ˜¯å¦æ¥å—è°ƒåº¦
         virtual ~Scheduler();
 
         const std::string& getName() const { return m_name; }
 
         static Scheduler* GetThis();     
-        static Fiber* GetMainFiber(); // µ÷¶ÈÆ÷Ò²ÓĞÒ»¸öÖ÷Ğ­³Ì
+        static Fiber* GetMainFiber(); // è°ƒåº¦å™¨ä¹Ÿæœ‰ä¸€ä¸ªä¸»åç¨‹
 
         void setThis();
         void start();
@@ -36,14 +36,14 @@ namespace Framework {
 
         }
 
-        // ÅúÁ¿µ÷¶È£¬È·±£Ò»×éÈÎÎñË³ĞòÖ´ĞĞ
+        // æ‰¹é‡è°ƒåº¦ï¼Œç¡®ä¿ä¸€ç»„ä»»åŠ¡é¡ºåºæ‰§è¡Œ
         template<class InputIterator>
         void schedule(InputIterator begin, InputIterator end) {
             bool need_tickle = false;
             {
                 MutexType::Lock lock(m_mutex);
                 while (begin != end) {
-                    need_tickle = scheduleNoLock(&*begin, -1) || need_tickle; // Ë¼¿¼£ºÕâÀïÖ¸ÕëÖ¸³öÓÖÈ¡µØÖ·ÊÇÎªÊ²Ã´£¿
+                    need_tickle = scheduleNoLock(&*begin, -1) || need_tickle; // æ€è€ƒï¼šè¿™é‡ŒæŒ‡é’ˆæŒ‡å‡ºåˆå–åœ°å€æ˜¯ä¸ºä»€ä¹ˆï¼Ÿ
                     ++begin;
                 }
             }
@@ -55,22 +55,22 @@ namespace Framework {
         virtual void tickle();
         void run();
         virtual bool stopping();
-        virtual void idle(); // ¿ÕÏĞĞ­³Ì¸ÃÖ´ĞĞµÄÈÎÎñ£¬ÂÖ¿Õ¡¢Ë¯Ãß£¿
+        virtual void idle(); // ç©ºé—²åç¨‹è¯¥æ‰§è¡Œçš„ä»»åŠ¡ï¼Œè½®ç©ºã€ç¡çœ ï¼Ÿ
 
-        // ÓÃÓÚ´æ´¢Ïß³ÌIDµÄÏòÁ¿
+        // ç”¨äºå­˜å‚¨çº¿ç¨‹IDçš„å‘é‡
         std::vector<int> m_threadIds;
-        // Ïß³ÌµÄ×ÜÊı
+        // çº¿ç¨‹çš„æ€»æ•°
         size_t m_threadCount = 0;
-        // µ±Ç°»îÔ¾µÄÏß³ÌÊıÁ¿
+        // å½“å‰æ´»è·ƒçš„çº¿ç¨‹æ•°é‡
         std::atomic<size_t> m_activeThreadCount = { 0 };
-        // µ±Ç°´¦ÓÚ¿ÕÏĞ×´Ì¬µÄÏß³ÌÊıÁ¿
-        std::atomic<size_t> m_idleThreadCount = { 0 }; // Ô­×ÓÁ¿£¬++ --²»ÓÃ¼ÓËø
-        // ±êÊ¶ÊÇ·ñÕıÔÚÍ£Ö¹µÄ±êÖ¾£¬true±íÊ¾ÕıÔÚÍ£Ö¹
+        // å½“å‰å¤„äºç©ºé—²çŠ¶æ€çš„çº¿ç¨‹æ•°é‡
+        std::atomic<size_t> m_idleThreadCount = { 0 }; // åŸå­é‡ï¼Œ++ --ä¸ç”¨åŠ é”
+        // æ ‡è¯†æ˜¯å¦æ­£åœ¨åœæ­¢çš„æ ‡å¿—ï¼Œtrueè¡¨ç¤ºæ­£åœ¨åœæ­¢
         bool m_stopping = true;
-        // ±êÊ¶ÊÇ·ñ×Ô¶¯Í£Ö¹µÄ±êÖ¾£¬true±íÊ¾×Ô¶¯Í£Ö¹
+        // æ ‡è¯†æ˜¯å¦è‡ªåŠ¨åœæ­¢çš„æ ‡å¿—ï¼Œtrueè¡¨ç¤ºè‡ªåŠ¨åœæ­¢
         bool m_autoStop = false;
     private:
-        // ½«Ò»¸öĞ­³Ì£¨»ò»Øµ÷º¯Êı£©¼ÓÈëµ½µ÷¶ÈÆ÷µÄÈÎÎñ¶ÓÁĞÖĞ£¬Èç¹ûµ±Ç°µ÷¶È¶ÓÁĞ m_fibers ÊÇ¿ÕµÄ£¬ÄÇÃ´ĞÂ¼ÓÈëµÄÈÎÎñ¾ÍĞèÒª¡°»½ĞÑ¡±µ÷¶ÈÆ÷
+        // å°†ä¸€ä¸ªåç¨‹ï¼ˆæˆ–å›è°ƒå‡½æ•°ï¼‰åŠ å…¥åˆ°è°ƒåº¦å™¨çš„ä»»åŠ¡é˜Ÿåˆ—ä¸­ï¼Œå¦‚æœå½“å‰è°ƒåº¦é˜Ÿåˆ— m_fibers æ˜¯ç©ºçš„ï¼Œé‚£ä¹ˆæ–°åŠ å…¥çš„ä»»åŠ¡å°±éœ€è¦â€œå”¤é†’â€è°ƒåº¦å™¨
         template<class FiberOrCb>
         bool scheduleNoLock(FiberOrCb fc, int thread) {
             bool need_tickle = m_fibers.empty();
@@ -106,7 +106,7 @@ namespace Framework {
 
             FiberAndThread() 
                 :thread(-1) {
-                // ÎªÊ²Ã´ĞèÒªÄ¬ÈÏ¹¹Ôì²ÎÊı£¿ÒòÎªµÈÏÂÒª°ÑËû·Åµ½STLµÄlistÀï£¬²»È»Ã»·¨×ö³õÊ¼»¯¡£
+                // ä¸ºä»€ä¹ˆéœ€è¦é»˜è®¤æ„é€ å‚æ•°ï¼Ÿå› ä¸ºç­‰ä¸‹è¦æŠŠä»–æ”¾åˆ°STLçš„listé‡Œï¼Œä¸ç„¶æ²¡æ³•åšåˆå§‹åŒ–ã€‚
             }
 
             void reset() {
@@ -115,11 +115,11 @@ namespace Framework {
                 thread = -1;
             }
 
-        }; // Ë¼¿¼£ºÎªÊ²Ã´»áÓĞÁ½¸ö°æ±¾£ºÖÇÄÜÖ¸Õë¡¢ÒÔ¼°ÖÇÄÜÖ¸ÕëµÄÖ¸Õë£¿ÖÇÄÜÖ¸ÕëµÄÖ¸ÕëÎªÊ²Ã´ĞèÒªÊ¹ÓÃfiber.swap(*f);£¿ÕâÀï¿ÉÒÔÌæ´ú³ÉÒÆ¶¯¹¹Ôìº¯ÊıÂğ£¿
+        }; // æ€è€ƒï¼šä¸ºä»€ä¹ˆä¼šæœ‰ä¸¤ä¸ªç‰ˆæœ¬ï¼šæ™ºèƒ½æŒ‡é’ˆã€ä»¥åŠæ™ºèƒ½æŒ‡é’ˆçš„æŒ‡é’ˆï¼Ÿæ™ºèƒ½æŒ‡é’ˆçš„æŒ‡é’ˆä¸ºä»€ä¹ˆéœ€è¦ä½¿ç”¨fiber.swap(*f);ï¼Ÿè¿™é‡Œå¯ä»¥æ›¿ä»£æˆç§»åŠ¨æ„é€ å‡½æ•°å—ï¼Ÿ
     private:
         Mutex m_mutex;
         std::vector<Multithread::ptr> m_threads;
-        std::list<FiberAndThread> m_fibers; // ´ıÖ´ĞĞµÄ¶ÓÁĞ£¬Ö´ĞĞÌå¼È¿ÉÒÔÊÇÏß³Ì£¬Ò²¿ÉÒÔÊÇĞ­³Ì
+        std::list<FiberAndThread> m_fibers; // å¾…æ‰§è¡Œçš„é˜Ÿåˆ—ï¼Œæ‰§è¡Œä½“æ—¢å¯ä»¥æ˜¯çº¿ç¨‹ï¼Œä¹Ÿå¯ä»¥æ˜¯åç¨‹
         std::string m_name;
         uint32_t m_rootThread;
         Fiber::ptr m_rootFiber;

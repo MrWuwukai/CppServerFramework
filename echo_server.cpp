@@ -21,7 +21,7 @@ EchoServer::EchoServer(int type)
 
 void EchoServer::handleClient(Framework::Socket::ptr client) {
     LOG_INFO(g_logger) << "handleClient " << client->toString();
-    Framework::ByteArray::ptr ba(new Framework::ByteArray); // ÐòÁÐ»¯Êý¾Ý
+    Framework::ByteArray::ptr ba(new Framework::ByteArray); // åºåˆ—åŒ–æ•°æ®
     while (true) {
         ba->clear();
         std::vector<iovec> iovs;
@@ -48,7 +48,7 @@ void EchoServer::handleClient(Framework::Socket::ptr client) {
     }
 }
 
-int type = 1; // Ä¬ÈÏtext
+int type = 1; // é»˜è®¤text
 
 void run() {
     EchoServer::ptr es(new EchoServer(type));

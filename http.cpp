@@ -203,7 +203,7 @@ namespace Framework {
         }
 
         std::ostream& HttpResponse::dump(std::ostream& os) {
-            // ÏìÓ¦µÚÒ»ĞĞ
+            // å“åº”ç¬¬ä¸€è¡Œ
             os << "HTTP/"
                 << ((uint32_t)(m_version >> 4)) << "." << ((uint32_t)(m_version & 0x0F))
                 << " "
@@ -212,7 +212,7 @@ namespace Framework {
                 << (m_reason.empty() ? HttpStatusToString(m_status) : m_reason)
                 << "\r\n";
 
-            // ÏìÓ¦Í·ÆäËû²¿·Ö
+            // å“åº”å¤´å…¶ä»–éƒ¨åˆ†
             for (auto& i : m_headers) {
                 if (strcasecmp(i.first.c_str(), "connection") == 0) {
                     continue;
@@ -221,7 +221,7 @@ namespace Framework {
             }
             os << "connection: " << (m_close ? "close" : "keep-alive") << "\r\n";
 
-            // ÏìÓ¦Ìå
+            // å“åº”ä½“
             if (!m_body.empty()) {
                 os << "content-length: " << m_body.size() << "\r\n\r\n" << m_body;
             }

@@ -8,54 +8,19 @@ namespace Framework {
     static Framework::Logger::ptr g_logger = LOG_NAME("system");
 
     uint32_t GetThreadId() {
-    #ifdef _WIN32
-        std::thread::id tid = std::this_thread::get_id();
-        std::hash<std::thread::id> hasher;
-        size_t id_hash = hasher(tid); // 得到一个数值哈希值
-
-        uint32_t id_num = static_cast<uint32_t>(id_hash);
-        return id_num;
-    }
-    #else
-    uint32_t GetThreadId() {
         return (uint32_t)syscall(SYS_gettid);
     }
-    #endif
 
     uint32_t GetFiberId() {
-    #ifdef _WIN32
-        LPVOID fiber = GetCurrentFiber();
-        if (fiber == nullptr) {
-            return 0;
-        }
-        // 使用 std::hash 计算指针的哈希值
-        std::hash<LPVOID> hasher;
-        size_t hash_value = hasher(fiber);
-        // 将哈希值转换为 uint32_t
-        uint32_t fiber_id = static_cast<uint32_t>(hash_value);
-        return fiber_id;
-    #else
         return Fiber::GetFiberId();
-    #endif
     }
-
-    #ifdef _WIN32
-    int myvasprintf(char** strp, const char* format, va_list ap) {
-        
-        int wanted = vsnprintf(*strp = NULL, 0, format, ap);
-        if ((wanted > 0) && ((*strp = (char*)malloc(1 + wanted)) != NULL))
-            return vsprintf(*strp, format, ap);
-
-        return wanted;
-    }
-    #endif
 }
 
 
 namespace Framework {
     void Backtrace(std::vector<std::string>& bt, int size, int skip) {
         // 之所以分配在堆上是因为协程的栈空间比线程小很多，所以要节省栈空间
-        void* array = (void*)malloc((sizeof(void*) * size));
+        void** array = (void**)malloc((sizeof(void*) * size));
         size_t s = ::backtrace(array, size); // 当 :: 前面不加任何标识符​（即写成 :: 后直接跟名称）时，它表示全局作用域​（Global Scope）。
         char** strings = backtrace_symbols(array, s);
 

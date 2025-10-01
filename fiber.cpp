@@ -9,11 +9,11 @@ namespace Framework {
 
     static std::atomic<uint64_t> s_fiber_id{ 0 };
     static std::atomic<uint64_t> s_fiber_count{ 0 };
-    static thread_local Fiber* t_fiber = nullptr; // Ïß³Ì¿ØÖÆ
-    static thread_local Fiber::ptr t_threadFiber = nullptr; // mainĞ­³Ì
-    static ConfigVar<uint32_t>::ptr g_fiber_stack_size = Config::Lookup<uint32_t>("fiber.stack_size", 1024 * 1024, "fiber stack size"); // ÅäÖÃÒ»¸öĞ­³ÌÕ»¿Õ¼ä´óĞ¡
+    static thread_local Fiber* t_fiber = nullptr; // çº¿ç¨‹æ§åˆ¶
+    static thread_local Fiber::ptr t_threadFiber = nullptr; // mainåç¨‹
+    static ConfigVar<uint32_t>::ptr g_fiber_stack_size = Config::Lookup<uint32_t>("fiber.stack_size", 1024 * 1024, "fiber stack size"); // é…ç½®ä¸€ä¸ªåç¨‹æ ˆç©ºé—´å¤§å°
 
-	// Í¨ÓÃÕ»ÄÚ´æ·ÖÅäÆ÷
+	// é€šç”¨æ ˆå†…å­˜åˆ†é…å™¨
     class MallocStackAllocator {
     public:
         static void* Alloc(size_t size) {
@@ -26,8 +26,8 @@ namespace Framework {
     };
     typedef MallocStackAllocator myStackAllocator;
 
-    // Ğ­³Ì³õÊ¼»¯£¬»ñµÃÏß³ÌÉÏÏÂÎÄĞÅÏ¢
-    // Ö÷Ğ­³ÌÃ»ÓĞstack
+    // åç¨‹åˆå§‹åŒ–ï¼Œè·å¾—çº¿ç¨‹ä¸Šä¸‹æ–‡ä¿¡æ¯
+    // ä¸»åç¨‹æ²¡æœ‰stack
     Fiber::Fiber() {
         m_state = EXEC;
         SetThis(this);
@@ -40,22 +40,22 @@ namespace Framework {
     }
 
     Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool use_caller)
-        : m_id(++s_fiber_id)  // ³õÊ¼»¯Ğ­³ÌµÄÎ¨Ò»ID£¬Ê¹ÓÃ¾²Ì¬³ÉÔ±±äÁ¿s_fiber_id×ÔÔöÀ´Éú³ÉÎ¨Ò»±êÊ¶
-        , m_cb(cb) {  // ±£´æ´«ÈëµÄÈÎÎñº¯Êı
-        ++s_fiber_count;  // Ğ­³Ì¼ÆÊıÆ÷×ÔÔö£¬¼ÇÂ¼µ±Ç°´´½¨µÄĞ­³ÌÊıÁ¿
+        : m_id(++s_fiber_id)  // åˆå§‹åŒ–åç¨‹çš„å”¯ä¸€IDï¼Œä½¿ç”¨é™æ€æˆå‘˜å˜é‡s_fiber_idè‡ªå¢æ¥ç”Ÿæˆå”¯ä¸€æ ‡è¯†
+        , m_cb(cb) {  // ä¿å­˜ä¼ å…¥çš„ä»»åŠ¡å‡½æ•°
+        ++s_fiber_count;  // åç¨‹è®¡æ•°å™¨è‡ªå¢ï¼Œè®°å½•å½“å‰åˆ›å»ºçš„åç¨‹æ•°é‡
 
-        m_stacksize = stacksize ? stacksize : g_fiber_stack_size->getValue();  // ÉèÖÃÕ»´óĞ¡£¬Èç¹ûÓĞ´«ÈëÔòÊ¹ÓÃ´«ÈëÖµ£¬·ñÔòÊ¹ÓÃÈ«¾ÖÄ¬ÈÏÕ»´óĞ¡
+        m_stacksize = stacksize ? stacksize : g_fiber_stack_size->getValue();  // è®¾ç½®æ ˆå¤§å°ï¼Œå¦‚æœæœ‰ä¼ å…¥åˆ™ä½¿ç”¨ä¼ å…¥å€¼ï¼Œå¦åˆ™ä½¿ç”¨å…¨å±€é»˜è®¤æ ˆå¤§å°
 
-        m_stack = myStackAllocator::Alloc(m_stacksize);  // ´ÓÕ»·ÖÅäÆ÷ÖĞ·ÖÅäÖ¸¶¨´óĞ¡µÄÕ»ÄÚ´æ
-        if (getcontext(&m_ctx)) {  // »ñÈ¡µ±Ç°ÉÏÏÂÎÄ
-            ASSERT_W(false, "getcontext");  // Èç¹û»ñÈ¡ÉÏÏÂÎÄÊ§°Ü£¬¶ÏÑÔÊ§°Ü²¢Êä³ö´íÎóĞÅÏ¢
+        m_stack = myStackAllocator::Alloc(m_stacksize);  // ä»æ ˆåˆ†é…å™¨ä¸­åˆ†é…æŒ‡å®šå¤§å°çš„æ ˆå†…å­˜
+        if (getcontext(&m_ctx)) {  // è·å–å½“å‰ä¸Šä¸‹æ–‡
+            ASSERT_W(false, "getcontext");  // å¦‚æœè·å–ä¸Šä¸‹æ–‡å¤±è´¥ï¼Œæ–­è¨€å¤±è´¥å¹¶è¾“å‡ºé”™è¯¯ä¿¡æ¯
         }
-        m_ctx.uc_link = nullptr;  // ÉèÖÃÉÏÏÂÎÄµÄÁ´½ÓÎªnullptr£¬±íÊ¾µ±Ç°ÉÏÏÂÎÄÖ´ĞĞÍê±ÏºóÃ»ÓĞºóĞøÉÏÏÂÎÄ
-        m_ctx.uc_stack.ss_sp = m_stack;  // ÉèÖÃÉÏÏÂÎÄµÄÕ»Ö¸ÕëÎª·ÖÅäµÄÕ»ÄÚ´æÆğÊ¼µØÖ·
-        m_ctx.uc_stack.ss_size = m_stacksize;  // ÉèÖÃÉÏÏÂÎÄµÄÕ»´óĞ¡
+        m_ctx.uc_link = nullptr;  // è®¾ç½®ä¸Šä¸‹æ–‡çš„é“¾æ¥ä¸ºnullptrï¼Œè¡¨ç¤ºå½“å‰ä¸Šä¸‹æ–‡æ‰§è¡Œå®Œæ¯•åæ²¡æœ‰åç»­ä¸Šä¸‹æ–‡
+        m_ctx.uc_stack.ss_sp = m_stack;  // è®¾ç½®ä¸Šä¸‹æ–‡çš„æ ˆæŒ‡é’ˆä¸ºåˆ†é…çš„æ ˆå†…å­˜èµ·å§‹åœ°å€
+        m_ctx.uc_stack.ss_size = m_stacksize;  // è®¾ç½®ä¸Šä¸‹æ–‡çš„æ ˆå¤§å°
 
         if (use_caller){
-            makecontext(&m_ctx, &Fiber::MainFunc, 0);  // ³õÊ¼»¯ÉÏÏÂÎÄ£¬ÉèÖÃÖ´ĞĞº¯ÊıÎªFiber::MainFunc£¬²ÎÊı¸öÊıÎª0
+            makecontext(&m_ctx, &Fiber::MainFunc, 0);  // åˆå§‹åŒ–ä¸Šä¸‹æ–‡ï¼Œè®¾ç½®æ‰§è¡Œå‡½æ•°ä¸ºFiber::MainFuncï¼Œå‚æ•°ä¸ªæ•°ä¸º0
         }
         else {
             makecontext(&m_ctx, &Fiber::MainFuncCaller, 0);
@@ -80,9 +80,9 @@ namespace Framework {
         }
     }
 
-    // Ğ­³Ì¹Ø±ÕÊ±ÄÚ´æÔİÊ±²»ÊÍ·Å£¬½«×ÊÔ´Ö±½Ó×ª½»¸øĞÂµÄĞ­³Ì
+    // åç¨‹å…³é—­æ—¶å†…å­˜æš‚æ—¶ä¸é‡Šæ”¾ï¼Œå°†èµ„æºç›´æ¥è½¬äº¤ç»™æ–°çš„åç¨‹
     void Fiber::reset(std::function<void()> cb) {
-        ASSERT(m_stack); // ¶ÏÑÔ²»ÄÜÊÇÖ÷Ğ­³Ì
+        ASSERT(m_stack); // æ–­è¨€ä¸èƒ½æ˜¯ä¸»åç¨‹
         ASSERT(m_state == TERM || m_state == INIT || m_state == EXCEPT);
         m_cb = cb;
         if (getcontext(&m_ctx)) {
@@ -95,7 +95,7 @@ namespace Framework {
         m_state = INIT;
     }
 
-    // ÇĞ»»Ö´ĞĞ±¾Ğ­³Ì£¬½«µ±Ç°Ö´ĞĞµÄĞ­³Ì·Åµ½ºóÌ¨
+    // åˆ‡æ¢æ‰§è¡Œæœ¬åç¨‹ï¼Œå°†å½“å‰æ‰§è¡Œçš„åç¨‹æ”¾åˆ°åå°
     void Fiber::swapIn() {
         SetThis(this);
         ASSERT(m_state != EXEC);
@@ -128,17 +128,17 @@ namespace Framework {
 
 	}
 
-    //ÉèÖÃµ±Ç°Ğ­³Ì
+    //è®¾ç½®å½“å‰åç¨‹
     void Fiber::SetThis(Fiber* f) {
         t_fiber = f;
     }
 
-    //·µ»Øµ±Ç°Ğ­³Ì
+    //è¿”å›å½“å‰åç¨‹
     Fiber::ptr Fiber::GetThis() {
         if (t_fiber)
             return t_fiber->shared_from_this();
 
-        // Ö÷Ğ­³Ì
+        // ä¸»åç¨‹
         Fiber::ptr main_fiber(new Fiber);
         ASSERT(t_fiber == main_fiber.get());
         t_threadFiber = main_fiber;
@@ -146,20 +146,20 @@ namespace Framework {
     }
 
     uint64_t Fiber::GetFiberId() {
-        if (t_fiber) { // Ã»ÓĞÈÎºÎĞ­³ÌµÄÏß³Ì·µ»Ø0
+        if (t_fiber) { // æ²¡æœ‰ä»»ä½•åç¨‹çš„çº¿ç¨‹è¿”å›0
             return t_fiber->getId();
         }
         return 0;
     }
 
-    // ÉèÖÃµ±Ç°Ğ­³ÌÎªready£¬ËæºóÇĞ»»µ½Ö÷Ğ­³Ì
+    // è®¾ç½®å½“å‰åç¨‹ä¸ºreadyï¼Œéšååˆ‡æ¢åˆ°ä¸»åç¨‹
     void Fiber::YieldToReady() {
         Fiber::ptr cur = GetThis();
         cur->m_state = READY;
         cur->swapOut();
     }
 
-    // Ğ­³ÌÇĞ»»µ½ºóÌ¨£¬²¢ÇÒÉèÖÃÎªHold×´Ì¬
+    // åç¨‹åˆ‡æ¢åˆ°åå°ï¼Œå¹¶ä¸”è®¾ç½®ä¸ºHoldçŠ¶æ€
     void Fiber::YieldToHold() {
         Fiber::ptr cur = GetThis();
         cur->m_state = HOLD;
@@ -175,7 +175,7 @@ namespace Framework {
         ASSERT(cur);
         try {
             cur->m_cb();
-            cur->m_cb = nullptr; // Ö¸ÕëÖÃ¿Õ£¬·ÀÖ¹±»°ó¶¨²ÎÊıµ¼ÖÂÖÇÄÜÖ¸ÕëÒıÓÃ´ÎÊıÒ»Ö±+1; ¼´Ê¹ m_cb Ã»ÓĞÖ±½Ó²¶»ñ Fiber£¬Èç¹û»Øµ÷º¯ÊıÄÚ²¿Í¨¹ıÆäËû·½Ê½£¨ÈçÈ«¾Ö±äÁ¿¡¢¾²Ì¬±äÁ¿µÈ£©¼ä½ÓÒıÓÃÁË Fiber ¶ÔÏó£¬Ò²¿ÉÄÜ×èÖ¹ÆäÎö¹¹¡£
+            cur->m_cb = nullptr; // æŒ‡é’ˆç½®ç©ºï¼Œé˜²æ­¢è¢«ç»‘å®šå‚æ•°å¯¼è‡´æ™ºèƒ½æŒ‡é’ˆå¼•ç”¨æ¬¡æ•°ä¸€ç›´+1; å³ä½¿ m_cb æ²¡æœ‰ç›´æ¥æ•è· Fiberï¼Œå¦‚æœå›è°ƒå‡½æ•°å†…éƒ¨é€šè¿‡å…¶ä»–æ–¹å¼ï¼ˆå¦‚å…¨å±€å˜é‡ã€é™æ€å˜é‡ç­‰ï¼‰é—´æ¥å¼•ç”¨äº† Fiber å¯¹è±¡ï¼Œä¹Ÿå¯èƒ½é˜»æ­¢å…¶ææ„ã€‚
             cur->m_state = TERM;
         }
         catch (std::exception& ex) {
@@ -187,8 +187,8 @@ namespace Framework {
             LOG_ERROR(g_logger) << "Fiber Except";
         }
 
-        // cur->swapOut(); // ÊÖ¶¯·µ»ØÖ÷Ğ­³Ì£¬µ«ÊÇ´ËÊ±Fiber::ptr cur = GetThis();ÉêÇëµÄÖÇÄÜÖ¸Õë²¢Î´±»ÊÍ·ÅÒıÓÃ¼ÆÊıÔÚ´Ë´¦Ò»¶¨>=1
-        auto raw_ptr = cur.get(); // ĞèÒªÊ¹ÓÃÂãÖ¸Õë
+        // cur->swapOut(); // æ‰‹åŠ¨è¿”å›ä¸»åç¨‹ï¼Œä½†æ˜¯æ­¤æ—¶Fiber::ptr cur = GetThis();ç”³è¯·çš„æ™ºèƒ½æŒ‡é’ˆå¹¶æœªè¢«é‡Šæ”¾å¼•ç”¨è®¡æ•°åœ¨æ­¤å¤„ä¸€å®š>=1
+        auto raw_ptr = cur.get(); // éœ€è¦ä½¿ç”¨è£¸æŒ‡é’ˆ
         cur.reset();
         raw_ptr->swapOut();
     }

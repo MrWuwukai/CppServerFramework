@@ -1,6 +1,6 @@
 #pragma once
-/*Ä£ÄâĞ­³Ì£¬ÓÉÒ»¸öÖ÷Ğ­³Ì¿ØÖÆ¡£¸÷¸öĞ­³ÌĞèÒªÓÉÖ÷Ğ­³Ìµ÷¶ÈÇĞ»»*/
-#include <ucontext.h> // winÏÂÊ¹ÓÃ#include <windows.h>µÄfiber
+/*æ¨¡æ‹Ÿåç¨‹ï¼Œç”±ä¸€ä¸ªä¸»åç¨‹æ§åˆ¶ã€‚å„ä¸ªåç¨‹éœ€è¦ç”±ä¸»åç¨‹è°ƒåº¦åˆ‡æ¢*/
+#include <ucontext.h> // winä¸‹ä½¿ç”¨#include <windows.h>çš„fiber
 #include <memory>
 #include <functional>
 #include "multithread.h"
@@ -23,20 +23,20 @@ namespace Framework {
         Fiber(std::function<void()> cb, size_t stacksize = 0, bool use_caller = false);
         ~Fiber();
 
-        //ÖØÖÃĞ­³Ìº¯Êı£¬²¢ÖØÖÃ×´Ì¬
+        //é‡ç½®åç¨‹å‡½æ•°ï¼Œå¹¶é‡ç½®çŠ¶æ€
         //INIT, TERM
         void reset(std::function<void()> cb);
-        //ÇĞ»»µ½µ±Ç°Ğ­³ÌÖ´ĞĞ
+        //åˆ‡æ¢åˆ°å½“å‰åç¨‹æ‰§è¡Œ
         void swapIn();
-        //ÇĞ»»µ½ºóÌ¨Ö´ĞĞ
+        //åˆ‡æ¢åˆ°åå°æ‰§è¡Œ
         void swapOut();
-        // Ö±½ÓÇĞ»»Ğ­³Ì£¬²»ĞèÒªÍ¨¹ıÖ÷Ğ­³Ì
+        // ç›´æ¥åˆ‡æ¢åç¨‹ï¼Œä¸éœ€è¦é€šè¿‡ä¸»åç¨‹
         void call();
         void uncall();
 
-        //ÉèÖÃµ±Ç°Ğ­³Ì
+        //è®¾ç½®å½“å‰åç¨‹
         static void SetThis(Fiber* f);
-        //·µ»Øµ±Ç°Ğ­³Ì
+        //è¿”å›å½“å‰åç¨‹
         static Fiber::ptr GetThis();
 
 		uint64_t getId() const {
@@ -50,17 +50,17 @@ namespace Framework {
         }
 
         static uint64_t GetFiberId();
-        //Ğ­³ÌÇĞ»»µ½ºóÌ¨£¬²¢ÇÒÉèÖÃÎªReady×´Ì¬
+        //åç¨‹åˆ‡æ¢åˆ°åå°ï¼Œå¹¶ä¸”è®¾ç½®ä¸ºReadyçŠ¶æ€
         static void YieldToReady();
-        //Ğ­³ÌÇĞ»»µ½ºóÌ¨£¬²¢ÇÒÉèÖÃÎªHold×´Ì¬
+        //åç¨‹åˆ‡æ¢åˆ°åå°ï¼Œå¹¶ä¸”è®¾ç½®ä¸ºHoldçŠ¶æ€
         static void YieldToHold();
-        //×ÜĞ­³ÌÊı
+        //æ€»åç¨‹æ•°
         static uint64_t TotalFibers();
 
         static void MainFunc();
         static void MainFuncCaller();
     private:
-        Fiber(); // Ë¼¿¼£ºÎªÊ²Ã´ÎŞ²Î¹¹ÔìÒªĞ´³ÉË½ÓĞ£¿
+        Fiber(); // æ€è€ƒï¼šä¸ºä»€ä¹ˆæ— å‚æ„é€ è¦å†™æˆç§æœ‰ï¼Ÿ
     private:
         uint64_t m_id = 0;
         uint32_t m_stacksize = 0;

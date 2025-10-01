@@ -3,7 +3,7 @@
 
 namespace Framework {
     bool Timer::Comparator::operator()(const Timer::ptr& lhs, const Timer::ptr& rhs) const {
-        // ±È½ÏÁ½¸ö¶¨Ê±Æ÷£¬Ë­Ö´ĞĞÊ±¼ä¶Ì¾ÍĞ¡£¬Ö´ĞĞÊ±¼äÒ»Ñù¾Í±È½ÏµØÖ·´óĞ¡
+        // æ¯”è¾ƒä¸¤ä¸ªå®šæ—¶å™¨ï¼Œè°æ‰§è¡Œæ—¶é—´çŸ­å°±å°ï¼Œæ‰§è¡Œæ—¶é—´ä¸€æ ·å°±æ¯”è¾ƒåœ°å€å¤§å°
         if (!lhs && !rhs) {
             return false;
         }
@@ -58,7 +58,7 @@ namespace Framework {
         if (it == m_manager->m_timers.end()) {
             return false;
         }
-        m_manager->m_timers.erase(it); // ÏÈÉ¾³ıÔÙÖØĞÂÉè¶¨Ê±¼ä£¬²»È»setÄÚ²¿ÅÅĞò»áÂÒ
+        m_manager->m_timers.erase(it); // å…ˆåˆ é™¤å†é‡æ–°è®¾å®šæ—¶é—´ï¼Œä¸ç„¶setå†…éƒ¨æ’åºä¼šä¹±
         m_next = Framework::GetCurrentMS() + m_ms;
         m_manager->m_timers.insert(shared_from_this());
         return true;
@@ -76,10 +76,10 @@ namespace Framework {
         if (it == m_manager->m_timers.end()) {
             return false;
         }
-        m_manager->m_timers.erase(it); // ÏÈÉ¾³ıÔÙÖØĞÂÉè¶¨Ê±¼ä£¬²»È»setÄÚ²¿ÅÅĞò»áÂÒ
+        m_manager->m_timers.erase(it); // å…ˆåˆ é™¤å†é‡æ–°è®¾å®šæ—¶é—´ï¼Œä¸ç„¶setå†…éƒ¨æ’åºä¼šä¹±
 
         uint64_t start = 0;
-        // Èç¹ûfrom_now£¬ÔòÏÂÒ»´ÎµÄÖ´ĞĞÊ±¼äÎªnow+ĞÂµÄ¼ä¸ô£¬²»È»µÄ»°Ô­¶¨ÏÂÒ»´ÎÖ´ĞĞµÄÊ±¼ä²»±ä
+        // å¦‚æœfrom_nowï¼Œåˆ™ä¸‹ä¸€æ¬¡çš„æ‰§è¡Œæ—¶é—´ä¸ºnow+æ–°çš„é—´éš”ï¼Œä¸ç„¶çš„è¯åŸå®šä¸‹ä¸€æ¬¡æ‰§è¡Œçš„æ—¶é—´ä¸å˜
         if (from_now) {
             start = Framework::GetCurrentMS();
         }
@@ -106,24 +106,24 @@ namespace Framework {
 
     void TimerManager::addTimer(Timer::ptr timer, RWMutex::WriteLock& lock) {
         auto it = m_timers.insert(timer).first;
-        bool at_front = (it == m_timers.begin() && !m_tickled); // ²åÈëµÄµü´úÆ÷Î»ÖÃÔÚ×îÇ°£¬ËµÃ÷²åÈëµÄ¶¨Ê±Æ÷×îĞ¡
+        bool at_front = (it == m_timers.begin() && !m_tickled); // æ’å…¥çš„è¿­ä»£å™¨ä½ç½®åœ¨æœ€å‰ï¼Œè¯´æ˜æ’å…¥çš„å®šæ—¶å™¨æœ€å°
         
         if (at_front) {
             m_tickled = true;
             lock.unlock();
-            onTimerInsertedAtFront(); // ²åÈëµÄ¶¨Ê±Æ÷×îĞ¡£¬ËµÃ÷Ö®Ç°µÄ¶¨Ê±Æ÷Ì«ÀÏÁË£¬ĞèÒª»½ĞÑµ÷¶ÈÆ÷Á¢¿ÌÖØÉèÊ±¼ä
+            onTimerInsertedAtFront(); // æ’å…¥çš„å®šæ—¶å™¨æœ€å°ï¼Œè¯´æ˜ä¹‹å‰çš„å®šæ—¶å™¨å¤ªè€äº†ï¼Œéœ€è¦å”¤é†’è°ƒåº¦å™¨ç«‹åˆ»é‡è®¾æ—¶é—´
         }
         lock.unlock();
     }
 
-    // ¶¨ÒåÒ»¸ö¾²Ì¬º¯ÊıOnTimer£¬Ëü½ÓÊÕÒ»¸öÈõÖ¸Õëweak_condºÍÒ»¸öº¯Êı¶ÔÏócb×÷Îª²ÎÊı
-    // ÈõÖ¸ÕëÓÃÓÚÔÚ²»Ôö¼ÓÒıÓÃ¼ÆÊıµÄÇé¿öÏÂ¹Û²ì¶ÔÏó£¬º¯Êı¶ÔÏócbÊÇÒªÖ´ĞĞµÄ»Øµ÷²Ù×÷
+    // å®šä¹‰ä¸€ä¸ªé™æ€å‡½æ•°OnTimerï¼Œå®ƒæ¥æ”¶ä¸€ä¸ªå¼±æŒ‡é’ˆweak_condå’Œä¸€ä¸ªå‡½æ•°å¯¹è±¡cbä½œä¸ºå‚æ•°
+    // å¼±æŒ‡é’ˆç”¨äºåœ¨ä¸å¢åŠ å¼•ç”¨è®¡æ•°çš„æƒ…å†µä¸‹è§‚å¯Ÿå¯¹è±¡ï¼Œå‡½æ•°å¯¹è±¡cbæ˜¯è¦æ‰§è¡Œçš„å›è°ƒæ“ä½œ
     static void OnTimer(std::weak_ptr<void> weak_cond, std::function<void()> cb) {
-        // ³¢ÊÔ½«ÈõÖ¸Õëweak_cond×ª»»ÎªÇ¿Ö¸Õëtmp£¬Èç¹û×ª»»³É¹¦ËµÃ÷±»¹Û²ìµÄ¶ÔÏóÈÔÈ»´æÔÚ
+        // å°è¯•å°†å¼±æŒ‡é’ˆweak_condè½¬æ¢ä¸ºå¼ºæŒ‡é’ˆtmpï¼Œå¦‚æœè½¬æ¢æˆåŠŸè¯´æ˜è¢«è§‚å¯Ÿçš„å¯¹è±¡ä»ç„¶å­˜åœ¨
         std::shared_ptr<void> tmp = weak_cond.lock();
-        // Èç¹ûtmp²»Îª¿Õ£¬¼´ÈõÖ¸Õë¶ÔÓ¦µÄ¶ÔÏó»¹´æÔÚ
+        // å¦‚æœtmpä¸ä¸ºç©ºï¼Œå³å¼±æŒ‡é’ˆå¯¹åº”çš„å¯¹è±¡è¿˜å­˜åœ¨
         if (tmp) {
-            // Ö´ĞĞ»Øµ÷º¯Êıcb
+            // æ‰§è¡Œå›è°ƒå‡½æ•°cb
             cb();
         }
     }
@@ -140,11 +140,11 @@ namespace Framework {
         }
         const Timer::ptr& next = *m_timers.begin();
         uint64_t now_ms = Framework::GetCurrentMS();
-        if (now_ms >= next->m_next) { // ÒòÎªÄ³Ğ©Ô­Òòµ±Ç°Ê±¼äÒÑ¾­³¬¹ıÁËÏÂÒ»¸ö¶¨Ê±Æ÷µÄÊ±¼ä£¬ÔòĞèÒªÁ¢¿ÌÖ´ĞĞÏÂÒ»¸ö¶¨Ê±Æ÷
+        if (now_ms >= next->m_next) { // å› ä¸ºæŸäº›åŸå› å½“å‰æ—¶é—´å·²ç»è¶…è¿‡äº†ä¸‹ä¸€ä¸ªå®šæ—¶å™¨çš„æ—¶é—´ï¼Œåˆ™éœ€è¦ç«‹åˆ»æ‰§è¡Œä¸‹ä¸€ä¸ªå®šæ—¶å™¨
             return 0;
         }
         else {
-            return next->m_next - now_ms; // ²»È»µÄ»°£¬¾Í¿ÉÒÔµÈ´ıÒ»¶ÎÊ±¼ä
+            return next->m_next - now_ms; // ä¸ç„¶çš„è¯ï¼Œå°±å¯ä»¥ç­‰å¾…ä¸€æ®µæ—¶é—´
         }
     }
 
@@ -163,18 +163,18 @@ namespace Framework {
         }
 
         Timer::ptr now_timer(new Timer(now_ms));
-        auto it = rollover ? m_timers.end() : m_timers.upper_bound(now_timer); // >now_timerµÄ¶¨Ê±Æ÷
+        auto it = rollover ? m_timers.end() : m_timers.upper_bound(now_timer); // >now_timerçš„å®šæ—¶å™¨
         expired.assign(m_timers.begin(), it);
         m_timers.erase(m_timers.begin(), it);
 
         for (auto& timer : expired) {
-            cbs.push_back(timer->m_cb); // »Øµ÷
-            if (timer->m_recurring) { // Ñ­»·¶¨Ê±Æ÷ÖØÉèÊ±¼äºóÔÙ¸øËûÈû»ØÈ¥
+            cbs.push_back(timer->m_cb); // å›è°ƒ
+            if (timer->m_recurring) { // å¾ªç¯å®šæ—¶å™¨é‡è®¾æ—¶é—´åå†ç»™ä»–å¡å›å»
                 timer->m_next = now_ms + timer->m_ms;
                 m_timers.insert(timer);
             }
             else {
-                timer->m_cb = nullptr; // ÖÃ¿Õm_cb£¬È·±£ÖÇÄÜÖ¸ÕëÒıÓÃ¼ÆÊı-1
+                timer->m_cb = nullptr; // ç½®ç©ºm_cbï¼Œç¡®ä¿æ™ºèƒ½æŒ‡é’ˆå¼•ç”¨è®¡æ•°-1
             }
         }
     }
