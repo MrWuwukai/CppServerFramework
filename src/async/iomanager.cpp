@@ -1,11 +1,12 @@
-﻿#include "iomanager.h"
-#include "macro.h"
-#include "log.h"
+﻿#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
 #include <sys/epoll.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
+
+#include "iomanager.h"
+#include "log.h"
+#include "macro.h"
 
 namespace Framework {
 	static Framework::Logger::ptr g_logger = LOG_NAME("system");
@@ -317,7 +318,7 @@ namespace Framework {
                 static const int MAX_TIMEOUT = 5000; // epoll支持毫秒级粒度，设置定时器也只需设置成毫秒级即可
 
                 // Timer
-                if (next_timeout == ~0ull) {
+                if (next_timeout != ~0ull) {
                     next_timeout = (int)next_timeout > MAX_TIMEOUT ? MAX_TIMEOUT : next_timeout;
                 }
                 else {

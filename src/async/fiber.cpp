@@ -1,8 +1,9 @@
-#include "fiber.h"
+#include <atomic>
+
 #include "config.h"
+#include "fiber.h"
 #include "macro.h"
 #include "scheduler.h"
-#include <atomic>
 
 namespace Framework {
     static Framework::Logger::ptr g_logger = LOG_NAME("system");

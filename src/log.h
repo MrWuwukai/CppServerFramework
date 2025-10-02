@@ -1,24 +1,26 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
-#include <string>
 #include <stdint.h>
-#include <memory>
-#include <list>
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <vector>
-#include <tuple>
-#include <map>
-#include <functional>
+#include <string.h>
+#include <time.h>
+
 #include <cstdarg>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <tuple>
+#include <vector>
+
+#include "multithread.h"
 #include "utils.h"
 #include "singleton.h"
-#include "multithread.h"
 
-#include <time.h>
-#include <string.h>
 
 #ifdef ERROR
 #undef ERROR  // 取消宏定义

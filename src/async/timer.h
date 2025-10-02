@@ -1,6 +1,8 @@
 #pragma once
+
 #include <memory>
 #include <set>
+
 #include "multithread.h"
 
 namespace Framework {

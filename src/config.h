@@ -1,17 +1,19 @@
 #pragma once
-#include <memory>
-#include <string>
-#include <sstream>
-#include <boost/lexical_cast.hpp>
-#include <yaml-cpp/yaml.h>
-#include <vector>
+
 #include <list>
 #include <map>
+#include <memory>
 #include <set>
+#include <string>
+#include <sstream>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
+
+#include <boost/lexical_cast.hpp>
 #include "log.h"
 #include "multithread.h"
+#include <yaml-cpp/yaml.h>
 
 namespace Framework {
 

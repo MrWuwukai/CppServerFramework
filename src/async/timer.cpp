@@ -106,14 +106,21 @@ namespace Framework {
 
     void TimerManager::addTimer(Timer::ptr timer, RWMutex::WriteLock& lock) {
         auto it = m_timers.insert(timer).first;
-        bool at_front = (it == m_timers.begin() && !m_tickled); // 插入的迭代器位置在最前，说明插入的定时器最小
+        bool at_front = (it == m_timers.begin()) && !m_tickled; // 插入的迭代器位置在最前，说明插入的定时器最小
         
-        if (at_front) {
+        // if (at_front) {
+        //     m_tickled = true;
+        //     lock.unlock();
+        //     onTimerInsertedAtFront(); // 插入的定时器最小，说明之前的定时器太老了，需要唤醒调度器立刻重设时间
+        // }
+        // lock.unlock();
+        if(at_front) {
             m_tickled = true;
-            lock.unlock();
-            onTimerInsertedAtFront(); // 插入的定时器最小，说明之前的定时器太老了，需要唤醒调度器立刻重设时间
         }
         lock.unlock();
+        if(at_front) {
+            onTimerInsertedAtFront();
+        }
     }
 
     // 定义一个静态函数OnTimer，它接收一个弱指针weak_cond和一个函数对象cb作为参数

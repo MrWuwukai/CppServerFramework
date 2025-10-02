@@ -1,4 +1,5 @@
 #pragma once
+
 namespace Framework {
     class Noncopyable {
     public:

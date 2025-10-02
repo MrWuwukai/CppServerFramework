@@ -239,7 +239,6 @@ namespace Framework {
         // 禁用拷贝构造函数
         Multithread(const Multithread&) = delete;
         // 禁用拷贝赋值运算符
-        Multithread(const Multithread&) = delete;
         Multithread& operator=(const Multithread&) = delete;
 
         static void* run(void* arg);
@@ -247,7 +246,7 @@ namespace Framework {
         // 线程ID
         pid_t m_id = -1;
         // POSIX线程句柄
-        long int m_thread = 0; // pthread_t
+        pthread_t m_thread = 0;
         // 存储线程执行函数的函数对象
         std::function<void()> m_cb;
         // 线程名称

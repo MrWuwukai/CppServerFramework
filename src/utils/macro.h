@@ -1,8 +1,10 @@
 #pragma once
-#include <string.h>
+
 #include <assert.h>
-#include "utils.h"
+#include <string.h>
+
 #include "log.h"
+#include "utils.h"
 
 /*
 C++20 引入了标准的属性 [[likely]] 和 [[unlikely]]，可以替代这种编译器特定的宏定义。

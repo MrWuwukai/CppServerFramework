@@ -1,7 +1,9 @@
 #pragma once
 // 线程池和协程调度器
-#include <memory>
+
 #include <functional>
+#include <memory>
+
 #include "fiber.h"
 #include "multithread.h"
 
@@ -41,7 +43,7 @@ namespace Framework {
         void schedule(InputIterator begin, InputIterator end) {
             bool need_tickle = false;
             {
-                MutexType::Lock lock(m_mutex);
+                Mutex::Lock lock(m_mutex);
                 while (begin != end) {
                     need_tickle = scheduleNoLock(&*begin, -1) || need_tickle; // 思考：这里指针指出又取地址是为什么？
                     ++begin;

@@ -1,8 +1,9 @@
 #include <vector>
-#include "scheduler.h"
+
+#include "hook.h"
 #include "log.h"
 #include "macro.h"
-#include "hook.h"
+#include "scheduler.h"
 
 namespace Framework {
 	static Logger::ptr g_logger = LOG_NAME("system");

@@ -1,8 +1,9 @@
-﻿#include "utils.h"
+﻿#include <execinfo.h>
+#include <sys/time.h>
+
 #include "fiber.h"
 #include "log.h"
-#include <execinfo.h>
-#include <sys/time.h>
+#include "utils.h"
 
 namespace Framework {
     static Framework::Logger::ptr g_logger = LOG_NAME("system");
@@ -15,7 +16,6 @@ namespace Framework {
         return Fiber::GetFiberId();
     }
 }
-
 
 namespace Framework {
     void Backtrace(std::vector<std::string>& bt, int size, int skip) {
@@ -61,6 +61,4 @@ namespace Framework {
         gettimeofday(&tv, NULL);
         return tv.tv_sec * 1000 * 1000ul + tv.tv_usec;
     }
-
-
 }

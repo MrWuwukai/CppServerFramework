@@ -1,9 +1,10 @@
-﻿#include "config.h"
-#include "hook.h"
-#include "log.h"
-#include "iomanager.h"
+﻿#include <dlfcn.h> // dlsym
+
+#include "config.h"
 #include "fdmanager.h"
-#include <dlfcn.h> // dlsym
+#include "hook.h"
+#include "iomanager.h"
+#include "log.h"
 
 static Framework::Logger::ptr g_logger = LOG_NAME("system");
 
@@ -53,7 +54,7 @@ namespace Framework {
 
     // 静态全局变量在main前初始化（会调用构造函数），确保先hook
     // __attribute__((constructor))也能实现类似效果
-    static uint64_t s_connect_timeout = -l;
+    static uint64_t s_connect_timeout = -1;
     struct _HookIniter {
         _HookIniter() {
             hook_init();
@@ -135,7 +136,7 @@ namespace Framework {
                     if (!t || t->cancelled) {
                         return;
                     }
-                    t->cancelled = ETIMEOUT;
+                    t->cancelled = ETIMEDOUT;
                     iom->cancelEvent(fd, (Framework::IOManager::Event)(event));
                     }, winfo);
             }
@@ -266,7 +267,8 @@ extern "C" {
         }
         Framework::Fiber::ptr fiber = Framework::Fiber::GetThis();
         Framework::IOManager* iom = Framework::IOManager::GetThis();
-        iom->addTimer(seconds * 1000, [iom, fiber]() {iom->schedule(fiber); });
+        // iom->addTimer(seconds * 1000, [iom, fiber]() {iom->schedule(fiber); });
+        iom->addTimer(seconds * 1000, std::bind((void(Framework::Scheduler::*)(Framework::Fiber::ptr, int thread))&Framework::IOManager::schedule, iom, fiber, -1));
         Framework::Fiber::YieldToHold();
         return 0;
     }
@@ -277,7 +279,8 @@ extern "C" {
         }
         Framework::Fiber::ptr fiber = Framework::Fiber::GetThis();
         Framework::IOManager* iom = Framework::IOManager::GetThis();
-        iom->addTimer(usec / 1000, [iom, fiber]() {iom->schedule(fiber); });
+        // iom->addTimer(usec / 1000, [iom, fiber]() {iom->schedule(fiber); });
+        iom->addTimer(usec / 1000, std::bind((void(Framework::Scheduler::*)(Framework::Fiber::ptr, int thread))&Framework::IOManager::schedule, iom, fiber, -1));
         Framework::Fiber::YieldToHold();
         return 0;
     }
@@ -310,7 +313,7 @@ extern "C" {
     // connect的超时跟一般IO不同
     int connect(int sockfd, const struct sockaddr* addr, socklen_t addrlen) {
         //return connect_f(sockfd, addr, addrlen);
-        return Framework::IOHook_connect(sockfd, addr, addrlen, Framework::s_connect_timeout);
+        return IOHook_connect(sockfd, addr, addrlen, Framework::s_connect_timeout);
     }
 
     int accept(int s, struct sockaddr* addr, socklen_t* addrlen) {
@@ -337,7 +340,7 @@ extern "C" {
         return Framework::IOhook(sockfd, recvfrom_f, "recvfrom", Framework::IOManager::READ, SO_RCVTIMEO, buf, len, flags, src_addr, addrlen);
     }
 
-    ssize_t recvmsg(int sockfd, struct mmsghdr* msg, int flags) {
+    ssize_t recvmsg(int sockfd, struct msghdr* msg, int flags) {
         return Framework::IOhook(sockfd, recvmsg_f, "recvmsg", Framework::IOManager::READ, SO_RCVTIMEO, msg, flags);
     }
 

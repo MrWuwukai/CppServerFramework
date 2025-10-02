@@ -1,5 +1,5 @@
-﻿#include "log.h"
-#include "config.h"
+﻿#include "config.h"
+#include "log.h"
 
 namespace Framework {
     // ---LogEvent---

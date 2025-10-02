@@ -44,6 +44,7 @@ ipch/
 Debug/
 Release/
 x64/
+build/
 *.obj
 *.exe
 *.pdb
