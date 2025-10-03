@@ -1,5 +1,5 @@
 ﻿#include "ipaddress.h"
-#include "endian.h"
+#include "endians.h"
 #include "log.h"
 
 #include <sstream>
@@ -194,7 +194,7 @@ namespace Framework {
                                 << " err=" << errno << " errstr=" << strerror(errno);
             return false;
         }
-
+        
         try {
             for (next = results; next; next = next->ifa_next) {
                 Address::ptr addr;
@@ -241,11 +241,10 @@ namespace Framework {
     }
 
     // 服务器网卡信息转地址（指定网卡名字）
-    bool Address::GetInterfaceAddresses(std::vector<std::pair<Address::ptr, uint32_t>>& result
-        , const std::string& iface, int family) {
+    bool Address::GetInterfaceAddresses(std::vector<std::pair<Address::ptr, uint32_t>>& result, const std::string& iface, int family) {
         if (iface.empty() || iface == "*") {
             if (family == AF_INET || family == AF_UNSPEC) {
-                result.push_back(std::make_pair(Address::ptr(new IPv4Address()), 0u));
+                // result.push_back(std::make_pair(Address::ptr(new IPv4Address()), 0u));
             }
             if (family == AF_INET6 || family == AF_UNSPEC) {
                 result.push_back(std::make_pair(Address::ptr(new IPv6Address()), 0u));
@@ -300,11 +299,11 @@ namespace Framework {
         }
     }
 
-    IPv4Address::IPv4Address() {
-        memset(&m_addr, 0, sizeof(m_addr));
-        m_addr.sin_family = AF_INET;
+    // IPv4Address::IPv4Address() {
+    //     memset(&m_addr, 0, sizeof(m_addr));
+    //     m_addr.sin_family = AF_INET;
 
-    }
+    // }
     IPv4Address::IPv4Address(const sockaddr_in& address) {
         m_addr = address;
     }

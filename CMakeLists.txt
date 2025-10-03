@@ -17,9 +17,10 @@ set(LIB_SRC
     src/async/multithread.cpp
     src/async/scheduler.cpp
     src/async/timer.cpp
-    src/config.cpp
-    src/log.cpp
-    src/utils.cpp   
+    src/config/config.cpp
+    src/log/log.cpp
+    src/socket/ipaddress.cpp
+    src/utils/utils.cpp   
     )
 
 add_library(CFramework SHARED ${LIB_SRC})
@@ -29,9 +30,10 @@ target_include_directories(CFramework
         # .           # 项目根目录
         src         # src 目录，可访问 src/log.h
         src/async
+        src/config
+        src/log
+        src/socket
         src/utils
-        # 如果还有别的目录，比如 include/，也可以加上
-        # include
 )
 
 set(LIBS
@@ -40,7 +42,7 @@ set(LIBS
     ${YAMLCPP}
     )
 
-add_executable(test tests/test_iomanager.cpp)
+add_executable(test tests/test_address.cpp)
 add_dependencies(test CFramework)
 target_link_libraries(test CFramework ${LIBS})
 

@@ -1,15 +1,17 @@
 #pragma once
-#include <memory>
-#include <string>
+
+#include <arpa/inet.h>
+#include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
-#include <iostream>
-#include <vector>
-#include <map>
-#include <arpa/inet.h>
 #include <unistd.h>
-#include <netdb.h>
+
+#include <iostream>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace Framework {
 
@@ -57,7 +59,7 @@ namespace Framework {
     class IPv4Address : public IPAddress {
     public:
         typedef std::shared_ptr<IPv4Address> ptr;
-        IPv4Address();
+        // IPv4Address(); 只需下面的带有默认参数的即可，否则会发生歧义
         IPv4Address(const sockaddr_in& address);
         IPv4Address(uint32_t address = INADDR_ANY, uint16_t port = 0);
 
@@ -72,7 +74,7 @@ namespace Framework {
         uint16_t getPort() const override;
         void setPort(uint16_t v) override;
     public:
-        static IPv4Address::ptr Create(const char* address, uint16_t port = 0) {}
+        static IPv4Address::ptr Create(const char* address, uint16_t port = 0);
     private:
         sockaddr_in m_addr;
     };

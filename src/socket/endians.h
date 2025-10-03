@@ -1,10 +1,12 @@
 #pragma once
+
 #define THIS_LITTLE_ENDIAN 1
 #define THIS_BIG_ENDIAN 2
 
 #include <byteswap.h>
-#include <type_traits>
 #include <stdint.h>
+
+#include <type_traits>
 
 namespace Framework {
     constexpr uint64_t bswap_64(uint64_t value) {

@@ -30,13 +30,13 @@ void test_iface() {
 }
 
 void test_ipv4() {
-    auto addr = Framework::IPAddress::Create("www.baidu.com");
+    auto addr = Framework::IPAddress::Create("127.0.0.1");
     if (addr) {
         LOG_INFO(g_logger) << addr->toString();
     }
 }
 
 int main(int argc, char** argv) {
-    test();
+    test_iface();
     return 0;
 }

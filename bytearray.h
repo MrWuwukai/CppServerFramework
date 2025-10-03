@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include "endian.h"
+// #include "endian.h"
 
 namespace Framework {
 	class ByteArray {
