@@ -1,6 +1,6 @@
-#include "tcpserver.h"
 #include "config.h"
 #include "log.h"
+#include "tcpserver.h"
 
 namespace Framework {
     static Framework::ConfigVar<uint64_t>::ptr g_tcp_server_read_timeout =
@@ -14,7 +14,7 @@ namespace Framework {
         m_handleClientWorker(handleClientWorker),
         m_readTimeout(g_tcp_server_read_timeout->getValue()),
         m_name("MyServer/1.0.0"),
-        m_isStop(false) {
+        m_isStop(true) {
     }
 
     TcpServer::~TcpServer() {
@@ -57,7 +57,12 @@ namespace Framework {
         return true;
     }
 
+    void TcpServer::handleClient(Socket::ptr client) {
+        LOG_INFO(g_logger) << "handleClient: " << client->toString();
+    }
+
     void TcpServer::startAccept(Socket::ptr sock) {
+        // LOG_INFO(g_logger) << "startAccept!!";
         while (!m_isStop) {
             Socket::ptr client = sock->accept();
             if (client) {
@@ -76,7 +81,9 @@ namespace Framework {
             return true;
         }
         m_isStop = false;
+        // LOG_INFO(g_logger) << m_isStop << "!!";
         for (auto& sock : m_socks) {
+            // LOG_INFO(g_logger) << "for!!";
             m_acceptWorker->schedule(std::bind(&TcpServer::startAccept, shared_from_this(), sock));
         }
         return true;

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "http_common.h"
 
 typedef struct http_parser {

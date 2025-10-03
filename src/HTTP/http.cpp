@@ -1,7 +1,7 @@
+#include <strings.h>
+
 #include "http.h"
 #include "log.h"
-
-#include <strings.h>
 
 namespace Framework {
 	namespace HTTP {
@@ -163,8 +163,9 @@ namespace Framework {
             os << "connection: " << (m_close ? "close" : "keep-alive") << "\r\n";
             for (auto& i : m_headers) {
                 if (strcasecmp(i.first.c_str(), "connection") == 0) {
-                    os << i.first << ":" << i.second << "\r\n";
+                    continue;
                 }
+                os << i.first << ": " << i.second << "\r\n";
             }
             if (!m_body.empty()) {
                 os << "content-length: " << m_body.size() << "\r\n\r\n" << m_body;

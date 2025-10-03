@@ -1,17 +1,19 @@
-﻿#include "tcpserver.h"
+﻿#include "hook.h"
 #include "iomanager.h"
 #include "log.h"
-#include "hook.h"
+#include "tcpserver.h"
 
 Framework::Logger::ptr g_logger = LOG_ROOT();
 
+// sudo netstat -tnalp | grep test_
+// telnet 127.0.0.1 8033
 void run() {
     auto addr = Framework::Address::LookupAny("0.0.0.0:8033");
-    auto addr2 = Framework::UnixAddress::ptr(new Framework::UnixAddress("/tmp/unix_addr"));
+    // auto addr2 = Framework::UnixAddress::ptr(new Framework::UnixAddress("/tmp/unix_addr"));
 
     std::vector<Framework::Address::ptr> addrs;
     addrs.push_back(addr);
-    addrs.push_back(addr2);
+    // addrs.push_back(addr2);
 
     Framework::TcpServer::ptr tcp_server(new Framework::TcpServer);
     std::vector<Framework::Address::ptr> fails;

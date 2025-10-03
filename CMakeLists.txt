@@ -18,10 +18,15 @@ set(LIB_SRC
     src/async/scheduler.cpp
     src/async/timer.cpp
     src/config/config.cpp
+    src/HTTP/http_parser.cpp
+    src/HTTP/http.cpp
+    src/HTTP/httprequest_parser.cpp
+    src/HTTP/httprespond_parser.cpp
     src/log/log.cpp
     src/socket/async_socket.cpp
     src/socket/bytearray.cpp
     src/socket/ipaddress.cpp
+    src/stream/tcpserver.cpp
     src/utils/utils.cpp   
     )
 
@@ -33,8 +38,10 @@ target_include_directories(CFramework
         src         # src 目录，可访问 src/log.h
         src/async
         src/config
+        src/HTTP
         src/log
         src/socket
+        src/stream
         src/utils
 )
 
@@ -44,7 +51,7 @@ set(LIBS
     ${YAMLCPP}
     )
 
-add_executable(test tests/test_bytearray.cpp)
+add_executable(test tests/test_tcpserver.cpp)
 add_dependencies(test CFramework)
 target_link_libraries(test CFramework ${LIBS})
 

@@ -6,7 +6,7 @@
 #include "iomanager.h"
 #include "ipaddress.h"
 #include "noncopyable.h"
-#include "socket.h"
+#include "async_socket.h"
 
 namespace Framework {
     class TcpServer : public std::enable_shared_from_this<TcpServer>, private Noncopyable {
@@ -14,7 +14,7 @@ namespace Framework {
         typedef std::shared_ptr<TcpServer> ptr;
         TcpServer(Framework::IOManager* handleClientWorker = Framework::IOManager::GetThis()
                 , Framework::IOManager* acceptWorker = Framework::IOManager::GetThis());
-        virtual ~TcpServer() {}
+        virtual ~TcpServer();
 
         virtual bool bind(Framework::Address::ptr addr);
         virtual bool bind(const std::vector<Address::ptr>& addrs, std::vector<Address::ptr>& failedAddrs);
@@ -28,7 +28,7 @@ namespace Framework {
 
         bool isStop() const { return m_isStop; }
     protected:
-        virtual void handleClient(Socket::ptr client) {}
+        virtual void handleClient(Socket::ptr client);
         virtual void startAccept(Socket::ptr sock);
     private:
         std::vector<Socket::ptr> m_socks; // 可同时listen多个地址

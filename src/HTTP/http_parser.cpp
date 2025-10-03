@@ -1,8 +1,8 @@
+#include <string.h>
+
+#include "config.h"
 #include "http_parser.h"
 #include "log.h"
-#include "config.h"
-
-#include <string.h>
 
 namespace {
     static Framework::Logger::ptr g_logger = LOG_NAME("system");
@@ -144,6 +144,7 @@ namespace Framework {
         size_t HttpRequestParser::execute(char* data, size_t len) {
             size_t offset = http_parser_execute(&m_parser, data, len, 0);
             // 还没解析完就把已经解析的移走
+            // std::cout<<"body_start: "<<m_parser.body_start<<std::endl;
             memmove(data, data + offset, (len - offset));
             return offset;
         }
@@ -237,6 +238,7 @@ namespace Framework {
                 httpclient_parser_init(&m_parser);
             }
             size_t offset = httpclient_parser_execute(&m_parser, data, len, 0);
+            // std::cout<<offset<<std::endl;
             memmove(data, data + offset, (len - offset));
             return offset;
         }
