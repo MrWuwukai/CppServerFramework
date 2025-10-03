@@ -1,10 +1,10 @@
-﻿#include "bytearray.h"
-#include "log.h"
-
-#include <fstream>
-#include <sstream>
+﻿#include <fstream>
 #include <iomanip>
+#include <sstream>
 #include <string.h>
+
+#include "bytearray.h"
+#include "log.h"
 
 namespace Framework {
     static Logger::ptr g_logger = LOG_NAME("system");

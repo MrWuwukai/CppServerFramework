@@ -1,8 +1,8 @@
-﻿#include "bytearray.h"
-#include "macro.h"
-#include "log.h"
+﻿#include <vector>
 
-#include <vector>
+#include "bytearray.h"
+#include "log.h"
+#include "macro.h"
 
 Framework::Logger::ptr g_logger = LOG_ROOT();
 
@@ -25,7 +25,8 @@ void test() {
     ASSERT(ba->getReadSize() == 0); \
     LOG_INFO(g_logger) << #write_fun "/" #read_fun \
                          " (" #type ") len=" << len \
-                         << " base_len=" << base_len; \
+                         << " base_len=" << base_len \
+                         << " size=" << ba->getSize(); \
     }
 
     XX(int8_t, 100, writeFint8, readFint8, 1);
@@ -92,5 +93,6 @@ void test_file() {
 
 int main(int argc, char** argv) {
     test();
+    test_file();
     return 0;
 }
