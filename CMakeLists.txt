@@ -19,6 +19,7 @@ set(LIB_SRC
     src/async/timer.cpp
     src/config/config.cpp
     src/log/log.cpp
+    src/socket/async_socket.cpp
     src/socket/ipaddress.cpp
     src/utils/utils.cpp   
     )
@@ -42,7 +43,7 @@ set(LIBS
     ${YAMLCPP}
     )
 
-add_executable(test tests/test_address.cpp)
+add_executable(test tests/test_socket.cpp)
 add_dependencies(test CFramework)
 target_link_libraries(test CFramework ${LIBS})
 

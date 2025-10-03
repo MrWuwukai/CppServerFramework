@@ -2,9 +2,9 @@
 
 #include <memory>
 
+#include "hook.h"
 #include "ipaddress.h" 
 #include "noncopyable.h"
-#include "hook.h"
 
 namespace Framework {
     class Socket : public std::enable_shared_from_this<Socket>, private Noncopyable {

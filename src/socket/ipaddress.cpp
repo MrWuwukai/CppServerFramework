@@ -1,9 +1,9 @@
-﻿#include "ipaddress.h"
+﻿#include <sstream>
+#include <ifaddrs.h>
+
+#include "ipaddress.h"
 #include "endians.h"
 #include "log.h"
-
-#include <sstream>
-#include <ifaddrs.h>
 
 namespace Framework {
     static Logger::ptr g_logger = LOG_NAME("system");

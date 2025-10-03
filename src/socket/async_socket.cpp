@@ -1,12 +1,12 @@
-#include "socket.h"
+#include <netinet/tcp.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
+#include "async_socket.h"
 #include "fdmanager.h"
 #include "iomanager.h"
 #include "log.h"
 #include "macro.h"
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/tcp.h>
 
 // socket new
 namespace Framework {
@@ -323,8 +323,8 @@ namespace Framework {
 
     int Socket::recv(iovec* buffers, size_t length, int flags) {
         if (isConnected()) {
-            memset(&msg, 0, sizeof(msg));
             msghdr msg;
+            memset(&msg, 0, sizeof(msg));           
             msg.msg_iov = (iovec*)buffers;
             msg.msg_iovlen = length;
             return ::recvmsg(m_sock, &msg, flags);
