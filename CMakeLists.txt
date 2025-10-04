@@ -51,13 +51,13 @@ set(LIBS
     ${YAMLCPP}
     )
 
-add_executable(test tests/test_tcpserver.cpp)
+# add_executable(test tests/test_tcpserver.cpp)
+# add_dependencies(test CFramework)
+# target_link_libraries(test CFramework ${LIBS})
+
+add_executable(test tests/echo_server.cpp)
 add_dependencies(test CFramework)
 target_link_libraries(test CFramework ${LIBS})
-
-# add_executable(test_config tests/test_config.cpp)
-# add_dependencies(test_config CFramework)
-# target_link_libraries(test_config CFramework ${YAMLCPP})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

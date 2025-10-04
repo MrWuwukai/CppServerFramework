@@ -2,8 +2,8 @@
 
 #include <memory>
 
+#include "async_socket.h"
 #include "bytearray.h"
-#include "socket.h"
 
 namespace Framework {
     class Stream {
