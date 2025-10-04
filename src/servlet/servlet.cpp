@@ -1,6 +1,6 @@
-#include "servlet.h"
-
 #include <fnmatch.h>
+
+#include "servlet.h"
 
 namespace Framework {
     namespace HTTP {

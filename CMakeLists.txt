@@ -24,9 +24,11 @@ set(LIB_SRC
     src/HTTP/httprequest_parser.cpp
     src/HTTP/httprespond_parser.cpp
     src/log/log.cpp
+    src/servlet/servlet.cpp
     src/socket/async_socket.cpp
     src/socket/bytearray.cpp
     src/socket/ipaddress.cpp
+    src/stream/stream.cpp
     src/stream/tcpserver.cpp
     src/utils/utils.cpp   
     )
@@ -41,6 +43,7 @@ target_include_directories(CFramework
         src/config
         src/HTTP
         src/log
+        src/servlet
         src/socket
         src/stream
         src/utils
