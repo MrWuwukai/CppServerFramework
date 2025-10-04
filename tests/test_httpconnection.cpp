@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include "connection.h"
+#include "http_connection.h"
 #include "iomanager.h"
 #include "log.h"
 
@@ -10,7 +10,7 @@ void test_pool() {
         "www.baidu.com", "", 80, 10, 1000 * 30, 20));
 
     Framework::IOManager::GetThis()->addTimer(1000, [pool]() {
-        auto r = pool->GET("/", 300);
+        auto r = pool->GET("/", 3000);
         LOG_INFO(g_logger) << r->toString();
         }, true);
 }

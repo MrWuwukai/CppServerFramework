@@ -1,9 +1,11 @@
 #pragma once
 
+#include <list>
+
 #include "http.h"
+#include "multithread.h"
 #include "stream.h"
 #include "uri.h"
-#include "multithread.h"
 
 namespace Framework {
     namespace HTTP {

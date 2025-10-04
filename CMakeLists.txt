@@ -18,12 +18,14 @@ set(LIB_SRC
     src/async/scheduler.cpp
     src/async/timer.cpp
     src/config/config.cpp
+    src/HTTP/http_connection.cpp
     src/HTTP/http_parser.cpp
     src/HTTP/http_server.cpp
     src/HTTP/http_session.cpp
     src/HTTP/http.cpp
     src/HTTP/httprequest_parser.cpp
     src/HTTP/httprespond_parser.cpp
+    src/HTTP/uri.cpp
     src/log/log.cpp
     src/servlet/servlet.cpp
     src/socket/async_socket.cpp
@@ -60,7 +62,7 @@ set(LIBS
 # add_dependencies(test CFramework)
 # target_link_libraries(test CFramework ${LIBS})
 
-add_executable(test tests/test_httpserver.cpp)
+add_executable(test tests/test_httpconnection.cpp)
 add_dependencies(test CFramework)
 target_link_libraries(test CFramework ${LIBS})
 

@@ -163,7 +163,7 @@ namespace Framework {
     // 协程切换到后台，并且设置为Hold状态
     void Fiber::YieldToHold() {
         Fiber::ptr cur = GetThis();
-        cur->m_state = HOLD;
+        // cur->m_state = HOLD;
         cur->swapOut();
     }
    

@@ -18,9 +18,10 @@ namespace Framework {
             do {
                 auto req = session->recvRequest();
                 if (!req) {
-                    LOG_WARN(g_logger) << "recv http request fail, errno="
+                    LOG_DEBUG(g_logger) << "recv http request fail, errno="
                         << errno << " errstr=" << strerror(errno)
-                        << " client:" << client->toString();
+                        << " client:" << client->toString()
+                        << " keep_alive=" << m_isKeepAlive;
                     break;
                 }
 
@@ -33,7 +34,11 @@ namespace Framework {
                 //rsp->setBody("hello world");
 
                 session->sendResponse(rsp);
-            } while (m_isKeepAlive);
+
+                if(!m_isKeepAlive || req->isClose()) {
+                    break;
+                }
+            } while (true);
             session->close();
         }
     }

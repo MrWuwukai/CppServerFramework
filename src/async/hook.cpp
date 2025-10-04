@@ -145,7 +145,7 @@ namespace Framework {
 
             // 添加事件
             int rt = iom->addEvent(fd, (Framework::IOManager::Event)(event));
-            if (rt) {
+            if (rt) [[unlikely]] {
                 if (c) {
                     LOG_ERROR(g_logger) << hook_fun_name << " addEvent("
                         << fd << ", " << event << ") retry c=" << c
@@ -427,7 +427,9 @@ extern "C" {
         case F_SETSIG:
         case F_SETLEASE:
         case F_NOTIFY:
+#ifdef F_SETPIPE_SZ
         case F_SETPIPE_SZ:
+#endif
             {
                 int arg = va_arg(va, int);
                 va_end(va);
@@ -438,7 +440,9 @@ extern "C" {
         case F_GETOWN:
         case F_GETSIG:
         case F_GETLEASE:
+#ifdef F_GETPIPE_SZ
         case F_GETPIPE_SZ:
+#endif
             {
                 va_end(va);
                 return fcntl_f(fd, cmd);

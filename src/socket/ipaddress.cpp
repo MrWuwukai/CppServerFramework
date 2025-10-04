@@ -152,7 +152,7 @@ namespace Framework {
         }
         int error = getaddrinfo(node.c_str(), service, &hints, &results);
         if (error) {
-            LOG_ERROR(g_logger) << "Address::Lookup getaddress(" << host << ", " << family << ", " << type << ") err=" << error << " errstr=" << strerror(errno);
+            LOG_ERROR(g_logger) << "Address::Lookup getaddress(" << host << ", " << family << ", " << type << ") err=" << error << " errstr=" << gai_strerror(errno);
             return false;
         }
 

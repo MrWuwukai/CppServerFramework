@@ -499,6 +499,11 @@ int httpclient_parser_init(httpclient_parser *parser)  {
 /** exec **/
 int httpclient_parser_execute(httpclient_parser *parser, const char *buffer, size_t len, size_t off)  
 {
+    parser->nread = 0;
+    parser->mark = 0;
+    parser->field_len = 0;
+    parser->field_start = 0;
+    
     const char *p, *pe;
     int cs = parser->cs;
 
@@ -512,7 +517,7 @@ int httpclient_parser_execute(httpclient_parser *parser, const char *buffer, siz
 
 
     
-#line 516 "httprespond_parser.cpp"
+#line 521 "httprespond_parser.cpp"
 	{
 	int _klen;
 	unsigned int _trans;
@@ -676,7 +681,7 @@ _match:
         {p++; goto _out; }
     }
 	break;
-#line 680 "httprespond_parser.cpp"
+#line 685 "httprespond_parser.cpp"
 		}
 	}
 
@@ -689,7 +694,7 @@ _again:
 	_out: {}
 	}
 
-#line 164 "httprespond_parser.rl"
+#line 169 "httprespond_parser.rl"
 
     parser->cs = cs;
     parser->nread += p - (buffer + off);

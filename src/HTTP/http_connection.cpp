@@ -1,7 +1,7 @@
-#include "connection.h"
+#include "http_connection.h"
+#include "log.h"
 #include "http_parser.h"
 #include "utils.h"
-#include "log.h"
 
 namespace Framework {
     namespace HTTP {
@@ -335,7 +335,7 @@ namespace Framework {
                     , nullptr, "connect fail: " + sock->getRemoteAddress()->toString());
             }
             sock->setRecvTimeout(timeout_ms);
-            HttpConnection::ptr conn = std::make_shared<HttpConnection>(sock);
+            // HttpConnection::ptr conn = std::make_shared<HttpConnection>(sock);
             // send
             int rt = conn->sendRequest(req);
             if (rt == 0) {

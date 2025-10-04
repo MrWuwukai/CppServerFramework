@@ -27,7 +27,7 @@ namespace Framework {
         void setHost(const std::string& v) { m_host = v; }
         void setPath(const std::string& v) { m_path = v; }
         void setQuery(const std::string& v) { m_query = v; }
-        void setQuery(const std::string& v) { m_fragment = v; }
+        void setFragment(const std::string& v) { m_fragment = v; }
         void setPort(int32_t v) { m_port = v; }
 
         std::ostream& dump(std::ostream& os) const;
