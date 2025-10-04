@@ -1,4 +1,4 @@
-﻿#include "httpserver.h"
+﻿#include "http_server.h"
 #include "log.h"
 
 static Framework::Logger::ptr g_logger = LOG_ROOT();
@@ -26,7 +26,7 @@ void run() {
             rsp->setBody(req->toString());
             return 0;
         });
-    sd->addFuzzyServlet("/a", [](Framework::HTTP::HttpRequest::ptr req
+    sd->addFuzzyServlet("/a/*", [](Framework::HTTP::HttpRequest::ptr req
         , Framework::HTTP::HttpResponse::ptr rsp
         , Framework::HTTP::HttpSession::ptr session) {
             rsp->setBody("F" + req->toString());
