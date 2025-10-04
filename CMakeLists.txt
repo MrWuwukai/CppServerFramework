@@ -19,6 +19,7 @@ set(LIB_SRC
     src/async/timer.cpp
     src/config/config.cpp
     src/HTTP/http_parser.cpp
+    src/HTTP/http_session.cpp
     src/HTTP/http.cpp
     src/HTTP/httprequest_parser.cpp
     src/HTTP/httprespond_parser.cpp
